@@ -1,41 +1,141 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import Layout from './components/Layout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Courses from './pages/Courses';
-import CourseDetail from './pages/CourseDetail';
-import AdminPanel from './pages/AdminPanel';
-import './App.css';
-
-const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, loading, isAdmin } = useAuth();
-  
-  if (loading) return <div className="loading">Loading...</div>;
-  if (!user) return <Navigate to="/login" />;
-  if (adminOnly && !isAdmin()) return <Navigate to="/dashboard" />;
-  
-  return children;
-};
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { ProtectedRoute, RoleGuard } from './components/auth';
+import { Layout } from './components/Layout';
+import {
+  LoginPage,
+  RegisterPage,
+  DashboardPage,
+  StudentsPage,
+  CoursesPage,
+  EnrollmentsPage,
+  UsersPage,
+  ProfilePage,
+  NotFoundPage,
+  InstructorsPage,
+  InstructorDetailPage,
+  SchedulesPage,
+} from './pages';
+import { ROLES } from './utils/constants';
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-            <Route index element={<Navigate to="/dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="courses" element={<Courses />} />
-            <Route path="courses/:id" element={<CourseDetail />} />
-            <Route path="admin" element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+
+            {/* Protected Routes */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              {/* Dashboard - All authenticated users */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+
+              {/* Students - Admin only */}
+              <Route
+                path="/students"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <StudentsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/students/:id"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <StudentsPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Courses - All authenticated users */}
+              <Route path="/courses" element={<CoursesPage />} />
+              <Route path="/courses/:id" element={<CoursesPage />} />
+
+              {/* Enrollments - All authenticated users */}
+              <Route path="/enrollments" element={<EnrollmentsPage />} />
+
+              {/* Users - Admin only */}
+              <Route
+                path="/users"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <UsersPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Instructors - Admin only */}
+              <Route
+                path="/instructors"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <InstructorsPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/instructors/:id"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <InstructorDetailPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Schedules - Admin and Instructor */}
+              <Route
+                path="/schedules"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.INSTRUCTOR]}>
+                    <SchedulesPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Profile - All authenticated users */}
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+
+            {/* 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Router>
+
+        {/* Toast Notifications */}
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            className: 'dark:bg-gray-800 dark:text-white',
+            success: {
+              iconTheme: {
+                primary: '#22c55e',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
