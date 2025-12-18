@@ -1,0 +1,12 @@
+export { default as LoginPage } from './LoginPage';
+export { default as RegisterPage } from './RegisterPage';
+export { default as DashboardPage } from './DashboardPage';
+export { default as StudentsPage } from './StudentsPage';
+export { default as CoursesPage } from './CoursesPage';
+export { default as EnrollmentsPage } from './EnrollmentsPage';
+export { default as UsersPage } from './UsersPage';
+export { default as ProfilePage } from './ProfilePage';
+export { default as NotFoundPage } from './NotFoundPage';
+export { default as InstructorsPage } from './InstructorsPage';
+export { default as InstructorDetailPage } from './InstructorDetailPage';
+export { default as SchedulesPage } from './SchedulesPage';
