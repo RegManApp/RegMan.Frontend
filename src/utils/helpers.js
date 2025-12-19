@@ -242,3 +242,50 @@ export const downloadFile = (data, filename, type = "application/json") => {
  * Sleep/delay function
  */
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Normalize course data to handle both PascalCase and camelCase from backend
+ */
+export const normalizeCourse = (course) => {
+  if (!course) return null;
+  return {
+    id: course.id ?? course.Id ?? course.courseId ?? course.CourseId,
+    courseName: course.courseName ?? course.CourseName ?? course.name ?? course.Name,
+    courseCode: course.courseCode ?? course.CourseCode ?? course.code ?? course.Code,
+    creditHours: course.creditHours ?? course.CreditHours,
+    description: course.description ?? course.Description,
+    categoryName: course.categoryName ?? course.CategoryName ?? course.category?.name ?? course.Category?.Name,
+    courseCategoryId: course.courseCategoryId ?? course.CourseCategoryId ?? course.categoryId ?? course.CategoryId,
+    enrollmentCount: course.enrollmentCount ?? course.EnrollmentCount ?? 0,
+    ...course, // Keep any additional properties
+  };
+};
+
+/**
+ * Normalize array of courses
+ */
+export const normalizeCourses = (courses) => {
+  if (!Array.isArray(courses)) return [];
+  return courses.map(normalizeCourse);
+};
+
+/**
+ * Normalize category data to handle both PascalCase and camelCase from backend
+ */
+export const normalizeCategory = (category) => {
+  if (!category) return null;
+  return {
+    id: category.id ?? category.Id ?? category.categoryId ?? category.CategoryId,
+    name: category.name ?? category.Name ?? category.categoryName ?? category.CategoryName,
+    description: category.description ?? category.Description,
+    ...category,
+  };
+};
+
+/**
+ * Normalize array of categories
+ */
+export const normalizeCategories = (categories) => {
+  if (!Array.isArray(categories)) return [];
+  return categories.map(normalizeCategory);
+};

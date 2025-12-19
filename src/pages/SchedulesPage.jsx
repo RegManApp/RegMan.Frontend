@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { scheduleApi, courseApi, instructorApi } from '../api';
 import { ScheduleList, ScheduleForm, Timetable } from '../components/schedules';
 import { PageHeader, Button, Card, Tabs } from '../components/common';
-import { debounce } from '../utils/helpers';
+import { debounce, normalizeCourses } from '../utils/helpers';
 
 const SchedulesPage = () => {
   const { user, isAdmin, isInstructor } = useAuth();
@@ -55,7 +55,8 @@ const SchedulesPage = () => {
         instructorApi.getAll(),
       ]);
       
-      setCourses(Array.isArray(coursesRes) ? coursesRes : coursesRes.items || []);
+      const coursesData = Array.isArray(coursesRes) ? coursesRes : coursesRes.items || [];
+      setCourses(normalizeCourses(coursesData));
       setInstructors(Array.isArray(instructorsRes) ? instructorsRes : instructorsRes.items || []);
     } catch (error) {
       console.error('Failed to fetch courses and instructors:', error);

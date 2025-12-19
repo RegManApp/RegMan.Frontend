@@ -6,6 +6,7 @@ import { studentApi } from '../api/studentApi';
 import { courseApi } from '../api/courseApi';
 import { EnrollmentList, EnrollmentForm } from '../components/enrollments';
 import { PageLoading, Breadcrumb } from '../components/common';
+import { normalizeCourses } from '../utils/helpers';
 
 const EnrollmentsPage = () => {
   const { isAdmin } = useAuth();
@@ -61,7 +62,7 @@ const EnrollmentsPage = () => {
           courseApi.getAll({ pageSize: 100 }),
         ]);
         setStudents(studentsRes.data?.items || studentsRes.data || []);
-        setCourses(coursesRes.data?.items || coursesRes.data || []);
+        setCourses(normalizeCourses(coursesRes.data?.items || coursesRes.data || []));
       } catch (error) {
         console.error('Failed to load form data:', error);
       }
