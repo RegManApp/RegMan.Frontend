@@ -23,14 +23,14 @@ const AdminDashboard = ({
     {
       key: 'student',
       header: 'Student',
-      render: (_, enrollment) => (
-        <span className="font-medium">
-          {getFullName(
-            enrollment.student?.user?.firstName,
-            enrollment.student?.user?.lastName
-          )}
-        </span>
-      ),
+      render: (_, enrollment) => {
+        const user = enrollment.student?.user;
+        // Prefer first/last name, fallback to fullName
+        const name = user?.firstName || user?.lastName
+          ? getFullName(user?.firstName, user?.lastName)
+          : user?.fullName || enrollment.student?.fullName || 'Unknown';
+        return <span className="font-medium">{name}</span>;
+      },
     },
     {
       key: 'course',
