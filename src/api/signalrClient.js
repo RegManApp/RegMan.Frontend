@@ -13,13 +13,15 @@ export async function startConnection() {
     return connection;
 
   const token = getToken();
+  // If VITE_API_BASE_URL includes '/api', strip it so hub path becomes '/hubs/chat'
+  const apiBase = (import.meta.env.VITE_API_BASE_URL || "")
+    .replace(/\/$/, "")
+    .replace(/\/api\/?$/i, "");
+
   connection = new signalR.HubConnectionBuilder()
-    .withUrl(
-      `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")}/hubs/chat`,
-      {
-        accessTokenFactory: () => token || "",
-      }
-    )
+    .withUrl(`${apiBase}/hubs/chat`, {
+      accessTokenFactory: () => token || "",
+    })
     .configureLogging(signalR.LogLevel.Warning)
     .withAutomaticReconnect()
     .build();
