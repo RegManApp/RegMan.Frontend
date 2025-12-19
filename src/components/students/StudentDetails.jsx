@@ -11,6 +11,11 @@ import { getFullName, getStatusColor, formatDate } from '../../utils/helpers';
 const StudentDetails = ({ student, onEdit, onBack }) => {
   if (!student) return null;
 
+  // Get the full name from either fullName or user.fullName
+  const studentName = student.fullName || student.user?.fullName || getFullName(student.user?.firstName, student.user?.lastName);
+  const studentEmail = student.email || student.user?.email;
+  const initials = studentName?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
+
   const enrollmentColumns = [
     {
       key: 'course',
@@ -18,10 +23,10 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
       render: (_, enrollment) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">
-            {enrollment.course?.name}
+            {enrollment.course?.name || enrollment.course?.courseName || enrollment.courseName}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {enrollment.course?.courseCode}
+            {enrollment.course?.courseCode || enrollment.courseCode}
           </p>
         </div>
       ),
@@ -29,7 +34,7 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
     {
       key: 'enrollmentDate',
       header: 'Enrolled On',
-      render: (value) => formatDate(value),
+      render: (_, enrollment) => formatDate(enrollment.enrolledAt || enrollment.enrollmentDate),
     },
     {
       key: 'grade',
@@ -51,20 +56,20 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
       <Card>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
           <div className="flex items-center gap-4">
-            <Avatar
-              firstName={student.user?.firstName}
-              lastName={student.user?.lastName}
-              size="xl"
-            />
+            <div className="h-16 w-16 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <span className="text-primary-600 dark:text-primary-400 font-bold text-xl">
+                {initials}
+              </span>
+            </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                {getFullName(student.user?.firstName, student.user?.lastName)}
+                {studentName}
               </h2>
               <p className="text-gray-500 dark:text-gray-400">
-                {student.studentNumber}
+                ID: {student.studentProfile?.studentId || student.id?.substring(0, 8) || 'N/A'}
               </p>
-              <Badge className={`${getStatusColor(student.status)} mt-2`}>
-                {student.status}
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 mt-2">
+                {student.role || 'Student'}
               </Badge>
             </div>
           </div>
@@ -84,48 +89,54 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
               Email
             </h4>
             <p className="mt-1 text-gray-900 dark:text-white">
-              {student.user?.email}
+              {studentEmail}
             </p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Date of Birth
+              Address
             </h4>
             <p className="mt-1 text-gray-900 dark:text-white">
-              {formatDate(student.dateOfBirth)}
+              {student.address || 'Not provided'}
             </p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Enrollment Date
+              Completed Credits
             </h4>
-            <p className="mt-1 text-gray-900 dark:text-white">
-              {formatDate(student.enrollmentDate)}
+            <p className="mt-1 text-gray-900 dark:text-white font-semibold">
+              {student.studentProfile?.completedCredits || 0}
             </p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Role
+              Registered Credits
             </h4>
             <p className="mt-1 text-gray-900 dark:text-white">
-              {student.user?.role || 'Student'}
+              {student.studentProfile?.registeredCredits || 0}
             </p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Courses
+              GPA
             </h4>
-            <p className="mt-1 text-gray-900 dark:text-white">
-              {student.enrollments?.length || 0}
+            <p className="mt-1 text-2xl font-bold text-primary-600 dark:text-primary-400">
+              {(student.studentProfile?.gpa || 0).toFixed(2)}
             </p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Account Created
+              Academic Standing
             </h4>
-            <p className="mt-1 text-gray-900 dark:text-white">
-              {formatDate(student.user?.createdAt)}
-            </p>
+            <Badge className={
+              (student.studentProfile?.gpa || 0) >= 3.5 ? 'bg-green-100 text-green-800' :
+              (student.studentProfile?.gpa || 0) >= 2.0 ? 'bg-blue-100 text-blue-800' :
+              'bg-red-100 text-red-800'
+            }>
+              {(student.studentProfile?.gpa || 0) >= 3.5 ? 'Dean\'s List' :
+               (student.studentProfile?.gpa || 0) >= 2.0 ? 'Good Standing' :
+               'Academic Probation'}
+            </Badge>
           </div>
         </div>
       </Card>

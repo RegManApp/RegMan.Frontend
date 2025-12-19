@@ -67,11 +67,6 @@ const UsersPage = () => {
     loadUsers();
   }, [loadUsers]);
 
-  const handleEdit = (user) => {
-    setFormUser(user);
-    setIsFormOpen(true);
-  };
-
   const handleDelete = async () => {
     if (!deleteModal.user) return;
 
@@ -91,27 +86,32 @@ const UsersPage = () => {
 
     setIsFormLoading(true);
     try {
-      await userApi.update(formUser.id, formUser);
+      // Update user info
+      await userApi.update(formUser.id, {
+        fullName: formUser.fullName,
+        address: formUser.address,
+      });
+      
+      // Update role if changed
+      if (formUser.role && formUser.originalRole !== formUser.role) {
+        await userApi.updateRole(formUser.id, formUser.role);
+      }
+      
       toast.success('User updated successfully');
       setIsFormOpen(false);
       setFormUser(null);
       loadUsers();
     } catch (error) {
       console.error('Failed to update user:', error);
+      toast.error('Failed to update user');
     } finally {
       setIsFormLoading(false);
     }
   };
 
-  const handleRoleChange = async (userId, role) => {
-    try {
-      await userApi.updateRole(userId, role);
-      toast.success('Role assigned successfully');
-      loadUsers();
-    } catch (error) {
-      console.error('Failed to assign role:', error);
-      toast.error('Failed to assign role');
-    }
+  const handleEdit = (user) => {
+    setFormUser({ ...user, originalRole: user.role });
+    setIsFormOpen(true);
   };
 
   const columns = [
@@ -122,7 +122,7 @@ const UsersPage = () => {
       render: (_, user) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">
-            {getFullName(user.firstName, user.lastName)}
+            {user.fullName || getFullName(user.firstName, user.lastName)}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
         </div>
@@ -146,18 +146,6 @@ const UsersPage = () => {
       header: 'Actions',
       render: (_, user) => (
         <div className="flex items-center gap-2">
-          <select
-            value=""
-            onChange={(e) => handleRoleChange(user.id, e.target.value)}
-            className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800"
-          >
-            <option value="" disabled>
-              Assign Role
-            </option>
-            <option value="Admin">Admin</option>
-            <option value="Student">Student</option>
-            <option value="Instructor">Instructor</option>
-          </select>
           <Button
             variant="ghost"
             size="sm"
@@ -236,17 +224,10 @@ const UsersPage = () => {
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
           <Input
-            label="First Name"
-            value={formUser?.firstName || ''}
+            label="Full Name"
+            value={formUser?.fullName || ''}
             onChange={(e) =>
-              setFormUser({ ...formUser, firstName: e.target.value })
-            }
-          />
-          <Input
-            label="Last Name"
-            value={formUser?.lastName || ''}
-            onChange={(e) =>
-              setFormUser({ ...formUser, lastName: e.target.value })
+              setFormUser({ ...formUser, fullName: e.target.value })
             }
           />
           <Input
@@ -254,16 +235,28 @@ const UsersPage = () => {
             type="email"
             value={formUser?.email || ''}
             onChange={(e) => setFormUser({ ...formUser, email: e.target.value })}
+            disabled
           />
-          <Select
-            label="Role"
-            value={formUser?.role || ''}
-            onChange={(e) => setFormUser({ ...formUser, role: e.target.value })}
-            options={[
-              { value: 'Admin', label: 'Admin' },
-              { value: 'Student', label: 'Student' },
-            ]}
+          <Input
+            label="Address"
+            value={formUser?.address || ''}
+            onChange={(e) => setFormUser({ ...formUser, address: e.target.value })}
           />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Role
+            </label>
+            <select
+              value={formUser?.role || ''}
+              onChange={(e) => setFormUser({ ...formUser, role: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="">Select Role</option>
+              <option value="Admin">Admin</option>
+              <option value="Student">Student</option>
+              <option value="Instructor">Instructor</option>
+            </select>
+          </div>
 
           <div className="flex justify-end gap-3 pt-4">
             <Button
@@ -289,10 +282,7 @@ const UsersPage = () => {
         onClose={() => setDeleteModal({ isOpen: false, user: null })}
         onConfirm={handleDelete}
         title="Delete User"
-        message={`Are you sure you want to delete ${getFullName(
-          deleteModal.user?.firstName,
-          deleteModal.user?.lastName
-        )}? This action cannot be undone.`}
+        message={`Are you sure you want to delete ${deleteModal.user?.fullName || 'this user'}? This action cannot be undone.`}
         confirmText="Delete"
         variant="danger"
       />

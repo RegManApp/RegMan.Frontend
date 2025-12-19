@@ -9,13 +9,11 @@ import {
   Table,
   TablePagination,
   Button,
-  Badge,
   SearchInput,
   EmptyState,
   ConfirmModal,
 } from '../common';
-import { getFullName, getStudentLevelColor, formatDate } from '../../utils/helpers';
-import { getStudentLevelLabel } from '../../utils/constants';
+import { getFullName } from '../../utils/helpers';
 
 const StudentList = ({
   students,
@@ -34,45 +32,67 @@ const StudentList = ({
 
   const columns = [
     {
-      key: 'studentNumber',
-      header: 'Student #',
+      key: 'studentId',
+      header: 'Student ID',
       sortable: true,
+      render: (_, student) => (
+        <span className="font-mono text-sm">
+          {student.studentProfile?.studentId || student.id?.substring(0, 8) || 'N/A'}
+        </span>
+      ),
     },
     {
       key: 'name',
       header: 'Name',
       sortable: true,
+      render: (_, student) => {
+        const fullName = student.fullName || student.user?.fullName || getFullName(student.user?.firstName, student.user?.lastName);
+        const initials = fullName?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
+        return (
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+              <span className="text-primary-600 dark:text-primary-400 font-medium text-sm">
+                {initials}
+              </span>
+            </div>
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">
+                {fullName}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {student.email || student.user?.email}
+              </p>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'completedCredits',
+      header: 'Credits',
+      sortable: true,
       render: (_, student) => (
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
-            <span className="text-primary-600 dark:text-primary-400 font-medium text-sm">
-              {student.user?.firstName?.[0]}{student.user?.lastName?.[0]}
-            </span>
-          </div>
-          <div>
-            <p className="font-medium text-gray-900 dark:text-white">
-              {getFullName(student.user?.firstName, student.user?.lastName)}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              {student.user?.email}
-            </p>
-          </div>
+        <div className="text-center">
+          <span className="font-semibold text-gray-900 dark:text-white">
+            {student.studentProfile?.completedCredits || 0}
+          </span>
+          <span className="text-gray-500 dark:text-gray-400 text-sm"> completed</span>
         </div>
       ),
     },
     {
-      key: 'enrollmentDate',
-      header: 'Enrollment Date',
+      key: 'gpa',
+      header: 'GPA',
       sortable: true,
-      render: (value) => formatDate(value),
-    },
-    {
-      key: 'studentLevel',
-      header: 'Level',
-      sortable: true,
-      render: (value) => (
-        <Badge className={getStudentLevelColor(value)}>{getStudentLevelLabel(value)}</Badge>
-      ),
+      render: (_, student) => {
+        const gpa = student.studentProfile?.gpa || 0;
+        const gpaColor = gpa >= 3.5 ? 'text-green-600' : gpa >= 2.0 ? 'text-blue-600' : 'text-red-600';
+        return (
+          <span className={`font-semibold ${gpaColor}`}>
+            {gpa.toFixed(2)}
+          </span>
+        );
+      },
     },
     {
       key: 'actions',
@@ -160,7 +180,7 @@ const StudentList = ({
         onClose={() => setDeleteModal({ isOpen: false, student: null })}
         onConfirm={handleConfirmDelete}
         title="Delete Student"
-        message={`Are you sure you want to delete ${getFullName(deleteModal.student?.user?.firstName, deleteModal.student?.user?.lastName)}? This action cannot be undone.`}
+        message={`Are you sure you want to delete ${deleteModal.student?.fullName || 'this student'}? This action cannot be undone.`}
         confirmText="Delete"
         variant="danger"
       />
