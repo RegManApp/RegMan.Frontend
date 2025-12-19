@@ -18,9 +18,13 @@ export const instructorApi = {
   },
 
   // Create new instructor (Admin only)
-  // Request: { email, password, firstName, lastName, phoneNumber?, dateOfBirth, address?, city?, hireDate, departmentId? }
+  // Request: { email, password, firstName, lastName, title }
   create: (instructorData) => {
-    return axiosInstance.post("/instructor", instructorData);
+    const { firstName, lastName, ...rest } = instructorData;
+    return axiosInstance.post("/instructor", {
+      ...rest,
+      fullName: `${firstName} ${lastName}`.trim(),
+    });
   },
 
   // Update instructor (Admin only)

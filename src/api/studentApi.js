@@ -25,8 +25,11 @@ export const studentApi = {
   // Create new student (Admin only)
   // Request: { email, password, firstName, lastName, phoneNumber?, dateOfBirth, address?, city?, enrollmentDate, studentLevel }
   create: (studentData) => {
+    const { firstName, lastName, address, city, ...rest } = studentData;
     return axiosInstance.post("/admin/create-user", {
-      ...studentData,
+      ...rest,
+      fullName: `${firstName} ${lastName}`.trim(),
+      address: address || city || "",
       role: "Student",
     });
   },
