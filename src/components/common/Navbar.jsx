@@ -15,6 +15,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { cn, getFullName } from '../../utils/helpers';
 import Avatar from './Avatar';
 import AccountSwitcher from './AccountSwitcher';
+import NotificationBell from '../NotificationBell';
 
 const Navbar = ({ onMenuClick, showMenuButton = true }) => {
   const { user, logout } = useAuth();
@@ -58,6 +59,9 @@ const Navbar = ({ onMenuClick, showMenuButton = true }) => {
                 <MoonIcon className="h-5 w-5" />
               )}
             </button>
+
+            {/* Notifications */}
+            <NotificationBell />
 
             {/* Account Switcher */}
             <AccountSwitcher />

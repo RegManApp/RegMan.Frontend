@@ -19,6 +19,9 @@ import {
   SchedulesPage,
   AdvisingPage,
   AnalyticsPage,
+  OfficeHoursPage,
+  BookOfficeHourPage,
+  CalendarPage,
 } from './pages';
 import { ROLES } from './utils/constants';
 
@@ -123,6 +126,29 @@ function App() {
                 element={
                   <RoleGuard allowedRoles={[ROLES.ADMIN]}>
                     <AnalyticsPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Calendar - All authenticated users */}
+              <Route path="/calendar" element={<CalendarPage />} />
+
+              {/* Office Hours - Instructor only */}
+              <Route
+                path="/office-hours"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.INSTRUCTOR]}>
+                    <OfficeHoursPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Book Office Hours - Student only */}
+              <Route
+                path="/book-office-hours"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+                    <BookOfficeHourPage />
                   </RoleGuard>
                 }
               />

@@ -12,3 +12,6 @@ export { default as InstructorDetailPage } from "./InstructorDetailPage";
 export { default as SchedulesPage } from "./SchedulesPage";
 export { default as AdvisingPage } from "./AdvisingPage";
 export { default as AnalyticsPage } from "./AnalyticsPage";
+export { default as OfficeHoursPage } from "./OfficeHoursPage";
+export { default as BookOfficeHourPage } from "./BookOfficeHourPage";
+export { default as CalendarPage } from "./CalendarPage";

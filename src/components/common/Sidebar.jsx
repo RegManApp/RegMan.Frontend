@@ -13,6 +13,7 @@ import {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../utils/helpers';
@@ -28,11 +29,13 @@ const iconMap = {
   CalendarDaysIcon,
   ClipboardDocumentCheckIcon,
   ChartBarIcon,
+  ClockIcon,
 };
 
 const adminNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
   { name: 'Analytics', href: '/analytics', icon: 'ChartBarIcon' },
+  { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
   { name: 'Students', href: '/students', icon: 'UsersIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
   { name: 'Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
@@ -44,6 +47,8 @@ const adminNavigation = [
 
 const instructorNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
+  { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
+  { name: 'Office Hours', href: '/office-hours', icon: 'ClockIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
   { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
   { name: 'Schedules', href: '/schedules', icon: 'CalendarDaysIcon' },
@@ -52,6 +57,8 @@ const instructorNavigation = [
 
 const studentNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
+  { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
+  { name: 'Book Office Hours', href: '/book-office-hours', icon: 'ClockIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
   { name: 'My Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
   { name: 'Profile', href: '/profile', icon: 'UserIcon' },
