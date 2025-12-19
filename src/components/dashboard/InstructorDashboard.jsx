@@ -4,16 +4,20 @@ import {
   CalendarDaysIcon,
   UserGroupIcon,
   ClockIcon,
+  AcademicCapIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { Card, Button, Badge, EmptyState } from '../common';
 import StatsCard from './StatsCard';
 import { formatDate } from '../../utils/helpers';
-import { getDayOfWeekLabel } from '../../utils/constants';
+import { getDayOfWeekLabel, getInstructorDegreeLabel } from '../../utils/constants';
 
 const InstructorDashboard = ({
   instructor,
   schedules = [],
   isLoading,
+  user,
 }) => {
   // Calculate unique courses from schedules
   const uniqueCourses = [...new Set(schedules.map(s => s.courseId))];
@@ -30,15 +34,61 @@ const InstructorDashboard = ({
   const today = new Date().getDay();
   const todaySchedules = schedulesByDay[today] || [];
 
+  // Determine instructor degree level
+  const degree = instructor?.degree || user?.instructorTitle || 'TeachingAssistant';
+  const isTA = degree === 'TeachingAssistant' || degree === 0;
+  const isProfessorLevel = ['Professor', 'AssociateProfessor', 'AssistantProfessor', 3, 4, 5].includes(degree);
+  const isLecturerLevel = ['Lecturer', 'AssistantLecturer', 1, 2].includes(degree);
+
+  // Get gradient color based on degree
+  const getGradientColor = () => {
+    if (isProfessorLevel) return 'from-purple-600 to-purple-700';
+    if (isLecturerLevel) return 'from-blue-600 to-blue-700';
+    return 'from-green-600 to-green-700'; // TA
+  };
+
+  const getDegreeLabel = () => {
+    const labels = {
+      0: 'Teaching Assistant',
+      1: 'Assistant Lecturer',
+      2: 'Lecturer',
+      3: 'Assistant Professor',
+      4: 'Associate Professor',
+      5: 'Professor',
+      'TeachingAssistant': 'Teaching Assistant',
+      'AssistantLecturer': 'Assistant Lecturer',
+      'Lecturer': 'Lecturer',
+      'AssistantProfessor': 'Assistant Professor',
+      'AssociateProfessor': 'Associate Professor',
+      'Professor': 'Professor',
+    };
+    return labels[degree] || 'Instructor';
+  };
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-6 text-white">
-        <h1 className="text-2xl font-bold">
-          Welcome back, {instructor?.user?.firstName || 'Instructor'}!
-        </h1>
-        <p className="mt-2 text-green-100">
-          {instructor?.department && `Department: ${instructor.department}`}
+      <div className={`bg-gradient-to-r ${getGradientColor()} rounded-xl p-6 text-white`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">
+              Welcome back, {instructor?.user?.firstName || user?.firstName || 'Instructor'}!
+            </h1>
+            <p className="mt-2 text-white/80">
+              {instructor?.department && `Department: ${instructor.department}`}
+            </p>
+          </div>
+          <div className="text-right">
+            <Badge className="bg-white/20 text-white border-white/30">
+              <AcademicCapIcon className="w-4 h-4 mr-1 inline" />
+              {getDegreeLabel()}
+            </Badge>
+          </div>
+        </div>
+        <p className="mt-2 text-white/70">
+          {isProfessorLevel ? 'Manage your courses, supervise students, and review research.' : 
+           isLecturerLevel ? 'Manage your lectures and student progress.' :
+           'Assist with sections, labs, and student support.'}
         </p>
       </div>
 
@@ -69,6 +119,36 @@ const InstructorDashboard = ({
           iconClassName="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
         />
       </div>
+
+      {/* Quick Actions based on role */}
+      <Card title="Quick Actions">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link to="/schedules">
+            <Button variant="outline" className="w-full justify-start" icon={CalendarDaysIcon}>
+              My Schedule
+            </Button>
+          </Link>
+          <Link to="/courses">
+            <Button variant="outline" className="w-full justify-start" icon={BookOpenIcon}>
+              My Courses
+            </Button>
+          </Link>
+          {(isProfessorLevel || isLecturerLevel) && (
+            <Link to="/students">
+              <Button variant="outline" className="w-full justify-start" icon={UserGroupIcon}>
+                View Students
+              </Button>
+            </Link>
+          )}
+          {isProfessorLevel && (
+            <Link to="/reports">
+              <Button variant="outline" className="w-full justify-start" icon={ChartBarIcon}>
+                Reports
+              </Button>
+            </Link>
+          )}
+        </div>
+      </Card>
 
       {/* Today's Schedule */}
       <Card

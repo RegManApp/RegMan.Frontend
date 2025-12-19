@@ -40,9 +40,10 @@ const CoursesPage = () => {
         search: searchQuery,
       });
       const data = response.data;
-      setCourses(data.items || data);
-      setTotalPages(data.totalPages || 1);
-      setTotalItems(data.totalItems || data.length);
+      // Handle both camelCase and PascalCase from backend
+      setCourses(data.items || data.Items || data || []);
+      setTotalPages(data.totalPages || data.TotalPages || 1);
+      setTotalItems(data.totalItems || data.TotalItems || (data.length || 0));
     } catch (error) {
       console.error('Failed to load courses:', error);
       toast.error('Failed to load courses');

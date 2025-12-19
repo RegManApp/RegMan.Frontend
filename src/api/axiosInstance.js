@@ -1,18 +1,25 @@
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000,
 });
 
+// Helper to get token from either storage
+const getToken = () => {
+  return (
+    localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken")
+  );
+};
+
 // Request interceptor - Auto-attach token
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -28,12 +35,12 @@ axiosInstance.interceptors.response.use(
   (response) => {
     // Handle standard ApiResponse wrapper format
     const data = response.data;
-    if (data && typeof data === 'object' && 'success' in data) {
+    if (data && typeof data === "object" && "success" in data) {
       if (!data.success) {
         // API returned success: false
-        const errorMessage = data.message || 'An error occurred';
+        const errorMessage = data.message || "An error occurred";
         if (data.errors) {
-          const errorMessages = Object.values(data.errors).flat().join(', ');
+          const errorMessages = Object.values(data.errors).flat().join(", ");
           toast.error(errorMessages || errorMessage);
         } else {
           toast.error(errorMessage);
@@ -47,42 +54,50 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     const { response } = error;
-    
+
     if (response) {
       const apiResponse = response.data;
-      const message = apiResponse?.message || 'An error occurred';
-      
+      const message = apiResponse?.message || "An error occurred";
+
       switch (response.status) {
         case 401:
-          localStorage.removeItem('accessToken');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-          toast.error('Session expired. Please login again.');
+          // Clear both storages on 401
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
+          localStorage.removeItem("rememberMe");
+          sessionStorage.removeItem("accessToken");
+          sessionStorage.removeItem("refreshToken");
+          sessionStorage.removeItem("user");
+          window.location.href = "/login";
+          toast.error("Session expired. Please login again.");
           break;
         case 403:
-          toast.error('You do not have permission to perform this action.');
+          toast.error("You do not have permission to perform this action.");
           break;
         case 404:
-          toast.error(message || 'Resource not found.');
+          toast.error(message || "Resource not found.");
           break;
         case 400:
           if (apiResponse?.errors) {
-            const errorMessages = Object.values(apiResponse.errors).flat().join(', ');
+            const errorMessages = Object.values(apiResponse.errors)
+              .flat()
+              .join(", ");
             toast.error(errorMessages || message);
           } else {
             toast.error(message);
           }
           break;
         case 500:
-          toast.error('Server error. Please try again later.');
+          toast.error("Server error. Please try again later.");
           break;
         default:
           toast.error(message);
       }
     } else {
-      toast.error('Network error. Please check your connection.');
+      toast.error("Network error. Please check your connection.");
     }
-    
+
     return Promise.reject(error);
   }
 );

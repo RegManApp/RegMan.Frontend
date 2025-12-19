@@ -100,6 +100,7 @@ const DashboardPage = () => {
           instructor={instructorProfile}
           schedules={instructorSchedules}
           isLoading={isLoading}
+          user={user}
         />
       ) : (
         <StudentDashboard

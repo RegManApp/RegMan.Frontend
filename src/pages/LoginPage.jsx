@@ -14,7 +14,7 @@ const LoginPage = () => {
   const handleSubmit = async (data) => {
     setIsLoading(true);
     try {
-      await login(data.email, data.password);
+      await login(data.email, data.password, data.rememberMe);
       navigate(from, { replace: true });
     } catch (error) {
       // Error handled in context

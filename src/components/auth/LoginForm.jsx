@@ -8,6 +8,7 @@ import { Button, Input } from '../common';
 
 const LoginForm = ({ onSubmit, isLoading }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const {
     register,
@@ -21,8 +22,13 @@ const LoginForm = ({ onSubmit, isLoading }) => {
     },
   });
 
+  const handleFormSubmit = (data) => {
+    // Pass rememberMe flag along with credentials
+    onSubmit({ ...data, rememberMe });
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Input
         label="Email"
         type="email"
@@ -51,9 +57,11 @@ const LoginForm = ({ onSubmit, isLoading }) => {
       </div>
 
       <div className="flex items-center justify-between">
-        <label className="flex items-center">
+        <label className="flex items-center cursor-pointer">
           <input
             type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
           />
           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">

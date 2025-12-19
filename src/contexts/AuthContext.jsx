@@ -95,14 +95,22 @@ export const AuthProvider = ({ children }) => {
   // Check for existing auth on mount
   useEffect(() => {
     const initializeAuth = async () => {
-      const token = localStorage.getItem('accessToken');
-      const userData = localStorage.getItem('user');
+      // Check both localStorage (remember me) and sessionStorage (session only)
+      const token = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+      const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
 
       if (token) {
         // Check if token is expired
         if (isTokenExpired(token)) {
+          // Clear from both storages
           localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
+          localStorage.removeItem('rememberMe');
+          sessionStorage.removeItem('accessToken');
+          sessionStorage.removeItem('refreshToken');
+          sessionStorage.removeItem('user');
           dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
           return;
         }
@@ -116,10 +124,17 @@ export const AuthProvider = ({ children }) => {
             try {
               const response = await authApi.getCurrentUser();
               dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: response.data });
-              localStorage.setItem('user', JSON.stringify(response.data));
+              // Store in appropriate storage based on rememberMe setting
+              const storage = rememberMe ? localStorage : sessionStorage;
+              storage.setItem('user', JSON.stringify(response.data));
             } catch (error) {
               localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
               localStorage.removeItem('user');
+              localStorage.removeItem('rememberMe');
+              sessionStorage.removeItem('accessToken');
+              sessionStorage.removeItem('refreshToken');
+              sessionStorage.removeItem('user');
               dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: null });
             }
           }
@@ -128,10 +143,16 @@ export const AuthProvider = ({ children }) => {
           try {
             const response = await authApi.getCurrentUser();
             dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: response.data });
-            localStorage.setItem('user', JSON.stringify(response.data));
+            const storage = rememberMe ? localStorage : sessionStorage;
+            storage.setItem('user', JSON.stringify(response.data));
           } catch (error) {
             localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
+            localStorage.removeItem('rememberMe');
+            sessionStorage.removeItem('accessToken');
+            sessionStorage.removeItem('refreshToken');
+            sessionStorage.removeItem('user');
             dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: null });
           }
         }
@@ -144,26 +165,47 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email, password, rememberMe = false) => {
     dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: true });
     try {
       const response = await authApi.login({ email, password });
-      // Response format: { token, email, role, firstName, lastName }
-      const { token, email: userEmail, role, firstName, lastName } = response.data;
+      // Response format: { accessToken, refreshToken, email, fullName, role, userId, instructorTitle }
+      const { accessToken, refreshToken, email: userEmail, fullName, role, userId, instructorTitle } = response.data;
 
-      // Parse JWT to get additional claims if needed
-      const tokenPayload = parseJwt(token);
-      
+      // Parse full name into firstName and lastName
+      const nameParts = fullName?.split(' ') || [];
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+
       const user = {
-        id: tokenPayload?.sub || tokenPayload?.userId,
+        id: userId,
         email: userEmail,
         role,
         firstName,
         lastName,
+        fullName,
+        instructorTitle,
       };
 
-      localStorage.setItem('accessToken', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      // Choose storage based on "Remember me" checkbox
+      // localStorage persists after browser close, sessionStorage clears on close
+      const storage = rememberMe ? localStorage : sessionStorage;
+      
+      // Clear both storages first to avoid conflicts
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('user');
+
+      // Store in appropriate storage
+      storage.setItem('accessToken', accessToken);
+      storage.setItem('refreshToken', refreshToken);
+      storage.setItem('user', JSON.stringify(user));
+      
+      // Always store rememberMe preference in localStorage
+      localStorage.setItem('rememberMe', rememberMe.toString());
 
       dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: user });
       toast.success('Login successful!');
@@ -193,12 +235,21 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = useCallback(async () => {
     try {
-      await authApi.logout();
+      const refreshToken = localStorage.getItem('refreshToken') || sessionStorage.getItem('refreshToken');
+      if (refreshToken) {
+        await authApi.logout({ refreshToken });
+      }
     } catch (error) {
       // Ignore logout API errors
     } finally {
+      // Clear both storages
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('rememberMe');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('refreshToken');
+      sessionStorage.removeItem('user');
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
       toast.success('Logged out successfully');
     }
@@ -207,8 +258,11 @@ export const AuthProvider = ({ children }) => {
   // Update user profile
   const updateUser = useCallback((userData) => {
     dispatch({ type: AUTH_ACTIONS.UPDATE_USER, payload: userData });
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-    localStorage.setItem('user', JSON.stringify({ ...currentUser, ...userData }));
+    // Update in the appropriate storage
+    const rememberMe = localStorage.getItem('rememberMe') === 'true';
+    const storage = rememberMe ? localStorage : sessionStorage;
+    const currentUser = JSON.parse(storage.getItem('user') || '{}');
+    storage.setItem('user', JSON.stringify({ ...currentUser, ...userData }));
   }, []);
 
   // Clear error
@@ -240,6 +294,33 @@ export const AuthProvider = ({ children }) => {
     return hasRole('Instructor');
   }, [hasRole]);
 
+  // Check instructor title/degree
+  const isTeachingAssistant = useCallback(() => {
+    return hasRole('Instructor') && state.user?.instructorTitle === 'TeachingAssistant';
+  }, [hasRole, state.user]);
+
+  const isProfessor = useCallback(() => {
+    return hasRole('Instructor') && 
+      ['Professor', 'AssociateProfessor', 'AssistantProfessor'].includes(state.user?.instructorTitle);
+  }, [hasRole, state.user]);
+
+  const isLecturer = useCallback(() => {
+    return hasRole('Instructor') && 
+      ['Lecturer', 'AssistantLecturer'].includes(state.user?.instructorTitle);
+  }, [hasRole, state.user]);
+
+  const getInstructorDegreeLabel = useCallback(() => {
+    const titles = {
+      'TeachingAssistant': 'Teaching Assistant',
+      'AssistantLecturer': 'Assistant Lecturer',
+      'Lecturer': 'Lecturer',
+      'AssistantProfessor': 'Assistant Professor',
+      'AssociateProfessor': 'Associate Professor',
+      'Professor': 'Professor'
+    };
+    return titles[state.user?.instructorTitle] || state.user?.instructorTitle || 'Instructor';
+  }, [state.user]);
+
   const value = {
     user: state.user,
     isAuthenticated: state.isAuthenticated,
@@ -254,6 +335,10 @@ export const AuthProvider = ({ children }) => {
     isAdmin,
     isStudent,
     isInstructor,
+    isTeachingAssistant,
+    isProfessor,
+    isLecturer,
+    getInstructorDegreeLabel,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
