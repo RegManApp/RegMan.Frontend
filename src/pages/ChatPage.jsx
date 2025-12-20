@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { startConnection, stopConnection, onReceiveMessage, offReceiveMessage, sendMessage as hubSend } from '../api/signalrClient';
 import ConversationList from '../components/chat/ConversationList';
@@ -12,7 +12,7 @@ export default function ChatPage() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const res = await axiosInstance.get('/chat');
+      const res = await chatApi.getConversations();
       setConversations(res.data?.conversations || []);
     } catch (e) {
       console.error('Failed to load conversations', e);
@@ -70,7 +70,7 @@ export default function ChatPage() {
             } catch (e) {
               // Fallback to REST
               try {
-                await axiosInstance.post('/chat', null, { params: { receiverId, textMessage: text } });
+                await chatApi.sendMessage(receiverId, text);
                 loadConversations();
               } catch (err) {
                 console.error('Failed to send message', err);

@@ -13,3 +13,4 @@ export { calendarApi } from "./calendarApi";
 export { default as gpaApi } from "./gpaApi";
 export { notificationApi } from "./notificationApi";
 export { officeHourApi } from "./officeHourApi";
+export { chatApi } from "./chatApi";

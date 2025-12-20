@@ -79,11 +79,30 @@ const GpaPage = () => {
     
     setIsSaving(true);
     try {
-      await gpaApi.updateGrade(enrollmentId, newGrade);
+      const response = await gpaApi.updateGrade(enrollmentId, newGrade);
       toast.success('Grade updated successfully');
       setEditingGrade(null);
       setNewGrade('');
-      loadGpaData(); // Reload to get updated GPA
+      
+      // Instantly update the GPA from response if available
+      if (response.data?.newGpa !== undefined) {
+        setGpaData(prev => ({
+          ...prev,
+          currentGpa: response.data.newGpa
+        }));
+        // Also update the enrollment in the list
+        setGpaData(prev => ({
+          ...prev,
+          enrollments: prev.enrollments.map(e => 
+            e.enrollmentId === enrollmentId 
+              ? { ...e, grade: newGrade.toUpperCase(), status: response.data.status }
+              : e
+          )
+        }));
+      } else {
+        // Fallback: reload to get updated GPA
+        loadGpaData();
+      }
     } catch (error) {
       console.error('Failed to update grade:', error);
       toast.error('Failed to update grade');
