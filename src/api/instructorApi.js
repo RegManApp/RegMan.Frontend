@@ -2,27 +2,37 @@ import axiosInstance from "./axiosInstance";
 
 export const instructorApi = {
   // Get all instructors
+  // Route: GET /instructor
+  // Available to: Admin, Student, Instructor
   getAll: (params = {}) => {
     return axiosInstance.get("/instructor", { params });
   },
 
-  // Get instructor by ID
+  // Get instructor by InstructorProfile ID
+  // Route: GET /instructor/{id}
+  // Available to: Admin, Student, Instructor
+  // Note: id is InstructorProfile.InstructorId (int)
   getById: (id) => {
     return axiosInstance.get(`/instructor/${id}`);
   },
 
-  // Get instructor schedule
+  // Get instructor schedule by InstructorProfile ID
+  // Route: GET /instructor/{id}/schedule
+  // Available to: Admin, Instructor
   getSchedule: (id) => {
     return axiosInstance.get(`/instructor/${id}/schedule`);
   },
 
   // Get my schedule (for logged-in instructor)
+  // Route: GET /instructor/my-schedule
+  // Available to: Instructor only
   getMySchedule: () => {
     return axiosInstance.get("/instructor/my-schedule");
   },
 
   // Create new instructor (Admin only)
-  // Request: { email, password, fullName, title, degree?, department? }
+  // Route: POST /instructor
+  // Request: CreateInstructorDTO { email, password, fullName, title?, degree?, department? }
   create: (instructorData) => {
     const { firstName, lastName, ...rest } = instructorData;
     return axiosInstance.post("/instructor", {
@@ -35,7 +45,8 @@ export const instructorApi = {
   },
 
   // Update instructor (Admin only)
-  // Request: { fullName?, email?, title?, degree?, department?, address? }
+  // Route: PUT /instructor/{id}
+  // Request: UpdateInstructorDTO { fullName?, email?, title?, degree?, department?, address? }
   update: (id, instructorData) => {
     const { firstName, lastName, ...rest } = instructorData;
     return axiosInstance.put(`/instructor/${id}`, {
@@ -48,6 +59,7 @@ export const instructorApi = {
   },
 
   // Delete instructor (Admin only)
+  // Route: DELETE /instructor/{id}
   delete: (id) => {
     return axiosInstance.delete(`/instructor/${id}`);
   },

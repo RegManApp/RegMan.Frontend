@@ -1,43 +1,40 @@
 import axiosInstance from "./axiosInstance";
 
 export const scheduleApi = {
-  // Get all schedules with filtering
-  // Query: courseId?, instructorId?, dayOfWeek?, roomNumber?
+  // Get all schedule slots
+  // Available to: Admin, Instructor, Student
   getAll: (params = {}) => {
     return axiosInstance.get("/scheduleslot", { params });
   },
 
-  // Get schedule by ID
-  getById: (id) => {
-    return axiosInstance.get(`/scheduleslot/${id}`);
-  },
-
-  // Get schedules for a student
-  getByStudent: (studentId) => {
-    return axiosInstance.get(`/scheduleslot/student/${studentId}`);
+  // Get schedules by section ID
+  // Available to: Admin, Instructor, Student
+  // Route: /scheduleslot/section/{sectionId}
+  getBySection: (sectionId) => {
+    return axiosInstance.get(`/scheduleslot/section/${sectionId}`);
   },
 
   // Get schedules for an instructor
+  // Available to: Admin, Instructor
+  // Route: /scheduleslot/instructor/{instructorId}
   getByInstructor: (instructorId) => {
-    return axiosInstance.get(`/instructor/${instructorId}/schedule`);
+    return axiosInstance.get(`/scheduleslot/instructor/${instructorId}`);
   },
 
-  // Create new schedule (Admin only)
-  // Request: { courseId, instructorId, dayOfWeek, startTime, endTime, roomNumber, semester }
+  // Get schedules by room ID
+  // Available to: Admin, Instructor, Student
+  // Route: /scheduleslot/room/{roomId}
+  getByRoom: (roomId) => {
+    return axiosInstance.get(`/scheduleslot/room/${roomId}`);
+  },
+
+  // Create new schedule slot (Admin only)
+  // Request: CreateScheduleSlotDTO (sectionId, instructorId, roomId, timeSlotId, etc.)
   create: (scheduleData) => {
     return axiosInstance.post("/scheduleslot", scheduleData);
   },
 
-  // Update schedule (Admin only)
-  // Request: { id, instructorId?, dayOfWeek?, startTime?, endTime?, roomNumber? }
-  update: (id, scheduleData) => {
-    return axiosInstance.put(`/scheduleslot/${id}`, {
-      id: Number(id),
-      ...scheduleData,
-    });
-  },
-
-  // Delete schedule (Admin only)
+  // Delete schedule slot (Admin only)
   delete: (id) => {
     return axiosInstance.delete(`/scheduleslot/${id}`);
   },
