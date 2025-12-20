@@ -157,7 +157,16 @@ const CoursesPage = () => {
 
   const handleUnenroll = async (courseId) => {
     try {
-      await enrollmentApi.unenrollFromCourse(courseId);
+      // Find the enrollment for this course
+      const enrollment = myEnrollments.find(
+        (e) => e.courseId === courseId && (e.status === 'Enrolled' || e.status === 'Pending')
+      );
+      if (!enrollment) {
+        toast.error('No active enrollment found for this course');
+        return;
+      }
+      // Drop the enrollment using the enrollmentId
+      await enrollmentApi.drop(enrollment.enrollmentId);
       toast.success('Successfully dropped course');
       loadMyEnrollments();
       if (id) {
@@ -167,6 +176,7 @@ const CoursesPage = () => {
       }
     } catch (error) {
       console.error('Failed to unenroll:', error);
+      toast.error('Failed to drop course');
     }
   };
 

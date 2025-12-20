@@ -80,10 +80,16 @@ export const enrollmentApi = {
     return axiosInstance.get("/cart/my-enrollments");
   },
 
-  // Add section to cart (Student)
+  // Add section to cart by scheduleSlotId (Student)
   // Route: POST /cart?scheduleSlotId={scheduleSlotId}
-  enrollInCourse: (scheduleSlotId) => {
+  addToCartByScheduleSlot: (scheduleSlotId) => {
     return axiosInstance.post(`/cart?scheduleSlotId=${scheduleSlotId}`);
+  },
+
+  // Add to cart by courseId - finds first available section (Student)
+  // Route: POST /cart/by-course/{courseId}
+  enrollInCourse: (courseId) => {
+    return axiosInstance.post(`/cart/by-course/${courseId}`);
   },
 
   // Get cart contents (Student)
