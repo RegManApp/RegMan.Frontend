@@ -65,7 +65,8 @@ const InstructorDetailPage = () => {
   const handleSubmit = async (data) => {
     try {
       setIsSubmitting(true);
-      await instructorApi.update(instructor.id, data);
+      const instructorId = instructor.instructorId || instructor.id;
+      await instructorApi.update(instructorId, data);
       toast.success('Instructor updated successfully');
       handleCloseForm();
       // Refresh instructor data
@@ -117,7 +118,7 @@ const InstructorDetailPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Instructor Details"
-        description={`Viewing details for ${instructor.user?.firstName} ${instructor.user?.lastName}`}
+        description={`Viewing details for ${instructor.fullName || instructor.user?.firstName + ' ' + instructor.user?.lastName}`}
       />
 
       <InstructorDetails

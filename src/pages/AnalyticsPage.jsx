@@ -13,14 +13,27 @@ import {
   UsersIcon,
   AcademicCapIcon,
   BookOpenIcon,
-  BuildingOfficeIcon,
   ChartBarIcon,
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
-  ArrowTrendingUpIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 const AnalyticsPage = () => {
   const { isAdmin } = useAuth();
@@ -83,6 +96,9 @@ const AnalyticsPage = () => {
   if (isLoading) {
     return <PageLoading />;
   }
+
+  // Chart colors
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
 
   return (
     <div className="space-y-6">
@@ -157,6 +173,133 @@ const AnalyticsPage = () => {
         </div>
       )}
 
+      {/* Enrollment Trends Chart */}
+      {enrollmentTrends.length > 0 && (
+        <Card title="Enrollment Trends (Last 30 Days)">
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={enrollmentTrends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 12 }}
+                  interval="preserveStartEnd"
+                />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#1F2937', 
+                    border: 'none', 
+                    borderRadius: '8px',
+                    color: '#F9FAFB'
+                  }} 
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="total" 
+                  stroke="#3B82F6" 
+                  strokeWidth={2}
+                  name="Total"
+                  dot={false}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="approved" 
+                  stroke="#10B981" 
+                  strokeWidth={2}
+                  name="Approved"
+                  dot={false}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="pending" 
+                  stroke="#F59E0B" 
+                  strokeWidth={2}
+                  name="Pending"
+                  dot={false}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="declined" 
+                  stroke="#EF4444" 
+                  strokeWidth={2}
+                  name="Declined"
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
+      {/* GPA & Credits Distribution Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* GPA Distribution Pie Chart */}
+        {gpaDistribution?.chartData && (
+          <Card title={`GPA Distribution (Avg: ${gpaDistribution.summary?.averageGPA || 0})`}>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={gpaDistribution.chartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value, percent }) => value > 0 ? `${name}: ${value} (${(percent * 100).toFixed(0)}%)` : ''}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {gpaDistribution.chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      color: '#F9FAFB'
+                    }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        )}
+
+        {/* Credits Distribution Bar Chart */}
+        {creditsDistribution?.chartData && (
+          <Card title={`Student Classification (Avg Credits: ${creditsDistribution.summary?.averageCredits || 0})`}>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={creditsDistribution.chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      color: '#F9FAFB'
+                    }}
+                    formatter={(value, name, props) => [value, props.payload.range]}
+                  />
+                  <Bar dataKey="value" name="Students">
+                    {creditsDistribution.chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        )}
+      </div>
+
       {/* User Breakdown & Enrollment Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Breakdown */}
@@ -230,107 +373,6 @@ const AnalyticsPage = () => {
         )}
       </div>
 
-      {/* GPA & Credits Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* GPA Distribution */}
-        {gpaDistribution && (
-          <Card title="GPA Distribution">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Average GPA</span>
-                <span className="text-2xl font-bold text-primary-600">{gpaDistribution.averageGPA}</span>
-              </div>
-              <div className="space-y-2 mt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-24 text-sm text-gray-600 dark:text-gray-400">Excellent (≥3.5)</div>
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div 
-                      className="bg-green-500 h-4 rounded-full" 
-                      style={{ width: `${(gpaDistribution.excellent / (gpaDistribution.excellent + gpaDistribution.good + gpaDistribution.average + gpaDistribution.belowAverage + gpaDistribution.atRisk || 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="w-10 text-sm font-medium">{gpaDistribution.excellent}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 text-sm text-gray-600 dark:text-gray-400">Good (3.0-3.5)</div>
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div 
-                      className="bg-blue-500 h-4 rounded-full" 
-                      style={{ width: `${(gpaDistribution.good / (gpaDistribution.excellent + gpaDistribution.good + gpaDistribution.average + gpaDistribution.belowAverage + gpaDistribution.atRisk || 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="w-10 text-sm font-medium">{gpaDistribution.good}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 text-sm text-gray-600 dark:text-gray-400">Average (2.5-3.0)</div>
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div 
-                      className="bg-yellow-500 h-4 rounded-full" 
-                      style={{ width: `${(gpaDistribution.average / (gpaDistribution.excellent + gpaDistribution.good + gpaDistribution.average + gpaDistribution.belowAverage + gpaDistribution.atRisk || 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="w-10 text-sm font-medium">{gpaDistribution.average}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 text-sm text-gray-600 dark:text-gray-400">Below (2.0-2.5)</div>
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div 
-                      className="bg-orange-500 h-4 rounded-full" 
-                      style={{ width: `${(gpaDistribution.belowAverage / (gpaDistribution.excellent + gpaDistribution.good + gpaDistribution.average + gpaDistribution.belowAverage + gpaDistribution.atRisk || 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="w-10 text-sm font-medium">{gpaDistribution.belowAverage}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 text-sm text-gray-600 dark:text-gray-400">At Risk (&lt;2.0)</div>
-                  <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                    <div 
-                      className="bg-red-500 h-4 rounded-full" 
-                      style={{ width: `${(gpaDistribution.atRisk / (gpaDistribution.excellent + gpaDistribution.good + gpaDistribution.average + gpaDistribution.belowAverage + gpaDistribution.atRisk || 1)) * 100}%` }}
-                    ></div>
-                  </div>
-                  <span className="w-10 text-sm font-medium">{gpaDistribution.atRisk}</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-
-        {/* Credits Distribution */}
-        {creditsDistribution && (
-          <Card title="Student Classification">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600 dark:text-gray-400">Average Credits</span>
-                <span className="text-2xl font-bold text-primary-600">{creditsDistribution.averageCredits}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-blue-600">{creditsDistribution.freshman}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Freshman</p>
-                  <p className="text-xs text-gray-500">(0-29 credits)</p>
-                </div>
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-green-600">{creditsDistribution.sophomore}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Sophomore</p>
-                  <p className="text-xs text-gray-500">(30-59 credits)</p>
-                </div>
-                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-yellow-600">{creditsDistribution.junior}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Junior</p>
-                  <p className="text-xs text-gray-500">(60-89 credits)</p>
-                </div>
-                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-purple-600">{creditsDistribution.senior}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Senior</p>
-                  <p className="text-xs text-gray-500">(90+ credits)</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
-      </div>
-
       {/* Top Courses */}
       {courseStats.length > 0 && (
         <Card title="Top Courses by Enrollment">
@@ -392,59 +434,68 @@ const AnalyticsPage = () => {
         </Card>
       )}
 
-      {/* Top Instructors */}
+      {/* Top Instructors with Bar Chart */}
       {instructorStats.length > 0 && (
         <Card title="Top Instructors by Student Count">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead>
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Instructor
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Department
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Rank
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Sections
-                  </th>
-                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Students
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {instructorStats.map((instructor) => (
-                  <tr key={instructor.id}>
-                    <td className="px-4 py-3">
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">{instructor.fullName}</p>
-                        <p className="text-sm text-gray-500">{instructor.title}</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white">
-                      {instructor.department || 'N/A'}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                        {instructor.degree}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-center text-gray-900 dark:text-white">
-                      {instructor.sectionsCount}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        {instructor.totalStudents}
-                      </Badge>
-                    </td>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart 
+                  data={instructorStats.slice(0, 5)} 
+                  layout="vertical"
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <XAxis type="number" tick={{ fontSize: 12 }} />
+                  <YAxis 
+                    dataKey="fullName" 
+                    type="category" 
+                    width={120}
+                    tick={{ fontSize: 11 }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937', 
+                      border: 'none', 
+                      borderRadius: '8px',
+                      color: '#F9FAFB'
+                    }}
+                  />
+                  <Bar dataKey="totalStudents" fill="#8B5CF6" name="Students" />
+                  <Bar dataKey="sectionsCount" fill="#3B82F6" name="Sections" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Instructor</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sections</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Students</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {instructorStats.map((instructor) => (
+                    <tr key={instructor.id}>
+                      <td className="px-4 py-3">
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{instructor.fullName}</p>
+                          <p className="text-sm text-gray-500">{instructor.department || 'N/A'}</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-center text-gray-900 dark:text-white">
+                        {instructor.sectionsCount}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          {instructor.totalStudents}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Card>
       )}

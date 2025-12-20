@@ -43,13 +43,23 @@ const DashboardPage = () => {
       } else if (isInstructor()) {
         // Load instructor dashboard data
         try {
-          const instructorsRes = await instructorApi.getAll({ userId: user?.id });
+          // Get instructor profile by looking through all instructors (filtering by email would be ideal if API supports it)
+          const instructorsRes = await instructorApi.getAll();
           const instructors = instructorsRes.items || instructorsRes || [];
-          const instructor = instructors[0];
+          // Find the instructor matching the current user's email
+          const instructor = instructors.find(i => i.email === user?.email) || instructors.find(i => i.userId === user?.id);
           
           if (instructor) {
             setInstructorProfile(instructor);
-            const schedulesRes = await scheduleApi.getByInstructor(instructor.id);
+            const instructorId = instructor.instructorId || instructor.id;
+            // Use the instructor's schedule endpoint
+            const schedulesRes = await instructorApi.getSchedule(instructorId).catch(() => 
+              instructorApi.getMySchedule()
+            );
+            setInstructorSchedules(Array.isArray(schedulesRes) ? schedulesRes : schedulesRes.items || []);
+          } else {
+            // Fallback to my-schedule endpoint
+            const schedulesRes = await instructorApi.getMySchedule();
             setInstructorSchedules(Array.isArray(schedulesRes) ? schedulesRes : schedulesRes.items || []);
           }
         } catch (error) {

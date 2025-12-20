@@ -3,16 +3,16 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Input, Select, Button } from '../common';
 import { createInstructorSchema, updateInstructorSchema } from '../../utils/validators';
+import { INSTRUCTOR_DEGREES } from '../../utils/constants';
 
 const InstructorForm = ({
   isOpen,
   onClose,
   onSubmit,
   instructor = null,
-  departments = [],
   isLoading = false,
 }) => {
-  const isEditing = Boolean(instructor?.id);
+  const isEditing = Boolean(instructor?.instructorId || instructor?.id);
   const schema = isEditing ? updateInstructorSchema : createInstructorSchema;
 
   const {
@@ -27,26 +27,27 @@ const InstructorForm = ({
       password: '',
       firstName: '',
       lastName: '',
-      phoneNumber: '',
-      dateOfBirth: '',
+      title: '',
+      degree: '',
+      department: '',
       address: '',
-      city: '',
-      hireDate: new Date().toISOString().split('T')[0],
-      departmentId: '',
     },
   });
 
   useEffect(() => {
     if (instructor) {
+      // Parse fullName into firstName/lastName
+      const nameParts = (instructor.fullName || '').split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       reset({
-        firstName: instructor.firstName || '',
-        lastName: instructor.lastName || '',
-        phoneNumber: instructor.phoneNumber || '',
-        dateOfBirth: instructor.dateOfBirth ? instructor.dateOfBirth.split('T')[0] : '',
+        firstName: firstName,
+        lastName: lastName,
+        title: instructor.title || '',
+        degree: instructor.degree?.toString() || '',
+        department: instructor.department || '',
         address: instructor.address || '',
-        city: instructor.city || '',
-        hireDate: instructor.hireDate ? instructor.hireDate.split('T')[0] : '',
-        departmentId: instructor.departmentId || '',
       });
     } else {
       reset({
@@ -54,32 +55,30 @@ const InstructorForm = ({
         password: '',
         firstName: '',
         lastName: '',
-        phoneNumber: '',
-        dateOfBirth: '',
+        title: '',
+        degree: '',
+        department: '',
         address: '',
-        city: '',
-        hireDate: new Date().toISOString().split('T')[0],
-        departmentId: '',
       });
     }
   }, [instructor, reset]);
 
   const handleFormSubmit = (data) => {
-    // Clean up the data
     const submitData = { ...data };
-    if (submitData.departmentId === '') {
-      submitData.departmentId = null;
+    // Convert degree to number if provided
+    if (submitData.degree !== '' && submitData.degree !== undefined) {
+      submitData.degree = Number(submitData.degree);
     } else {
-      submitData.departmentId = Number(submitData.departmentId);
+      delete submitData.degree;
     }
     onSubmit(submitData);
   };
 
-  const departmentOptions = [
-    { value: '', label: 'Select Department (Optional)' },
-    ...departments.map((dept) => ({
-      value: dept.id,
-      label: dept.name,
+  const degreeOptions = [
+    { value: '', label: 'Select Degree' },
+    ...INSTRUCTOR_DEGREES.map((deg) => ({
+      value: deg.value,
+      label: deg.label,
     })),
   ];
 
@@ -121,17 +120,25 @@ const InstructorForm = ({
           />
         </div>
 
+        <Input
+          label="Title"
+          placeholder="e.g., Dr., Prof."
+          error={errors.title?.message}
+          {...register('title')}
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="Phone Number"
-            error={errors.phoneNumber?.message}
-            {...register('phoneNumber')}
+          <Select
+            label="Academic Degree"
+            options={degreeOptions}
+            error={errors.degree?.message}
+            {...register('degree')}
           />
           <Input
-            label="Date of Birth"
-            type="date"
-            error={errors.dateOfBirth?.message}
-            {...register('dateOfBirth')}
+            label="Department"
+            placeholder="e.g., Computer Science"
+            error={errors.department?.message}
+            {...register('department')}
           />
         </div>
 
@@ -139,27 +146,6 @@ const InstructorForm = ({
           label="Address"
           error={errors.address?.message}
           {...register('address')}
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="City"
-            error={errors.city?.message}
-            {...register('city')}
-          />
-          <Input
-            label="Hire Date"
-            type="date"
-            error={errors.hireDate?.message}
-            {...register('hireDate')}
-          />
-        </div>
-
-        <Select
-          label="Department"
-          options={departmentOptions}
-          error={errors.departmentId?.message}
-          {...register('departmentId')}
         />
 
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

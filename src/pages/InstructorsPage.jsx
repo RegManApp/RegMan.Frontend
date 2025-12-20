@@ -70,7 +70,7 @@ const InstructorsPage = () => {
   };
 
   const handleEdit = (instructor) => {
-    if (instructor?.id) {
+    if (instructor?.instructorId || instructor?.id) {
       setFormModal({ isOpen: true, instructor });
     } else {
       setFormModal({ isOpen: true, instructor: null });
@@ -84,8 +84,9 @@ const InstructorsPage = () => {
   const handleSubmit = async (data) => {
     try {
       setIsSubmitting(true);
-      if (formModal.instructor?.id) {
-        await instructorApi.update(formModal.instructor.id, data);
+      const instructorId = formModal.instructor?.instructorId || formModal.instructor?.id;
+      if (instructorId) {
+        await instructorApi.update(instructorId, data);
         toast.success('Instructor updated successfully');
       } else {
         await instructorApi.create(data);
@@ -113,7 +114,7 @@ const InstructorsPage = () => {
   };
 
   const handleViewDetails = (instructor) => {
-    navigate(`/instructors/${instructor.id}`);
+    navigate(`/instructors/${instructor.instructorId || instructor.id}`);
   };
 
   if (!isAdmin()) {
@@ -139,6 +140,7 @@ const InstructorsPage = () => {
       <InstructorList
         instructors={instructors}
         isLoading={isLoading}
+        onCreate={() => handleEdit(null)}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onViewDetails={handleViewDetails}

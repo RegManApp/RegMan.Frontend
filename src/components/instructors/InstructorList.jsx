@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Badge, SearchInput, Card, ConfirmModal, EmptyState } from '../common';
-import { formatDate, getFullName } from '../../utils/helpers';
+import { getFullName } from '../../utils/helpers';
+import { getInstructorDegreeLabel } from '../../utils/constants';
 import { PencilIcon, TrashIcon, EyeIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const InstructorList = ({
@@ -23,7 +24,7 @@ const InstructorList = ({
 
   const handleDelete = () => {
     if (deleteModal.instructor) {
-      onDelete?.(deleteModal.instructor.id);
+      onDelete?.(deleteModal.instructor.instructorId || deleteModal.instructor.id);
       setDeleteModal({ isOpen: false, instructor: null });
     }
   };
@@ -36,22 +37,25 @@ const InstructorList = ({
       render: (_, instructor) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">
-            {instructor.fullName || getFullName(instructor.firstName, instructor.lastName)}
+            {instructor.title ? `${instructor.title} ` : ''}{instructor.fullName || getFullName(instructor.firstName, instructor.lastName)}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">{instructor.email}</p>
         </div>
       ),
     },
     {
-      key: 'departmentName',
-      header: 'Department',
-      render: (value) => value || '-',
+      key: 'degree',
+      header: 'Degree',
+      render: (value, instructor) => (
+        <Badge variant="info" size="sm">
+          {getInstructorDegreeLabel(instructor.degree) || instructor.degreeDisplay || '-'}
+        </Badge>
+      ),
     },
     {
-      key: 'hireDate',
-      header: 'Hire Date',
-      sortable: true,
-      render: (value) => formatDate(value),
+      key: 'department',
+      header: 'Department',
+      render: (value) => value || '-',
     },
     {
       key: 'actions',
@@ -62,7 +66,7 @@ const InstructorList = ({
             variant="ghost"
             size="sm"
             icon={EyeIcon}
-            onClick={() => navigate(`/instructors/${instructor.id}`)}
+            onClick={() => navigate(`/instructors/${instructor.instructorId || instructor.id}`)}
           >
             View
           </Button>
