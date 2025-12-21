@@ -14,6 +14,21 @@ export const authApi = {
     return axiosInstance.post("/auth/login", credentials);
   },
 
+  // Get current student profile
+  getStudentMe: () => {
+    return axiosInstance.get("/api/Student/me");
+  },
+
+  // Update student profile data
+  updateStudentProfile: (profileData) => {
+    return axiosInstance.put("/api/Student/update-student", profileData);
+  },
+
+  // Change student email/password
+  changeStudentPassword: (data) => {
+    return axiosInstance.put("/api/Student", data);
+  },
+
   // Logout user - requires refresh token
   // Request: { refreshToken }
   logout: (data) => {

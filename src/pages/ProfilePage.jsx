@@ -15,6 +15,7 @@ import {
 } from '../components/common';
 import GpaWhatIf from '../components/gpa/GpaWhatIf';
 import { getFullName, getRoleColor, formatDate } from '../utils/helpers';
+import { sanitize } from '../utils/helpers';
 
 const ProfilePage = () => {
   const { user, updateUser } = useAuth();
@@ -24,11 +25,12 @@ const ProfilePage = () => {
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
 
-  // Load full profile data
+  // Load full profile data (Student)
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const response = await authApi.getCurrentUser();
+        // Use correct API for student profile
+        const response = await authApi.getStudentMe();
         setProfile(response.data);
       } catch (error) {
         console.error('Failed to load profile:', error);
@@ -156,7 +158,7 @@ const ProfilePage = () => {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {getFullName(user?.firstName, user?.lastName)}
+                  {sanitize(getFullName(user?.firstName, user?.lastName))}
                 </h2>
                 <Badge className={getRoleColor(user?.role)}>
                   {user?.role || 'User'}
@@ -166,7 +168,7 @@ const ProfilePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-                  <p className="text-gray-900 dark:text-white">{user?.email}</p>
+                  <p className="text-gray-900 dark:text-white">{sanitize(user?.email)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -435,7 +437,7 @@ const ProfilePage = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Emergency Contact
               </h3>
-              <p className="text-gray-900 dark:text-white">{profile.profile.familyContact}</p>
+              <p className="text-gray-900 dark:text-white">{sanitize(profile.profile.familyContact)}</p>
             </div>
           )}
         </Card>
