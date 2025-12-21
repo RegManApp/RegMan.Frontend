@@ -346,6 +346,7 @@ const CoursesPage = () => {
                 key={course.id}
                 course={course}
                 onEdit={handleEdit}
+                onDelete={handleDelete}
                 onEnroll={handleEnroll}
                 onUnenroll={handleUnenroll}
                 isAdmin={isAdmin()}

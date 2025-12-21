@@ -5,6 +5,7 @@ import { Card, Button, Badge } from '../common';
 const CourseCard = ({
   course,
   onEdit,
+  onDelete,
   onEnroll,
   onUnenroll,
   isAdmin,
@@ -27,11 +28,9 @@ const CourseCard = ({
         {course.courseName}
       </h3>
 
-      {course.description && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
-          {course.description}
-        </p>
-      )}
+      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow">
+        {course.description || <span className="italic text-gray-400">No description</span>}
+      </p>
 
       <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
         <div className="flex items-center gap-1">
@@ -53,13 +52,22 @@ const CourseCard = ({
           </Button>
         </Link>
         {isAdmin ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit?.(course)}
-          >
-            Edit
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit?.(course)}
+            >
+              Edit
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => onDelete?.(course.id)}
+            >
+              Delete
+            </Button>
+          </>
         ) : isEnrolled ? (
           <Button
             variant="danger"

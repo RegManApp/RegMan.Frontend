@@ -45,6 +45,7 @@ const adminNavigation = [
   { name: 'Students', href: '/students', icon: 'UsersIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
   { name: 'Sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
+  { name: 'Rooms', href: '/rooms', icon: 'ClipboardDocumentListIcon' },
   { name: 'Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
   { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
   { name: 'Instructors', href: '/instructors', icon: 'AcademicCapIcon' },

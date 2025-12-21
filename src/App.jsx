@@ -28,6 +28,7 @@ import {
   TranscriptPage,     
   SectionPage,        
 } from './pages';
+import RoomPage from './pages/RoomPage';
 
 import { ROLES } from './utils/constants';
 
@@ -195,6 +196,16 @@ function App() {
                 element={
                   <RoleGuard allowedRoles={[ROLES.ADMIN]}>
                     <GpaPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Rooms - Admin only */}
+              <Route
+                path="/rooms"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <RoomPage />
                   </RoleGuard>
                 }
               />
