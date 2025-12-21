@@ -26,7 +26,8 @@ import {
   GpaPage,
   AcademicPlanPage,   
   TranscriptPage,     
-  SectionPage,        
+  SectionPage,
+  AdminSettingsPage,
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
