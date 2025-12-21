@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 
 export const adminApi = {
   getRegistrationEndDate: () => {
-    return axiosInstance.get("/admin/registration-end-date");
+    return axiosInstance.get("/calendar/registration-withdraw-dates");
   },
   setRegistrationAndWithdrawDates: (registrationEndDate, withdrawEndDate) => {
     return axiosInstance.post("/admin/registration-end-date", {

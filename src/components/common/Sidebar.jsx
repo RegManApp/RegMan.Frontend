@@ -51,6 +51,7 @@ const adminNavigation = [
   { name: 'Instructors', href: '/instructors', icon: 'AcademicCapIcon' },
   { name: 'Schedules', href: '/schedules', icon: 'CalendarDaysIcon' },
   { name: 'Users', href: '/users', icon: 'UserGroupIcon' },
+  { name: 'Withdraw Requests', href: '/admin/withdraw-requests', icon: 'ClipboardDocumentCheckIcon' },
 ];
 
 const instructorNavigation = [
@@ -75,6 +76,7 @@ const studentNavigation = [
   { name: 'Book Office Hours', href: '/book-office-hours', icon: 'ClockIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
   { name: 'My Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
+  { name: 'Withdraw Request', href: '/withdraw-request', icon: 'ClipboardDocumentCheckIcon' },
   { name: 'Profile', href: '/profile', icon: 'UserIcon' },
 ];
 
