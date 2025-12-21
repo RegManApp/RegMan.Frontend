@@ -116,7 +116,7 @@ const SidebarContent = ({ navigation }) => {
   );
 };
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen = false, onClose }) => {
   const { isAdmin, isInstructor } = useAuth();
   
   let navigation;
@@ -128,6 +128,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     navigation = studentNavigation;
   }
 
+  // Defensive: only render Transition if isOpen is boolean
+  if (typeof isOpen !== 'boolean') return null;
   return (
     <>
       {/* Mobile sidebar */}

@@ -12,7 +12,7 @@ const sizes = {
 };
 
 const Modal = ({
-  isOpen,
+  isOpen = false,
   onClose,
   title,
   children,
@@ -22,6 +22,8 @@ const Modal = ({
   footer,
   className,
 }) => {
+  // Defensive: only render Transition if isOpen is boolean
+  if (typeof isOpen !== 'boolean') return null;
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
