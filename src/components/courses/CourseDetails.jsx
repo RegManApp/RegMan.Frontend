@@ -28,6 +28,10 @@ const CourseDetails = ({
 }) => {
   if (!course) return null;
 
+  // Robust fallback for category and description
+  const categoryName = course.categoryName || course.CourseCategoryName || course.category?.name || course.Category?.Name || '-';
+  const description = course.description || course.Description || '';
+
   const studentColumns = [
     {
       key: 'student',
@@ -85,21 +89,19 @@ const CourseDetails = ({
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <Badge variant="primary">{course.courseCode}</Badge>
-              {course.categoryName && (
+              {categoryName && categoryName !== '-' && (
                 <Badge variant="secondary">
                   <TagIcon className="w-3 h-3 mr-1" />
-                  {course.categoryName}
+                  {categoryName}
                 </Badge>
               )}
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {course.courseName}
             </h2>
-            {course.description && (
-              <p className="text-gray-600 dark:text-gray-400">
-                {course.description}
-              </p>
-            )}
+            <p className="text-gray-600 dark:text-gray-400">
+              {description ? description : <span className="italic text-gray-400">No description</span>}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -152,7 +154,7 @@ const CourseDetails = ({
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Category</p>
               <p className="font-semibold text-gray-900 dark:text-white">
-                {course.categoryName || '-'}
+                {categoryName}
               </p>
             </div>
           </div>
