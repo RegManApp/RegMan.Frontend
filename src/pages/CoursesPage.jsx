@@ -9,6 +9,8 @@ import { PageLoading, Breadcrumb, Button } from '../components/common';
 import { normalizeCourse, normalizeCourses, normalizeCategories } from '../utils/helpers';
 import { courseCategoryApi } from '../api/courseCategoryApi';
 import { Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
+import adminApi from '../api/adminApi';
+import cartApi from '../api/cartApi';
 
 const CoursesPage = () => {
   const { id } = useParams();
@@ -19,6 +21,7 @@ const CoursesPage = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [enrolledStudents, setEnrolledStudents] = useState([]);
   const [myEnrollments, setMyEnrollments] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
@@ -34,6 +37,7 @@ const CoursesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 12;
+  const [registrationEndDate, setRegistrationEndDate] = useState("");
 
   const loadCourses = useCallback(async () => {
     setIsLoading(true);
@@ -121,6 +125,15 @@ const CoursesPage = () => {
     }
   }, [isAdmin]);
 
+  const loadCartItems = useCallback(async () => {
+    try {
+      const response = await cartApi.viewCart();
+      setCartItems(response.data?.items || response.data || []);
+    } catch (error) {
+      setCartItems([]);
+    }
+  }, []);
+
   useEffect(() => {
     if (id) {
       loadCourseDetails(id);
@@ -136,6 +149,16 @@ const CoursesPage = () => {
   useEffect(() => {
     loadMyEnrollments();
   }, [loadMyEnrollments]);
+
+  useEffect(() => {
+    loadCartItems();
+  }, [loadCartItems]);
+
+  useEffect(() => {
+    adminApi.getRegistrationEndDate().then((res) => {
+      setRegistrationEndDate(res.data?.registrationEndDate || "");
+    });
+  }, []);
 
   const isEnrolled = (courseId) => {
     return myEnrollments.some(
@@ -155,46 +178,6 @@ const CoursesPage = () => {
       loadCourses();
     } catch (error) {
       console.error('Failed to delete course:', error);
-    }
-  };
-
-  const handleEnroll = async (courseId) => {
-    try {
-      await enrollmentApi.enrollInCourse(courseId);
-      toast.success('Successfully enrolled in course');
-      loadMyEnrollments();
-      if (id) {
-        loadCourseDetails(id);
-      } else {
-        loadCourses();
-      }
-    } catch (error) {
-      console.error('Failed to enroll:', error);
-    }
-  };
-
-  const handleUnenroll = async (courseId) => {
-    try {
-      // Find the enrollment for this course
-      const enrollment = myEnrollments.find(
-        (e) => e.courseId === courseId && (e.status === 'Enrolled' || e.status === 'Pending')
-      );
-      if (!enrollment) {
-        toast.error('No active enrollment found for this course');
-        return;
-      }
-      // Drop the enrollment using the enrollmentId
-      await enrollmentApi.drop(enrollment.enrollmentId);
-      toast.success('Successfully dropped course');
-      loadMyEnrollments();
-      if (id) {
-        loadCourseDetails(id);
-      } else {
-        loadCourses();
-      }
-    } catch (error) {
-      console.error('Failed to unenroll:', error);
-      toast.error('Failed to drop course');
     }
   };
 
@@ -222,6 +205,36 @@ const CoursesPage = () => {
     }
   };
 
+  // Helper to get cart/enrollment status for a course
+  const getCartStatus = (courseId) => {
+    const item = cartItems.find(
+      (ci) => ci.courseId === courseId || ci.sectionId === courseId || ci.scheduleSlotId === courseId
+    );
+    return item ? 'added' : null;
+  };
+  const getEnrollmentStatus = (courseId) => {
+    const enrollment = myEnrollments.find((e) => e.courseId === courseId);
+    return enrollment ? enrollment.status : null;
+  };
+  const handleRemoveFromCart = async (courseId) => {
+    const item = cartItems.find(
+      (ci) => ci.courseId === courseId || ci.sectionId === courseId || ci.scheduleSlotId === courseId
+    );
+    if (item) {
+      await cartApi.removeFromCart(item.cartItemId || item.id);
+      toast.success('Removed from cart');
+      loadCartItems();
+    }
+  };
+  const handleDrop = async (courseId) => {
+    const enrollment = myEnrollments.find((e) => e.courseId === courseId);
+    if (enrollment) {
+      await enrollmentApi.drop(enrollment.enrollmentId);
+      toast.success('Course dropped');
+      loadMyEnrollments();
+    }
+  };
+
   if (isLoading && !courses.length && !selectedCourse) {
     return <PageLoading />;
   }
@@ -240,8 +253,6 @@ const CoursesPage = () => {
           course={selectedCourse}
           enrolledStudents={enrolledStudents}
           onEdit={handleEdit}
-          onEnroll={handleEnroll}
-          onUnenroll={handleUnenroll}
           onBack={() => navigate('/courses')}
           isAdmin={isAdmin()}
           isEnrolled={isEnrolled(selectedCourse.id)}
@@ -345,12 +356,15 @@ const CoursesPage = () => {
               <CourseCard
                 key={course.id}
                 course={course}
+                cartStatus={getCartStatus(course.id)}
+                enrollmentStatus={getEnrollmentStatus(course.id)}
+                registrationEndDate={registrationEndDate}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                onEnroll={handleEnroll}
-                onUnenroll={handleUnenroll}
                 isAdmin={isAdmin()}
-                isEnrolled={isEnrolled(course.id)}
+                isEnrolled={false}
+                onRemoveFromCart={handleRemoveFromCart}
+                onDrop={handleDrop}
               />
             ))}
           </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { calendarApi } from '../api/calendarApi';
+import { adminApi } from '../api/adminApi';
 import toast from 'react-hot-toast';
 import {
   FiChevronLeft,
@@ -26,6 +27,29 @@ const CalendarPage = () => {
 
   useEffect(() => {
     fetchEvents();
+    // Fetch registration/withdraw dates and add to calendar events
+    adminApi.getRegistrationEndDate().then((res) => {
+      const regDate = res.data?.registrationEndDate;
+      const withdrawStart = res.data?.withdrawStartDate;
+      const withdrawEnd = res.data?.withdrawEndDate;
+      const dateEvents = [];
+      if (regDate) {
+        dateEvents.push({
+          title: 'Registration Ends',
+          date: regDate,
+          type: 'registration',
+        });
+      }
+      if (withdrawStart && withdrawEnd) {
+        dateEvents.push({
+          title: 'Withdraw Period',
+          date: withdrawStart,
+          endDate: withdrawEnd,
+          type: 'withdraw',
+        });
+      }
+      setEvents((prev) => [...prev, ...dateEvents]);
+    });
   }, [year, month]);
 
   const fetchEvents = async () => {
@@ -84,6 +108,10 @@ const CalendarPage = () => {
         return 'bg-purple-500';
       case 'Teaching':
         return 'bg-orange-500';
+      case 'registration':
+        return 'bg-red-500';
+      case 'withdraw':
+        return 'bg-yellow-500';
       default:
         return 'bg-gray-500';
     }
@@ -99,6 +127,10 @@ const CalendarPage = () => {
         return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400';
       case 'Teaching':
         return 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400';
+      case 'registration':
+        return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
+      case 'withdraw':
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400';
       default:
         return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
     }
@@ -114,6 +146,10 @@ const CalendarPage = () => {
         return <FiBook className="w-4 h-4" />;
       case 'Teaching':
         return <FiUsers className="w-4 h-4" />;
+      case 'registration':
+        return <FiUser className="w-4 h-4" />;
+      case 'withdraw':
+        return <FiUser className="w-4 h-4" />;
       default:
         return <FiCalendar className="w-4 h-4" />;
     }
@@ -208,6 +244,14 @@ const CalendarPage = () => {
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-500"></div>
           <span className="text-sm text-gray-600 dark:text-gray-400">Teaching</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Registration Ends</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+          <span className="text-sm text-gray-600 dark:text-gray-400">Withdraw Period</span>
         </div>
       </div>
 

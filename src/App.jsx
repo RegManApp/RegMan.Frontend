@@ -30,6 +30,8 @@ import {
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
+import WithdrawRequestPage from './pages/WithdrawRequestPage';
+import AdminWithdrawRequestsPage from './pages/AdminWithdrawRequestsPage';
 
 import { ROLES } from './utils/constants';
 
@@ -216,6 +218,26 @@ function App() {
                 element={
                   <RoleGuard allowedRoles={[ROLES.ADMIN]}>
                     <RoomDetailsPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Withdraw Request - Student only */}
+              <Route
+                path="/withdraw-request"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+                    <WithdrawRequestPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Admin Withdraw Requests - Admin only */}
+              <Route
+                path="/admin/withdraw-requests"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <AdminWithdrawRequestsPage />
                   </RoleGuard>
                 }
               />

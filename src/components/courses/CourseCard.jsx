@@ -1,16 +1,52 @@
 import { Link } from 'react-router-dom';
 import { BookOpenIcon, UserGroupIcon, TagIcon } from '@heroicons/react/24/outline';
 import { Card, Button, Badge } from '../common';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import cartApi from '../../api/cartApi';
+import adminApi from '../../api/adminApi';
 
 const CourseCard = ({
   course,
+  cartStatus,
+  enrollmentStatus,
+  registrationEndDate,
   onEdit,
   onDelete,
-  onEnroll,
-  onUnenroll,
   isAdmin,
   isEnrolled,
+  onRemoveFromCart,
+  onDrop,
 }) => {
+  const [isAdding, setIsAdding] = useState(false);
+  const [isDropping, setIsDropping] = useState(false);
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    try {
+      await cartApi.addToCartByCourse(course.id);
+      toast.success('Added to cart');
+    } catch (error) {
+      toast.error('Failed to add to cart');
+    } finally {
+      setIsAdding(false);
+    }
+  };
+  const handleRemoveFromCart = async () => {
+    if (onRemoveFromCart) onRemoveFromCart(course.id);
+  };
+  const handleDrop = async () => {
+    setIsDropping(true);
+    try {
+      await cartApi.dropCourse(course.id);
+      toast.success('Course dropped');
+      if (onDrop) onDrop(course.id);
+    } catch (error) {
+      toast.error('Failed to drop course');
+    } finally {
+      setIsDropping(false);
+    }
+  };
+
   return (
     <Card hover className="h-full flex flex-col">
       <div className="flex items-start justify-between mb-3">
@@ -68,21 +104,31 @@ const CourseCard = ({
               Delete
             </Button>
           </>
-        ) : isEnrolled ? (
+        ) : cartStatus === 'added' ? (
           <Button
             variant="danger"
             size="sm"
-            onClick={() => onUnenroll?.(course.id)}
+            onClick={handleRemoveFromCart}
           >
-            Drop
+            Remove from Cart
+          </Button>
+        ) : enrollmentStatus === 'approved' && registrationEndDate && new Date() < new Date(registrationEndDate) ? (
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={handleDrop}
+            disabled={isDropping}
+          >
+            {isDropping ? 'Dropping...' : 'Drop'}
           </Button>
         ) : (
           <Button
             variant="primary"
             size="sm"
-            onClick={() => onEnroll?.(course.id)}
+            onClick={handleAddToCart}
+            disabled={isAdding}
           >
-            Enroll
+            {isAdding ? 'Adding...' : 'Add to Cart'}
           </Button>
         )}
       </div>
