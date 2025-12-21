@@ -21,38 +21,33 @@ const GpaPage = () => {
   const { isAdmin, user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // For admin: search and select student
+  // For admin: search and select student (with search button)
   const [studentSearch, setStudentSearch] = useState('');
   const [studentOptions, setStudentOptions] = useState([]);
   const [studentSearchLoading, setStudentSearchLoading] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [searched, setSearched] = useState(false);
 
   // Use either param or selected
   const studentId = paramStudentId || selectedStudent?.studentId;
-  // Admin: search students as you type
-  useEffect(() => {
-    if (!isAdmin() || !studentSearch) {
-      setStudentOptions([]);
-      return;
-    }
+
+  // Admin: search students only when clicking search
+  const handleStudentSearch = async () => {
     setStudentSearchLoading(true);
-    const timer = setTimeout(async () => {
-      try {
-        // Search by id, name, or email
-        const params = { pageSize: 10, pageNumber: 1 };
-        if (/^\d+$/.test(studentSearch)) params.studentId = studentSearch;
-        else if (studentSearch.includes('@')) params.email = studentSearch;
-        else params.fullName = studentSearch;
-        const res = await studentApi.getAll(params);
-        setStudentOptions(res.data.items || res.data || []);
-      } catch (e) {
-        setStudentOptions([]);
-      } finally {
-        setStudentSearchLoading(false);
-      }
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [studentSearch, isAdmin]);
+    setSearched(true);
+    try {
+      const params = { pageSize: 10, pageNumber: 1 };
+      if (/^\d+$/.test(studentSearch)) params.studentId = studentSearch;
+      else if (studentSearch.includes('@')) params.email = studentSearch;
+      else params.fullName = studentSearch;
+      const res = await studentApi.getAll(params);
+      setStudentOptions(res.data.items || res.data || []);
+    } catch (e) {
+      setStudentOptions([]);
+    } finally {
+      setStudentSearchLoading(false);
+    }
+  };
 
   const [gpaData, setGpaData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -89,10 +84,15 @@ const GpaPage = () => {
   useEffect(() => {
     if (isAdmin() && !studentId) {
       setGpaData(null);
+      setIsLoading(false);
+      return;
+    }
+    if (isAdmin() && !searched) {
+      setIsLoading(false);
       return;
     }
     loadGpaData();
-  }, [loadGpaData, studentId, isAdmin]);
+  }, [loadGpaData, studentId, isAdmin, searched]);
 
   // Simulate GPA when courses change
   useEffect(() => {
@@ -176,40 +176,46 @@ const GpaPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Admin: Student search/select */}
+      {/* Admin: Student search/select with search button */}
       {isAdmin() && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Select Student</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Search Student</label>
           <div className="flex gap-2 items-center">
-            <SearchInput
+            <Input
               value={studentSearch}
-              onChange={setStudentSearch}
-              placeholder="Search by ID, name, or email..."
+              onChange={e => setStudentSearch(e.target.value)}
+              placeholder="Enter ID, name, or email..."
               className="w-64"
             />
-            <Select
-              options={studentOptions.map(s => ({
-                value: s.studentProfile?.studentId || s.id,
-                label: `${s.studentProfile?.studentId || s.id} - ${s.fullName || s.user?.fullName || ''} (${s.email || s.user?.email || ''})`
-              }))}
-              value={selectedStudent?.studentId || ''}
-              onChange={e => {
-                const val = e.target.value;
-                const found = studentOptions.find(s => (s.studentProfile?.studentId || s.id) == val);
-                setSelectedStudent(found ? {
-                  studentId: found.studentProfile?.studentId || found.id,
-                  fullName: found.fullName || found.user?.fullName,
-                  email: found.email || found.user?.email
-                } : null);
-                setStudentSearch('');
-                setStudentOptions([]);
-                // Optionally update URL
-                // navigate(`/gpa?studentId=${val}`);
-              }}
-              placeholder="Select student..."
-              className="w-96"
-            />
+            <Button onClick={handleStudentSearch} loading={studentSearchLoading} size="sm">Search</Button>
           </div>
+          {searched && studentOptions.length === 0 && !studentSearchLoading && (
+            <div className="text-red-600 mt-2">No students found.</div>
+          )}
+          {studentOptions.length > 0 && (
+            <div className="mt-2">
+              <Select
+                options={studentOptions.map(s => ({
+                  value: s.studentProfile?.studentId || s.id,
+                  label: `${s.studentProfile?.studentId || s.id} - ${s.fullName || s.user?.fullName || ''} (${s.email || s.user?.email || ''})`
+                }))}
+                value={selectedStudent?.studentId || ''}
+                onChange={e => {
+                  const val = e.target.value;
+                  const found = studentOptions.find(s => (s.studentProfile?.studentId || s.id) == val);
+                  setSelectedStudent(found ? {
+                    studentId: found.studentProfile?.studentId || found.id,
+                    fullName: found.fullName || found.user?.fullName,
+                    email: found.email || found.user?.email
+                  } : null);
+                  // Optionally update URL
+                  // navigate(`/gpa?studentId=${val}`);
+                }}
+                placeholder="Select student..."
+                className="w-96"
+              />
+            </div>
+          )}
         </div>
       )}
       {/* Breadcrumb */}

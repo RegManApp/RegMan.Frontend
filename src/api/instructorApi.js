@@ -13,7 +13,7 @@ export const instructorApi = {
   // Available to: Admin, Student, Instructor
   // Note: id is InstructorProfile.InstructorId (int)
   getById: (id) => {
-    return axiosInstance.get(`/api/instructor/${id}`);
+    return axiosInstance.get(`/instructor/${id}`);
   },
 
   // Get instructor schedule by InstructorProfile ID
