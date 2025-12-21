@@ -185,45 +185,31 @@ const GpaPage = () => {
 
   return (
     <div className="space-y-6">
-      {/* Admin: Live student search/select */}
+      {/* Admin: Live student search/select in one field */}
       {isAdmin() && (
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Search Student</label>
-          <div className="flex gap-2 items-center">
-            <Input
-              value={studentSearch}
-              onChange={e => setStudentSearch(e.target.value)}
-              placeholder="Enter ID, name, or email..."
-              className="w-64"
-            />
-            {studentSearchLoading && <span className="ml-2 text-gray-500">Loading...</span>}
-          </div>
+          <SearchInput
+            value={studentSearch}
+            onChange={setStudentSearch}
+            placeholder="Type ID, name, or email..."
+            className="w-96"
+            loading={studentSearchLoading}
+            options={studentOptions.map(s => ({
+              value: s.studentProfile?.studentId || s.id,
+              label: `${s.studentProfile?.studentId || s.id} - ${s.fullName || s.user?.fullName || ''} (${s.email || s.user?.email || ''})`
+            }))}
+            onSelect={val => {
+              const found = studentOptions.find(s => (s.studentProfile?.studentId || s.id) == val);
+              setSelectedStudent(found ? {
+                studentId: found.studentProfile?.studentId || found.id,
+                fullName: found.fullName || found.user?.fullName,
+                email: found.email || found.user?.email
+              } : null);
+            }}
+          />
           {searched && studentOptions.length === 0 && !studentSearchLoading && (
             <div className="text-red-600 mt-2">No students found.</div>
-          )}
-          {studentOptions.length > 0 && (
-            <div className="mt-2">
-              <Select
-                options={studentOptions.map(s => ({
-                  value: s.studentProfile?.studentId || s.id,
-                  label: `${s.studentProfile?.studentId || s.id} - ${s.fullName || s.user?.fullName || ''} (${s.email || s.user?.email || ''})`
-                }))}
-                value={selectedStudent?.studentId || ''}
-                onChange={e => {
-                  const val = e.target.value;
-                  const found = studentOptions.find(s => (s.studentProfile?.studentId || s.id) == val);
-                  setSelectedStudent(found ? {
-                    studentId: found.studentProfile?.studentId || found.id,
-                    fullName: found.fullName || found.user?.fullName,
-                    email: found.email || found.user?.email
-                  } : null);
-                  // Optionally update URL
-                  // navigate(`/gpa?studentId=${val}`);
-                }}
-                placeholder="Select student..."
-                className="w-96"
-              />
-            </div>
           )}
         </div>
       )}
