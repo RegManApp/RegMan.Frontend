@@ -51,6 +51,30 @@ function App() {
 
               {/* Students - Admin only */}
               <Route
+                path="/academic-plan"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.STUDENT]}>
+                    <AcademicPlanPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/transcript"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.STUDENT]}>
+                    <TranscriptPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/sections"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <SectionPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
                 path="/students"
                 element={
                   <RoleGuard allowedRoles={[ROLES.ADMIN]}>

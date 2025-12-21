@@ -17,3 +17,9 @@ export { default as BookOfficeHourPage } from "./BookOfficeHourPage";
 export { default as CalendarPage } from "./CalendarPage";
 export { default as ChatPage } from "./ChatPage";
 export { default as GpaPage } from "./GpaPage";
+
+export { default as SectionPage } from "./SectionPage";
+
+export { default as TranscriptPage } from "./TranscriptPage";
+
+export { default as AcademicPlanPage } from "./AcademicPlanPage";

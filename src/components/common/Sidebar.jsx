@@ -37,11 +37,14 @@ const iconMap = {
 const adminNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
   { name: 'GPA & Grades', href: '/gpa', icon: 'AcademicCapIcon' },
+  { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
+  { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
   { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
   { name: 'Analytics', href: '/analytics', icon: 'ChartBarIcon' },
   { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
   { name: 'Students', href: '/students', icon: 'UsersIcon' },
   { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
+  { name: 'Sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
   { name: 'Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
   { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
   { name: 'Instructors', href: '/instructors', icon: 'AcademicCapIcon' },
@@ -64,6 +67,8 @@ const instructorNavigation = [
 const studentNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
   { name: 'GPA & Grades', href: '/gpa', icon: 'AcademicCapIcon' },
+  { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
+  { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
   { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
   { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
   { name: 'Book Office Hours', href: '/book-office-hours', icon: 'ClockIcon' },
