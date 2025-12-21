@@ -118,7 +118,8 @@ const CoursesPage = () => {
     if (!isAdmin()) {
       try {
         const response = await enrollmentApi.getMyEnrollments();
-        setMyEnrollments(response.data || []);
+        const enrollments = Array.isArray(response.data) ? response.data : (Array.isArray(response.data?.items) ? response.data.items : []);
+        setMyEnrollments(enrollments);
       } catch (error) {
         console.error('Failed to load enrollments:', error);
       }
@@ -130,7 +131,13 @@ const CoursesPage = () => {
     if (!isStudent()) return;
     try {
       const response = await cartApi.viewCart();
-      setCartItems(response.data?.items || response.data || []);
+      let items = [];
+      if (Array.isArray(response.data)) {
+        items = response.data;
+      } else if (Array.isArray(response.data?.items)) {
+        items = response.data.items;
+      }
+      setCartItems(items);
     } catch (error) {
       setCartItems([]);
     }
