@@ -73,6 +73,7 @@ const ProfilePage = () => {
       const payload = {
         ...data,
         FullName: `${data.firstName} ${data.lastName}`,
+        StudentId: profile?.profile?.studentId || profile?.studentId || user?.studentId || 0,
       };
       await authApi.updateStudentProfile(payload);
       updateUser(payload);
