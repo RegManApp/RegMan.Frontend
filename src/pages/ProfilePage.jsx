@@ -70,7 +70,7 @@ const ProfilePage = () => {
   const onProfileSubmit = async (data) => {
     setIsProfileLoading(true);
     try {
-      await authApi.updateProfile(data);
+      await authApi.updateStudentProfile(data);
       updateUser(data);
       toast.success('Profile updated successfully');
       setIsEditingProfile(false);
