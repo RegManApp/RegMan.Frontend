@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Select } from '../common';
+import SearchableSelect from '../common/SearchableSelect';
 import { courseCategoryApi } from '../../api';
 import { normalizeCategories } from '../../utils/helpers';
 
@@ -29,21 +29,18 @@ const CourseCategorySelect = ({
     loadCategories();
   }, []);
 
-  const options = [
-    { value: '', label: 'Select Category' },
-    ...categories.map((cat) => ({
-      value: cat.id,
-      label: cat.name,
-    })),
-  ];
+  const options = categories;
 
   return (
-    <Select
+    <SearchableSelect
       label="Course Category"
       value={value}
       onChange={onChange}
       options={options}
+      getOptionLabel={cat => cat.name}
+      getOptionValue={cat => cat.id}
       error={error}
+      required={props.required}
       disabled={isLoading}
       {...props}
     />

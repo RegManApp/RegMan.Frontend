@@ -5,6 +5,11 @@ import Button from "../components/common/Button";
 import Table from "../components/common/Table";
 import Modal from "../components/common/Modal";
 import Input from "../components/common/Input";
+import SearchableSelect from "../components/common/SearchableSelect";
+import { courseApi } from "../api/courseApi";
+import { roomApi } from "../api/roomApi";
+import { instructorApi } from "../api/instructorApi";
+import { timeSlotApi } from "../api/timeSlotApi";
 import toast from "react-hot-toast";
 
 const defaultForm = {
@@ -25,6 +30,13 @@ const SectionPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [editId, setEditId] = useState(null);
 
+  // Dropdown data
+  const [courses, setCourses] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [instructors, setInstructors] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [dropdownLoading, setDropdownLoading] = useState(false);
+
   const fetchSections = async () => {
     setLoading(true);
     try {
@@ -36,8 +48,28 @@ const SectionPage = () => {
     setLoading(false);
   };
 
+  const fetchDropdowns = async () => {
+    setDropdownLoading(true);
+    try {
+      const [courseRes, roomRes, instructorRes, timeSlotRes] = await Promise.all([
+        courseApi.getAll({ pageSize: 1000 }),
+        roomApi.getAll(),
+        instructorApi.getAll(),
+        timeSlotApi.getAll(),
+      ]);
+      setCourses(Array.isArray(courseRes.data) ? courseRes.data : courseRes.data.items || []);
+      setRooms(Array.isArray(roomRes.data) ? roomRes.data : roomRes.data.items || []);
+      setInstructors(Array.isArray(instructorRes.data) ? instructorRes.data : instructorRes.data.items || []);
+      setTimeSlots(Array.isArray(timeSlotRes.data) ? timeSlotRes.data : timeSlotRes.data.items || []);
+    } catch (e) {
+      toast.error("Failed to load dropdown data");
+    }
+    setDropdownLoading(false);
+  };
+
   useEffect(() => {
     fetchSections();
+    fetchDropdowns();
   }, []);
 
   const handleOpenModal = (section = null) => {
@@ -59,6 +91,11 @@ const SectionPage = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // For SearchableSelect
+  const handleSelectChange = (name) => (e) => {
+    setForm({ ...form, [name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -127,11 +164,51 @@ const SectionPage = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Semester" name="semester" value={form.semester} onChange={handleChange} required />
           <Input label="Year" name="year" value={form.year} onChange={handleChange} required />
-          <Input label="Instructor ID" name="instructorId" value={form.instructorId} onChange={handleChange} required type="number" />
-          <Input label="Course ID" name="courseId" value={form.courseId} onChange={handleChange} required type="number" />
+          <SearchableSelect
+            label="Instructor"
+            name="instructorId"
+            value={form.instructorId}
+            onChange={handleSelectChange("instructorId")}
+            options={instructors}
+            getOptionLabel={opt => opt.fullName || opt.name || opt.email || `ID ${opt.id || opt.instructorId}`}
+            getOptionValue={opt => opt.id || opt.instructorId || ''}
+            required
+            disabled={dropdownLoading}
+          />
+          <SearchableSelect
+            label="Course"
+            name="courseId"
+            value={form.courseId}
+            onChange={handleSelectChange("courseId")}
+            options={courses}
+            getOptionLabel={opt => `${opt.courseName || opt.name || ''} (${opt.courseCode || ''})`}
+            getOptionValue={opt => opt.id || opt.courseId || ''}
+            required
+            disabled={dropdownLoading}
+          />
           <Input label="Available Seats" name="availableSeats" value={form.availableSeats} onChange={handleChange} required type="number" />
-          <Input label="Room ID" name="roomId" value={form.roomId} onChange={handleChange} required type="number" />
-          <Input label="Time Slot ID" name="timeSlotId" value={form.timeSlotId} onChange={handleChange} required type="number" />
+          <SearchableSelect
+            label="Room"
+            name="roomId"
+            value={form.roomId}
+            onChange={handleSelectChange("roomId")}
+            options={rooms}
+            getOptionLabel={opt => `${opt.building || ''} - ${opt.roomNumber || ''}`}
+            getOptionValue={opt => opt.id || opt.roomId || ''}
+            required
+            disabled={dropdownLoading}
+          />
+          <SearchableSelect
+            label="Time Slot"
+            name="timeSlotId"
+            value={form.timeSlotId}
+            onChange={handleSelectChange("timeSlotId")}
+            options={timeSlots}
+            getOptionLabel={opt => `${opt.day || ''} ${opt.startTime || ''} - ${opt.endTime || ''}`}
+            getOptionValue={opt => opt.id || opt.timeSlotId || ''}
+            required
+            disabled={dropdownLoading}
+          />
           <Input label="Slot Type" name="slotType" value={form.slotType} onChange={handleChange} required />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={handleCloseModal}>
