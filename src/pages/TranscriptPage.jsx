@@ -155,7 +155,7 @@ const TranscriptPage = () => {
         </div>
       )}
       <Table columns={columns} data={transcripts} loading={loading} />
-      <Modal open={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Transcript" : "Add Transcript"}>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Transcript" : "Add Transcript"}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Student ID" name="studentId" value={form.studentId} onChange={handleChange} required />
           <Input label="Course ID" name="courseId" value={form.courseId} onChange={handleChange} required />

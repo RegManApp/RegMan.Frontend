@@ -197,7 +197,7 @@ const AcademicPlanPage = () => {
         <Button onClick={() => handleOpenModal()}>Add Plan</Button>
       </div>
       <Table columns={columns} data={plans} loading={loading} />
-      <Modal open={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Academic Plan" : "Add Academic Plan"}>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Academic Plan" : "Add Academic Plan"}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Name" name="name" value={form.name} onChange={handleChange} required />
           <Input label="Description" name="description" value={form.description} onChange={handleChange} required />
@@ -209,7 +209,7 @@ const AcademicPlanPage = () => {
           </div>
         </form>
       </Modal>
-      <Modal open={assignModal} onClose={() => setAssignModal(false)} title="Assign Plan to Student">
+      <Modal isOpen={assignModal} onClose={() => setAssignModal(false)} title="Assign Plan to Student">
         <form onSubmit={handleAssign} className="space-y-4">
           <Input label="Student ID" name="studentId" value={assignForm.studentId} onChange={e => setAssignForm({ ...assignForm, studentId: e.target.value })} required />
           <Input label="Plan ID" name="planId" value={assignForm.planId} onChange={e => setAssignForm({ ...assignForm, planId: e.target.value })} required />

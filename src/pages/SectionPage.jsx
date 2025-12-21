@@ -123,7 +123,7 @@ const SectionPage = () => {
         data={sections}
         loading={loading}
       />
-      <Modal open={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Section" : "Add Section"}>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Section" : "Add Section"}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Semester" name="semester" value={form.semester} onChange={handleChange} required />
           <Input label="Year" name="year" value={form.year} onChange={handleChange} required />
