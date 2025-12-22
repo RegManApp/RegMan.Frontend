@@ -165,22 +165,74 @@ const AcademicPlanPage = () => {
   // Student view
   if (!isAdmin()) {
     return (
-      <Card title="Academic Progress">
+      <Card title="Degree Progress" subtitle="Plan compliance and completion">
         {progress ? (
-          <div>
-            <div className="mb-4">
-              <strong>Plan:</strong> {progress.academicPlanName}<br />
-              <strong>Total Credits:</strong> {progress.totalCreditHours}<br />
-              <strong>Completed Credits:</strong> {progress.completedCredits}<br />
-              <strong>Required Courses:</strong>
-              <ul className="list-disc ml-6">
-                {progress.requiredCourses?.map((c) => (
-                  <li key={c.courseId}>{c.courseName}</li>
-                ))}
-              </ul>
+          <div className="space-y-6">
+            {/* Summary */}
+            <div className="space-y-2">
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Major:</strong> {progress.majorName || 'Not Assigned'}
+              </div>
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                <strong>Expected Graduation Year:</strong> {progress.expectedGraduationYear || '—'}
+              </div>
             </div>
-            <div className="mt-4">
-              <strong>Progress:</strong> {progress.completedCredits} / {progress.totalCreditHours} credits
+
+            {/* Progress Bar */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-medium text-gray-900 dark:text-white">
+                  {progress.progressPercentage}% complete
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  {progress.creditsCompleted} / {progress.totalCreditsRequired} credits
+                </div>
+              </div>
+              <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div
+                  className="h-3 bg-primary-600 rounded-full"
+                  style={{ width: `${Math.min(100, Math.max(0, progress.progressPercentage || 0))}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Counts */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400">Earned Credits</div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {progress.creditsCompleted} / {progress.totalCreditsRequired}
+                </div>
+              </div>
+              <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                <div className="text-sm text-gray-600 dark:text-gray-400">Required Courses</div>
+                <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {progress.requiredCoursesCompletedCount} / {progress.requiredCoursesCount} completed
+                </div>
+              </div>
+            </div>
+
+            {/* Missing prerequisites warnings */}
+            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="font-semibold text-gray-900 dark:text-white mb-2">
+                Prerequisite Warnings
+              </div>
+              {Array.isArray(progress.missingPrerequisiteWarnings) && progress.missingPrerequisiteWarnings.length > 0 ? (
+                <ul className="list-disc ml-6 text-sm text-yellow-800 dark:text-yellow-300">
+                  {progress.missingPrerequisiteWarnings.map((w) => (
+                    <li key={w.courseId}>
+                      <strong>{w.courseCode}</strong>: missing {Array.isArray(w.missingCourseCodes) ? w.missingCourseCodes.join(', ') : ''}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  No prerequisite warnings detected.
+                </div>
+              )}
+              <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                Warnings are inferred from plan ordering vs completed transcript courses.
+              </div>
             </div>
           </div>
         ) : (

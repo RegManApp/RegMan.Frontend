@@ -99,6 +99,55 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  // Set session from a LoginResponse-like payload (accessToken/refreshToken + user fields)
+  const setSessionFromLoginResponse = useCallback((loginResponse, rememberMe = true) => {
+    if (!loginResponse?.accessToken || !loginResponse?.refreshToken) {
+      throw new Error('Missing tokens');
+    }
+
+    const {
+      accessToken,
+      refreshToken,
+      email: userEmail,
+      fullName,
+      role,
+      userId,
+      instructorTitle,
+    } = loginResponse;
+
+    const nameParts = fullName?.split(' ') || [];
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const user = {
+      id: userId,
+      email: userEmail,
+      role,
+      firstName,
+      lastName,
+      fullName,
+      instructorTitle,
+    };
+
+    const storage = rememberMe ? localStorage : sessionStorage;
+
+    // Clear both storages first to avoid conflicts
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('user');
+
+    storage.setItem('accessToken', accessToken);
+    storage.setItem('refreshToken', refreshToken);
+    storage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('rememberMe', rememberMe.toString());
+
+    dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: user });
+    return user;
+  }, []);
+
   // Check for existing auth on mount
   useEffect(() => {
     const initializeAuth = async () => {
@@ -488,6 +537,9 @@ export const AuthProvider = ({ children }) => {
     removeAccount,
     getSavedAccounts,
     clearAllSavedAccounts,
+
+    // Dev/demo helpers
+    setSessionFromLoginResponse,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

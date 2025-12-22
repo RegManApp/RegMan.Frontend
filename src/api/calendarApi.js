@@ -58,6 +58,10 @@ export const calendarApi = {
   getCalendarEvents,
   getTodayEvents,
   getUpcomingEvents,
+  getTimeline: async () => {
+    const response = await axiosInstance.get("/calendar/timeline");
+    return response.data;
+  },
 };
 
 export default calendarApi;

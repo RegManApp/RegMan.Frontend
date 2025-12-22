@@ -94,6 +94,7 @@ const studentNavigation = [
     items: [
       { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
       { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
+      { name: 'Smart Schedule', href: '/smart-schedule', icon: 'CalendarDaysIcon' },
       { name: 'Cart', href: '/cart', icon: 'ClipboardDocumentListIcon' },
       { name: 'My Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
       { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },

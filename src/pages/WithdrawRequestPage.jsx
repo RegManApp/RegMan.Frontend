@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { enrollmentApi } from "../api/enrollmentApi";
 import { adminApi } from "../api/adminApi";
+import { calendarApi } from "../api/calendarApi";
 import toast from "react-hot-toast";
 import { Card, Button, Input, Modal } from "../components/common";
 
 const WithdrawRequestPage = () => {
   const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
-  const [registrationEndDate, setRegistrationEndDate] = useState("");
   const [withdrawStartDate, setWithdrawStartDate] = useState("");
   const [withdrawEndDate, setWithdrawEndDate] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -20,10 +20,14 @@ const WithdrawRequestPage = () => {
     enrollmentApi.getMyEnrollments().then((res) => {
       setEnrollments(res.data || []);
     });
-    adminApi.getRegistrationEndDate().then((res) => {
-      setRegistrationEndDate(res.data?.registrationEndDate || "");
-      setWithdrawStartDate(res.data?.withdrawStartDate || "");
-      setWithdrawEndDate(res.data?.withdrawEndDate || "");
+    calendarApi.getTimeline().then((data) => {
+      setWithdrawStartDate(data?.withdrawStartDate || "");
+      setWithdrawEndDate(data?.withdrawEndDate || "");
+    }).catch(() => {
+      adminApi.getRegistrationEndDate().then((res) => {
+        setWithdrawStartDate(res.data?.withdrawStartDate || "");
+        setWithdrawEndDate(res.data?.withdrawEndDate || "");
+      });
     });
   }, []);
 
@@ -42,12 +46,12 @@ const WithdrawRequestPage = () => {
     }
     setIsSubmitting(true);
     try {
-      await adminApi.submitWithdrawRequest(user.id, selectedEnrollment.enrollmentId, reason);
+      await adminApi.submitMyWithdrawRequest(selectedEnrollment.enrollmentId, reason);
       toast.success("Withdraw request submitted");
       setShowModal(false);
       setReason("");
     } catch (error) {
-      toast.error("Failed to submit request");
+      toast.error(error?.message || "Failed to submit request");
     } finally {
       setIsSubmitting(false);
     }

@@ -11,6 +11,7 @@ import { courseCategoryApi } from '../api/courseCategoryApi';
 import { Squares2X2Icon, ListBulletIcon } from '@heroicons/react/24/outline';
 import adminApi from '../api/adminApi';
 import cartApi from '../api/cartApi';
+import { calendarApi } from '../api/calendarApi';
 import { instructorApi } from '../api/instructorApi';
 import { sectionApi } from '../api/sectionApi';
 
@@ -39,6 +40,7 @@ const CoursesPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 12;
+  const [registrationStartDate, setRegistrationStartDate] = useState("");
   const [registrationEndDate, setRegistrationEndDate] = useState("");
 
   const loadCourses = useCallback(async () => {
@@ -206,14 +208,22 @@ const CoursesPage = () => {
   }, [loadCartItems]);
 
   useEffect(() => {
-    adminApi.getRegistrationEndDate().then((res) => {
-      setRegistrationEndDate(res.data?.registrationEndDate || "");
+    calendarApi.getTimeline().then((data) => {
+      setRegistrationStartDate(data?.registrationStartDate || "");
+      setRegistrationEndDate(data?.registrationEndDate || "");
+    }).catch(() => {
+      adminApi.getRegistrationEndDate().then((res) => {
+        setRegistrationStartDate(res.data?.registrationStartDate || "");
+        setRegistrationEndDate(res.data?.registrationEndDate || "");
+      });
     });
   }, []);
 
   const now = new Date();
+  const registrationStart = registrationStartDate ? new Date(registrationStartDate) : null;
   const registrationEnd = registrationEndDate ? new Date(registrationEndDate) : null;
-  const isRegistrationOpen = !registrationEnd || now < registrationEnd;
+  const isRegistrationOpen =
+    (!registrationStart || now >= registrationStart) && (!registrationEnd || now <= registrationEnd);
 
   const isEnrolled = (courseId) => {
     return myEnrollments.some(
@@ -338,7 +348,7 @@ const CoursesPage = () => {
           </h1>
           {registrationEndDate && (
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-              Registration {isRegistrationOpen ? 'closes' : 'closed'} on {formatDate(registrationEndDate)}.
+              Registration {isRegistrationOpen ? 'is open' : 'is closed'} ({formatDate(registrationStartDate)} → {formatDate(registrationEndDate)}).
             </p>
           )}
         </div>

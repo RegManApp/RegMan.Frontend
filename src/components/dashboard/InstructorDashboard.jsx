@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpenIcon,
@@ -18,6 +19,7 @@ const InstructorDashboard = ({
   schedules = [],
   isLoading,
   user,
+  timeline,
 }) => {
   // Calculate unique courses from schedules
   const uniqueCourses = [...new Set(schedules.map(s => s.courseId))];
@@ -65,6 +67,32 @@ const InstructorDashboard = ({
     return labels[degree] || 'Instructor';
   };
 
+  const countdownTarget = timeline?.status?.countdownTargetUtc ? new Date(timeline.status.countdownTargetUtc) : null;
+  const phase = timeline?.status?.phase || 'Closed';
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const countdownText = useMemo(() => {
+    if (!countdownTarget || Number.isNaN(countdownTarget.getTime())) return '';
+    const diffMs = countdownTarget.getTime() - now.getTime();
+    if (diffMs <= 0) return '0s';
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const parts = [];
+    if (days) parts.push(`${days}d`);
+    if (hours || days) parts.push(`${hours}h`);
+    if (minutes || hours || days) parts.push(`${minutes}m`);
+    parts.push(`${seconds}s`);
+    return parts.join(' ');
+  }, [countdownTarget?.getTime(), now]);
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -91,6 +119,31 @@ const InstructorDashboard = ({
            'Assist with sections, labs, and student support.'}
         </p>
       </div>
+
+      {/* Registration Timeline (read-only) */}
+      <Card title="Registration Timeline" subtitle="Read-only timeline visibility">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-400">Status:</span>
+            <Badge variant={phase === 'Open' ? 'success' : phase === 'Withdraw period' ? 'warning' : 'default'}>
+              {phase}
+            </Badge>
+            {countdownText && (
+              <span className="text-sm text-gray-700 dark:text-gray-300">
+                {phase === 'Open'
+                  ? `• closes in ${countdownText}`
+                  : phase === 'Withdraw period'
+                    ? `• ends in ${countdownText}`
+                    : `• next change in ${countdownText}`}
+              </span>
+            )}
+          </div>
+          <div className="text-sm text-gray-700 dark:text-gray-300">
+            <div>Registration: {timeline?.registrationStartDate || '—'} → {timeline?.registrationEndDate || '—'} (UTC)</div>
+            <div>Withdraw: {timeline?.withdrawStartDate || '—'} → {timeline?.withdrawEndDate || '—'} (UTC)</div>
+          </div>
+        </div>
+      </Card>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

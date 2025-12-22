@@ -2,10 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { FiChevronDown, FiUserPlus, FiLogOut, FiTrash2, FiUsers, FiCheck, FiX, FiUser, FiSettings } from 'react-icons/fi';
+import { devToolsApi } from '../../api';
+import toast from 'react-hot-toast';
 
 const AccountSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [showConfirmResetDemo, setShowConfirmResetDemo] = useState(false);
+  const [demoBusy, setDemoBusy] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   
@@ -17,7 +21,10 @@ const AccountSwitcher = () => {
     removeAccount,
     clearAllSavedAccounts,
     logout,
+    setSessionFromLoginResponse,
   } = useAuth();
+
+  const isDev = import.meta.env.DEV;
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -75,6 +82,55 @@ const AccountSwitcher = () => {
   const handleClearAll = () => {
     clearAllSavedAccounts();
     setShowConfirmClear(false);
+  };
+
+  const handleDemoLoginAs = async (email) => {
+    setDemoBusy(true);
+    try {
+      const response = await devToolsApi.loginAs(email);
+      // Clear saved accounts since tokens become irrelevant
+      clearAllSavedAccounts();
+      setSessionFromLoginResponse(response.data, true);
+      toast.success(`Switched to ${email}`);
+      setIsOpen(false);
+      setShowConfirmResetDemo(false);
+      navigate('/dashboard');
+    } catch (e) {
+      // axios interceptor already toasts
+    } finally {
+      setDemoBusy(false);
+    }
+  };
+
+  const handleDemoSeed = async () => {
+    setDemoBusy(true);
+    try {
+      await devToolsApi.seed();
+      toast.success('Demo data seeded');
+    } catch (e) {
+      // axios interceptor already toasts
+    } finally {
+      setDemoBusy(false);
+    }
+  };
+
+  const handleDemoReset = async () => {
+    setDemoBusy(true);
+    try {
+      await devToolsApi.reset();
+      clearAllSavedAccounts();
+      toast.success('Demo database reset');
+
+      const loginResponse = await devToolsApi.loginAs('admin@demo.local');
+      setSessionFromLoginResponse(loginResponse.data, true);
+      toast.success('Logged in as admin@demo.local');
+      setIsOpen(false);
+    } catch (e) {
+      // axios interceptor already toasts
+    } finally {
+      setDemoBusy(false);
+      setShowConfirmResetDemo(false);
+    }
   };
 
   if (!user) return null;
@@ -244,6 +300,83 @@ const AccountSwitcher = () => {
                     Clear all saved accounts
                   </button>
                 )}
+              </>
+            )}
+
+            {isDev && (
+              <>
+                <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
+
+                <div className="px-4 py-2">
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <FiUsers className="w-4 h-4" />
+                    Demo Tools
+                  </div>
+
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    <button
+                      disabled={demoBusy}
+                      onClick={() => handleDemoLoginAs('admin@demo.local')}
+                      className="px-2 py-1.5 text-xs rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Admin
+                    </button>
+                    <button
+                      disabled={demoBusy}
+                      onClick={() => handleDemoLoginAs('instructor@demo.local')}
+                      className="px-2 py-1.5 text-xs rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Instructor
+                    </button>
+                    <button
+                      disabled={demoBusy}
+                      onClick={() => handleDemoLoginAs('student@demo.local')}
+                      className="px-2 py-1.5 text-xs rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    >
+                      Student
+                    </button>
+                  </div>
+
+                  <button
+                    disabled={demoBusy}
+                    onClick={handleDemoSeed}
+                    className="mt-2 w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Seed demo data
+                  </button>
+
+                  {showConfirmResetDemo ? (
+                    <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                      <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                        Reset demo database?
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          disabled={demoBusy}
+                          onClick={handleDemoReset}
+                          className="flex-1 px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                        >
+                          Yes, reset
+                        </button>
+                        <button
+                          disabled={demoBusy}
+                          onClick={() => setShowConfirmResetDemo(false)}
+                          className="flex-1 px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      disabled={demoBusy}
+                      onClick={() => setShowConfirmResetDemo(true)}
+                      className="mt-2 w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      Reset demo database
+                    </button>
+                  )}
+                </div>
               </>
             )}
 

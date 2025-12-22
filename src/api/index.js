@@ -17,3 +17,5 @@ export { chatApi } from "./chatApi";
 export { sectionApi } from "./sectionApi";
 export { roomApi } from "./roomApi";
 export { timeSlotApi } from "./timeSlotApi";
+export { smartScheduleApi } from "./smartScheduleApi";
+export { devToolsApi } from "./devToolsApi";

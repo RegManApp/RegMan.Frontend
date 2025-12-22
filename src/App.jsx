@@ -28,6 +28,8 @@ import {
   TranscriptPage,     
   SectionPage,
   AdminSettingsPage,
+  NotificationsPage,
+  SmartScheduleBuilderPage,
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
@@ -192,6 +194,9 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               {/* Chat - All authenticated users */}
               <Route path="/chat" element={<ChatPage />} />
+
+              {/* Notifications - All authenticated users */}
+              <Route path="/notifications" element={<NotificationsPage />} />
               
               {/* GPA - Students view their own, Admin can view any student */}
               <Route path="/gpa" element={<GpaPage />} />
@@ -229,6 +234,16 @@ function App() {
                 element={
                   <RoleGuard allowedRoles={[ROLES.STUDENT]}>
                     <WithdrawRequestPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Smart Schedule Builder - Student only */}
+              <Route
+                path="/smart-schedule"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+                    <SmartScheduleBuilderPage />
                   </RoleGuard>
                 }
               />

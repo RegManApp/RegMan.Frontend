@@ -6,15 +6,27 @@ import { Card, Button, Input } from "../components/common";
 
 const AdminSettingsPage = () => {
   const { isAdmin } = useAuth();
+  const [registrationStartDate, setRegistrationStartDate] = useState("");
   const [registrationEndDate, setRegistrationEndDate] = useState("");
+  const [withdrawStartDate, setWithdrawStartDate] = useState("");
   const [withdrawEndDate, setWithdrawEndDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isAdmin()) {
-      adminApi.getRegistrationEndDate().then((res) => {
+      adminApi.getAcademicCalendarSettings().then((res) => {
+        setRegistrationStartDate(res.data?.registrationStartDate || "");
         setRegistrationEndDate(res.data?.registrationEndDate || "");
+        setWithdrawStartDate(res.data?.withdrawStartDate || "");
         setWithdrawEndDate(res.data?.withdrawEndDate || "");
+      }).catch(() => {
+        // fallback for older endpoint
+        adminApi.getRegistrationEndDate().then((res) => {
+          setRegistrationStartDate(res.data?.registrationStartDate || "");
+          setRegistrationEndDate(res.data?.registrationEndDate || "");
+          setWithdrawStartDate(res.data?.withdrawStartDate || "");
+          setWithdrawEndDate(res.data?.withdrawEndDate || "");
+        });
       });
     }
   }, [isAdmin]);
@@ -22,10 +34,15 @@ const AdminSettingsPage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await adminApi.setRegistrationAndWithdrawDates(registrationEndDate, withdrawEndDate);
-      toast.success("Dates updated");
+      await adminApi.setAcademicCalendarSettings({
+        registrationStartDate,
+        registrationEndDate,
+        withdrawStartDate,
+        withdrawEndDate,
+      });
+      toast.success("Timeline updated");
     } catch (error) {
-      toast.error("Failed to update dates");
+      toast.error("Failed to update timeline");
     } finally {
       setIsLoading(false);
     }
@@ -35,13 +52,25 @@ const AdminSettingsPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <Card title="Registration & Withdraw Settings">
+      <Card title="Registration Timeline">
         <div className="space-y-4">
+          <label className="block font-medium">Registration Open Date</label>
+          <Input
+            type="date"
+            value={registrationStartDate}
+            onChange={e => setRegistrationStartDate(e.target.value)}
+          />
           <label className="block font-medium">Registration End Date</label>
           <Input
             type="date"
             value={registrationEndDate}
             onChange={e => setRegistrationEndDate(e.target.value)}
+          />
+          <label className="block font-medium">Withdraw Start Date</label>
+          <Input
+            type="date"
+            value={withdrawStartDate}
+            onChange={e => setWithdrawStartDate(e.target.value)}
           />
           <label className="block font-medium">Withdraw End Date</label>
           <Input

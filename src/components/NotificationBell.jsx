@@ -1,7 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../api/notificationApi';
-import { FiBell, FiCheck, FiCheckCircle, FiTrash2, FiX } from 'react-icons/fi';
+import {
+  startNotificationsConnection,
+  stopNotificationsConnection,
+  onNotificationReceived,
+  offNotificationReceived,
+} from '../api/notificationSignalrClient';
+import { FiBell, FiCheck, FiTrash2, FiX } from 'react-icons/fi';
 
 const NotificationBell = () => {
   const { user } = useAuth();
@@ -9,6 +16,7 @@ const NotificationBell = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -19,6 +27,29 @@ const NotificationBell = () => {
       return () => clearInterval(interval);
     }
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const handler = () => {
+      // Keep it simple + reliable: refresh unread count, and refresh list if open
+      fetchUnreadCount();
+      if (isOpen) {
+        fetchNotifications();
+      }
+    };
+
+    startNotificationsConnection()
+      .then(() => onNotificationReceived(handler))
+      .catch((e) => console.error('Failed to start notifications hub', e));
+
+    return () => {
+      try {
+        offNotificationReceived(handler);
+        stopNotificationsConnection();
+      } catch (e) {}
+    };
+  }, [user, isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -32,20 +63,24 @@ const NotificationBell = () => {
 
   const fetchUnreadCount = async () => {
     try {
+      setLoadError(false);
       const count = await notificationApi.getUnreadCount();
       setUnreadCount(count);
     } catch (error) {
       console.error('Error fetching unread count:', error);
+      setLoadError(true);
     }
   };
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const data = await notificationApi.getNotifications();
-      setNotifications(data);
+      setLoadError(false);
+      const list = await notificationApi.getNotifications();
+      setNotifications(Array.isArray(list) ? list : []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      setLoadError(true);
     } finally {
       setLoading(false);
     }
@@ -183,6 +218,16 @@ const NotificationBell = () => {
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
               </div>
+            ) : loadError ? (
+              <div className="py-8 text-center text-gray-500 dark:text-gray-400">
+                <p>Couldn't load notifications.</p>
+                <button
+                  onClick={fetchNotifications}
+                  className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  Retry
+                </button>
+              </div>
             ) : notifications.length === 0 ? (
               <div className="py-8 text-center text-gray-500 dark:text-gray-400">
                 <FiBell className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -244,12 +289,33 @@ const NotificationBell = () => {
           {/* Footer */}
           {notifications.some((n) => n.isRead) && (
             <div className="p-3 border-t border-gray-200 dark:border-gray-700">
-              <button
-                onClick={handleClearRead}
-                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={handleClearRead}
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  Clear read
+                </button>
+                <Link
+                  to="/notifications"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                >
+                  View all
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {notifications.every((n) => !n.isRead) && (
+            <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-right">
+              <Link
+                to="/notifications"
+                onClick={() => setIsOpen(false)}
+                className="text-sm text-primary-600 dark:text-primary-400 hover:underline"
               >
-                Clear read notifications
-              </button>
+                View all
+              </Link>
             </div>
           )}
         </div>

@@ -3,13 +3,15 @@ import axiosInstance from "./axiosInstance";
 // Get all notifications for the current user
 export const getNotifications = async (params = {}) => {
   const response = await axiosInstance.get("/Notification", { params });
-  return response.data;
+  // Backend returns a payload object: { notifications, totalCount, unreadCount, ... }
+  return response.data?.notifications || [];
 };
 
 // Get unread notification count
 export const getUnreadCount = async () => {
   const response = await axiosInstance.get("/Notification/unread-count");
-  return response.data;
+  // Backend returns: { count }
+  return response.data?.count ?? 0;
 };
 
 // Mark a notification as read

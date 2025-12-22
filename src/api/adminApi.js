@@ -4,10 +4,22 @@ export const adminApi = {
   getRegistrationEndDate: () => {
     return axiosInstance.get("/calendar/registration-withdraw-dates");
   },
+  getAcademicCalendarSettings: () => {
+    return axiosInstance.get("/admin/academic-calendar-settings");
+  },
+  setAcademicCalendarSettings: (payload) => {
+    return axiosInstance.put("/admin/academic-calendar-settings", payload);
+  },
   setRegistrationAndWithdrawDates: (registrationEndDate, withdrawEndDate) => {
     return axiosInstance.post("/admin/registration-end-date", {
       registrationEndDate,
       withdrawEndDate,
+    });
+  },
+  submitMyWithdrawRequest: (enrollmentId, reason) => {
+    return axiosInstance.post(`/withdraw-requests`, {
+      enrollmentId,
+      reason,
     });
   },
   submitWithdrawRequest: (studentId, enrollmentId, reason) => {

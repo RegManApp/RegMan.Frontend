@@ -8,6 +8,7 @@ import { enrollmentApi } from '../api/enrollmentApi';
 import { courseApi } from '../api/courseApi';
 import { instructorApi } from '../api/instructorApi';
 import { scheduleApi } from '../api/scheduleApi';
+import { calendarApi } from '../api/calendarApi';
 import { normalizeCourses } from '../utils/helpers';
 
 const DashboardPage = () => {
@@ -21,6 +22,7 @@ const DashboardPage = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
   const [instructorProfile, setInstructorProfile] = useState(null);
   const [instructorSchedules, setInstructorSchedules] = useState([]);
+  const [timeline, setTimeline] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -43,25 +45,32 @@ const DashboardPage = () => {
       } else if (isInstructor()) {
         // Load instructor dashboard data
         try {
-          const schedulesRes = await instructorApi.getMySchedule();
+          const [schedulesRes, timelineRes] = await Promise.all([
+            instructorApi.getMySchedule().catch(() => ({ data: [] })),
+            calendarApi.getTimeline().catch(() => null),
+          ]);
+
           const schedules = schedulesRes?.data ?? schedulesRes;
           setInstructorSchedules(Array.isArray(schedules) ? schedules : schedules?.items || []);
           setInstructorProfile(null);
+          setTimeline(timelineRes);
         } catch (error) {
           console.error('Failed to load instructor data:', error);
         }
       } else {
         // Load student dashboard data
-        const [profileRes, enrollmentsRes, coursesRes] = await Promise.all([
+        const [profileRes, enrollmentsRes, coursesRes, timelineRes] = await Promise.all([
           studentApi.getMyProfile().catch(() => ({ data: null })),
           enrollmentApi.getMyEnrollments().catch(() => ({ data: [] })),
           courseApi.getAvailable().catch(() => ({ data: [] })),
+          calendarApi.getTimeline().catch(() => null),
         ]);
 
         setStudentProfile(profileRes.data || profileRes);
         setMyEnrollments(enrollmentsRes.data || enrollmentsRes || []);
         const coursesData = coursesRes.data || coursesRes || [];
         setAvailableCourses(normalizeCourses(Array.isArray(coursesData) ? coursesData : coursesData.items || []));
+        setTimeline(timelineRes);
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -101,6 +110,7 @@ const DashboardPage = () => {
           schedules={instructorSchedules}
           isLoading={isLoading}
           user={user}
+          timeline={timeline}
         />
       ) : (
         <StudentDashboard
@@ -108,6 +118,7 @@ const DashboardPage = () => {
           enrollments={myEnrollments}
           availableCourses={availableCourses}
           isLoading={isLoading}
+          timeline={timeline}
         />
       )}
     </div>

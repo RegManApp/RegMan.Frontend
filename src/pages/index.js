@@ -26,3 +26,5 @@ export { default as TranscriptPage } from "./TranscriptPage";
 export { default as AcademicPlanPage } from "./AcademicPlanPage";
 export { default as WithdrawRequestPage } from "./WithdrawRequestPage";
 export { default as AdminWithdrawRequestsPage } from "./AdminWithdrawRequestsPage";
+export { default as NotificationsPage } from "./NotificationsPage";
+export { default as SmartScheduleBuilderPage } from "./SmartScheduleBuilderPage";
