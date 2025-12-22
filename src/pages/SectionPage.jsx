@@ -31,6 +31,7 @@ const SectionPage = () => {
   const [form, setForm] = useState(defaultForm);
   const [editId, setEditId] = useState(null);
 
+
   // Dropdown data
   const [courses, setCourses] = useState([]);
   const [rooms, setRooms] = useState([]);
@@ -98,8 +99,8 @@ const SectionPage = () => {
     }
     try {
       const [timeSlotRes, scheduleSlotRes] = await Promise.all([
-        timeSlotApi.getAll({ roomId }),
-        scheduleSlotApi.getAll({ roomId }),
+        timeSlotApi.getByRoom(roomId),
+        scheduleSlotApi.getByRoom(roomId),
       ]);
       setTimeSlots(Array.isArray(timeSlotRes.data) ? timeSlotRes.data : timeSlotRes.data.items || []);
       const bookedIds = (Array.isArray(scheduleSlotRes.data) ? scheduleSlotRes.data : scheduleSlotRes.data.items || []).map(slot => slot.timeSlotId);
@@ -116,11 +117,11 @@ const SectionPage = () => {
       setForm({
         semester: section.semester || "",
         year: section.year || "",
-        instructorId: section.instructorId || "",
-        courseId: section.courseId || "",
-        availableSeats: section.availableSeats || 60,
-        roomId: section.roomId || "",
-        timeSlotId: section.timeSlotId || "",
+        instructorId: section.instructorId ? String(section.instructorId) : "",
+        courseId: section.courseId ? String(section.courseId) : "",
+        availableSeats: section.availableSeats ? String(section.availableSeats) : "",
+        roomId: section.roomId ? String(section.roomId) : "",
+        timeSlotId: section.timeSlotId ? String(section.timeSlotId) : "",
         slotType: section.slotType || "Lecture",
       });
       setEditId(section.sectionId || section.id);
@@ -152,11 +153,11 @@ const SectionPage = () => {
   const handleSelectChange = (field) => (selectedOption) => {
     const value = selectedOption
       ? String(
-          selectedOption.id ||
-          selectedOption.instructorId ||
-          selectedOption.roomId ||
-          selectedOption.courseId ||
           selectedOption.timeSlotId ||
+          selectedOption.roomId ||
+          selectedOption.instructorId ||
+          selectedOption.courseId ||
+          selectedOption.id ||
           ""
         )
       : "";
@@ -327,11 +328,14 @@ const SectionPage = () => {
             name="timeSlotId"
             value={form.timeSlotId}
             onChange={handleSelectChange("timeSlotId")}
-            options={form.roomId ? timeSlots.filter(
-              opt => !bookedTimeSlotIds.includes(opt.id || opt.timeSlotId)
-            ) : []}
+            options={(() => {
+              const filtered = form.roomId ? timeSlots.filter(
+                opt => !bookedTimeSlotIds.map(String).includes(String(opt.timeSlotId))
+              ) : [];
+              return filtered;
+            })()}
             getOptionLabel={opt => `${opt.day || ''} ${opt.startTime || ''} - ${opt.endTime || ''}`}
-            getOptionValue={opt => String(opt.id || opt.timeSlotId || '')}
+            getOptionValue={opt => String(opt.timeSlotId || '')}
             required
             disabled={dropdownLoading || !form.roomId}
           />
