@@ -31,11 +31,22 @@ const AdvisingPage = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [stats, setStats] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 10;
+
+  // Debounce search so we don't spam API and cause "reload" feel
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setPage(1);
+      setSearchQuery(searchInput);
+    }, 350);
+    return () => clearTimeout(handle);
+  }, [searchInput]);
 
   // Decline modal state
   const [declineModal, setDeclineModal] = useState({ isOpen: false, enrollment: null });
@@ -68,6 +79,7 @@ const AdvisingPage = () => {
       toast.error('Failed to load pending enrollments');
     } finally {
       setIsLoading(false);
+      setIsInitialLoad(false);
     }
   }, [page, pageSize, searchQuery]);
 
@@ -190,7 +202,7 @@ const AdvisingPage = () => {
     },
   ];
 
-  if (isLoading && !enrollments.length) {
+  if (isInitialLoad && isLoading) {
     return <PageLoading />;
   }
 
@@ -271,9 +283,9 @@ const AdvisingPage = () => {
       <Card title="Pending Enrollment Requests">
         <div className="mb-4">
           <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            onClear={() => setSearchQuery('')}
+            value={searchInput}
+            onChange={setSearchInput}
+            onClear={() => setSearchInput('')}
             placeholder="Search by student name or course..."
             className="w-full sm:w-80"
           />
