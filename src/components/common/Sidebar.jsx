@@ -1,7 +1,7 @@
-import { Fragment } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import {
   HomeIcon,
   UsersIcon,
@@ -114,48 +114,93 @@ const studentNavigation = [
   },
 ];
 
-const SidebarContent = ({ navigation }) => {
+const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
   const location = useLocation();
 
+  const sectionIdByName = useMemo(() => ({
+    Core: 'sidebar-section-core',
+    Support: 'sidebar-section-support',
+    Admin: 'sidebar-section-admin',
+  }), []);
+
+  const isSectionOpen = (sectionName) => {
+    if (sectionName === 'Core') return sectionOpen.core;
+    if (sectionName === 'Support') return sectionOpen.support;
+    if (sectionName === 'Admin') return sectionOpen.admin;
+    return true;
+  };
+
+  const toggleSection = (sectionName) => {
+    if (sectionName === 'Core') return onToggleSection('core');
+    if (sectionName === 'Support') return onToggleSection('support');
+    if (sectionName === 'Admin') return onToggleSection('admin');
+  };
+
   return (
-    <nav className="flex-1 px-2 py-4 space-y-6">
+    <nav className="flex-1 px-2 py-4 space-y-4 overflow-x-hidden">
       {navigation.map((group) => (
         <div key={group.section}>
-          <p className="px-3 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {group.section}
-          </p>
-          <div className="mt-2 space-y-1">
-            {group.items.map((item) => {
-              const Icon = iconMap[item.icon];
-              const isActive =
-                location.pathname === item.href ||
-                (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
+          <button
+            type="button"
+            onClick={() => toggleSection(group.section)}
+            aria-expanded={isSectionOpen(group.section)}
+            aria-controls={sectionIdByName[group.section]}
+            className={cn(
+              'w-full flex items-center justify-between px-3 py-2 rounded-lg',
+              'text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
+              'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500'
+            )}
+          >
+            <span>{group.section}</span>
+            {isSectionOpen(group.section) ? (
+              <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
+            ) : (
+              <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
+            )}
+          </button>
 
-              return (
-                <NavLink
-                  key={item.name}
-                  to={item.href}
-                  className={cn(
-                    'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
-                    isActive
-                      ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
-                      : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-                  )}
-                >
-                  {Icon && (
-                    <Icon
+          <div
+            id={sectionIdByName[group.section]}
+            className={cn(
+              'grid transition-[grid-template-rows] duration-200 ease-in-out',
+              isSectionOpen(group.section) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="mt-1 space-y-1">
+                {group.items.map((item) => {
+                  const Icon = iconMap[item.icon];
+                  const isActive =
+                    location.pathname === item.href ||
+                    (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
+
+                  return (
+                    <NavLink
+                      key={item.name}
+                      to={item.href}
                       className={cn(
-                        'mr-3 h-5 w-5 flex-shrink-0',
+                        'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors overflow-x-hidden',
                         isActive
-                          ? 'text-primary-600 dark:text-primary-400'
-                          : 'text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300'
+                          ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                          : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
                       )}
-                    />
-                  )}
-                  {item.name}
-                </NavLink>
-              );
-            })}
+                    >
+                      {Icon && (
+                        <Icon
+                          className={cn(
+                            'mr-3 h-5 w-5 flex-shrink-0',
+                            isActive
+                              ? 'text-primary-600 dark:text-primary-400'
+                              : 'text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300'
+                          )}
+                        />
+                      )}
+                      <span className="min-w-0 truncate">{item.name}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
       ))}
@@ -165,6 +210,17 @@ const SidebarContent = ({ navigation }) => {
 
 const Sidebar = ({ isOpen = false, onClose }) => {
   const { isAdmin, isInstructor } = useAuth();
+
+  // Collapse state is local to Sidebar (no persistence)
+  const [sectionOpen, setSectionOpen] = useState({
+    core: true,
+    support: true,
+    admin: false,
+  });
+
+  const onToggleSection = (key) => {
+    setSectionOpen((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
   
   let navigation;
   if (isAdmin()) {
@@ -232,8 +288,12 @@ const Sidebar = ({ isOpen = false, onClose }) => {
                   </span>
                 </div>
 
-                <div className="flex-1 h-0 overflow-y-auto">
-                  <SidebarContent navigation={navigation} />
+                <div className="flex-1 h-0 overflow-y-auto overflow-x-hidden">
+                  <SidebarContent
+                    navigation={navigation}
+                    sectionOpen={sectionOpen}
+                    onToggleSection={onToggleSection}
+                  />
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -245,8 +305,18 @@ const Sidebar = ({ isOpen = false, onClose }) => {
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-20 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 pt-16">
-          <div className="flex-1 flex flex-col overflow-y-auto">
-            <SidebarContent navigation={navigation} />
+          <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
+            <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
+              RegMan
+            </span>
+          </div>
+
+          <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
+            <SidebarContent
+              navigation={navigation}
+              sectionOpen={sectionOpen}
+              onToggleSection={onToggleSection}
+            />
           </div>
         </div>
       </div>
