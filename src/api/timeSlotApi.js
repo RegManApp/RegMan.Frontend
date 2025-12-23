@@ -20,8 +20,11 @@ export const timeSlotApi = {
   delete: (id) => {
     return axiosInstance.delete(`/timeslot/${id}`);
   },
-};
 
-// No changes needed, API is correct for TimeSlotPage usage
+  // Update time slot (Admin only)
+  update: (id, timeSlotData) => {
+    return axiosInstance.put(`/timeslot/${id}`, timeSlotData);
+  },
+};
 
 export default timeSlotApi;
