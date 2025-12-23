@@ -30,6 +30,7 @@ import {
   AdminSettingsPage,
   NotificationsPage,
   SmartScheduleBuilderPage,
+  WithdrawHistoryPage,
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
@@ -263,6 +264,16 @@ function App() {
                 element={
                   <RoleGuard allowedRoles={[ROLES.STUDENT]}>
                     <WithdrawRequestPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Withdraw History - Student only */}
+              <Route
+                path="/withdraw-history"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+                    <WithdrawHistoryPage />
                   </RoleGuard>
                 }
               />

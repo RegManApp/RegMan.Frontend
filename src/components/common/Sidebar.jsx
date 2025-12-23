@@ -113,6 +113,7 @@ const studentNavigation = [
       { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
       { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
       { name: 'Withdraw Request', href: '/withdraw-request', icon: 'ClipboardDocumentCheckIcon' },
+      { name: 'Withdraw History', href: '/withdraw-history', icon: 'ClipboardDocumentCheckIcon' },
       { name: 'Profile', href: '/profile', icon: 'UserIcon' },
     ],
   },
