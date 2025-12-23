@@ -65,6 +65,8 @@ const adminNavigation = [
       { name: 'GPA & Grades', href: '/gpa', icon: 'AcademicCapIcon' },
       { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
       { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
+      { name: 'Time Slots', href: '/time-slots', icon: 'ClockIcon' },
+      { name: 'Admin Settings', href: '/settings', icon: 'UserIcon' },
     ],
   },
 ];
@@ -75,6 +77,7 @@ const instructorNavigation = [
     items: [
       { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
       { name: 'My Courses', href: '/courses', icon: 'BookOpenIcon' },
+      { name: 'Sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
       { name: 'Office Hours', href: '/office-hours', icon: 'ClockIcon' },
       { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
     ],
@@ -83,6 +86,7 @@ const instructorNavigation = [
     section: 'Support',
     items: [
       { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
+      { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
       { name: 'Profile', href: '/profile', icon: 'UserIcon' },
     ],
   },

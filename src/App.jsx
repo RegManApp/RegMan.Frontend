@@ -35,6 +35,8 @@ import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
 import WithdrawRequestPage from './pages/WithdrawRequestPage';
 import AdminWithdrawRequestsPage from './pages/AdminWithdrawRequestsPage';
+import CartPage from './pages/CartPage';
+import TimeSlotPage from './pages/TimeSlotPage';
 
 import { ROLES } from './utils/constants';
 
@@ -199,12 +201,39 @@ function App() {
               <Route path="/notifications" element={<NotificationsPage />} />
               
               {/* GPA - Students view their own, Admin can view any student */}
-              <Route path="/gpa" element={<GpaPage />} />
               <Route
-                path="/students/:studentId/gpa"
+                path="/gpa"
                 element={
                   <RoleGuard allowedRoles={[ROLES.ADMIN]}>
                     <GpaPage />
+                  </RoleGuard>
+                }
+              />
+              <Route
+                path="/students/:studentId/gpa"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN, ROLES.STUDENT]}>
+                    <GpaPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Cart - Student only */}
+              <Route
+                path="/cart"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.STUDENT]}>
+                    <CartPage />
+                  </RoleGuard>
+                }
+              />
+
+              {/* Time Slots - Admin only */}
+              <Route
+                path="/time-slots"
+                element={
+                  <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                    <TimeSlotPage />
                   </RoleGuard>
                 }
               />

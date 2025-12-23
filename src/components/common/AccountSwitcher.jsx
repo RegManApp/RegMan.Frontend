@@ -303,7 +303,7 @@ const AccountSwitcher = () => {
               </>
             )}
 
-            {isDev && (
+            {isDev && user?.role === 'Admin' && (
               <>
                 <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 
