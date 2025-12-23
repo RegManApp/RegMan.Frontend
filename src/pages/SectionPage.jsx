@@ -74,7 +74,11 @@ const SectionPage = () => {
     setLoading(true);
     try {
       const res = await sectionApi.getAll();
-      setSections(res.data);
+      const data = res?.data;
+      const items = Array.isArray(data)
+        ? data
+        : (Array.isArray(data?.items) ? data.items : (Array.isArray(data?.Items) ? data.Items : []));
+      setSections(items);
     } catch (e) {
       toast.error("Failed to fetch sections");
     }
@@ -89,7 +93,11 @@ const SectionPage = () => {
         roomApi.getAll(),
         instructorApi.getAll(),
       ]);
-      setCourses(Array.isArray(courseRes.data) ? courseRes.data : courseRes.data.items || []);
+      const courseData = courseRes?.data;
+      const courseItems = Array.isArray(courseData)
+        ? courseData
+        : (Array.isArray(courseData?.items) ? courseData.items : (Array.isArray(courseData?.Items) ? courseData.Items : []));
+      setCourses(courseItems);
       // Normalize rooms
       const roomsData = Array.isArray(roomRes.data) ? roomRes.data : roomRes.data.items || [];
       const normalizedRooms = roomsData.map(r => ({
