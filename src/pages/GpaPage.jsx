@@ -1,11 +1,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import gpaApi from '../api/gpaApi';
-import studentApi from '../api/studentApi';
-import { PageLoading, Breadcrumb, Button, Input, Select, SearchInput } from '../components/common';
+import { PageLoading, Breadcrumb, Button, Input, Select } from '../components/common';
 
 const GRADE_OPTIONS = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'F'];
 
@@ -19,47 +18,14 @@ const GpaPage = () => {
   const { studentId: paramStudentId } = useParams();
   const navigate = useNavigate();
   const { isAdmin, user } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // For admin: live search and select student
-  const [studentSearch, setStudentSearch] = useState('');
-  const [studentOptions, setStudentOptions] = useState([]);
-  const [studentSearchLoading, setStudentSearchLoading] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [searched, setSearched] = useState(false);
-
-  // Use either param or selected
-  const studentId = paramStudentId || selectedStudent?.studentId;
-
-  // Admin: live search students as you type (debounced)
-  useEffect(() => {
-    if (!isAdmin() || !studentSearch) {
-      setStudentOptions([]);
-      setSearched(false);
-      return;
-    }
-    setStudentSearchLoading(true);
-    const timer = setTimeout(async () => {
-      try {
-        const params = { pageSize: 10, pageNumber: 1 };
-        if (/^\d+$/.test(studentSearch)) params.studentId = studentSearch;
-        else if (studentSearch.includes('@')) params.email = studentSearch;
-        else params.fullName = studentSearch;
-        const res = await studentApi.getAll(params);
-        setStudentOptions(res.data.items || res.data || []);
-        setSearched(true);
-      } catch (e) {
-        setStudentOptions([]);
-        setSearched(true);
-      } finally {
-        setStudentSearchLoading(false);
-      }
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [studentSearch, isAdmin]);
+  // Admin must explicitly enter a student id and click an action
+  const [adminStudentId, setAdminStudentId] = useState(paramStudentId || '');
+  const [activeStudentId, setActiveStudentId] = useState(paramStudentId || null);
 
   const [gpaData, setGpaData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !isAdmin());
+  const [isSimulating, setIsSimulating] = useState(false);
   const [editingGrade, setEditingGrade] = useState(null);
   const [newGrade, setNewGrade] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -74,57 +40,74 @@ const GpaPage = () => {
     setIsLoading(true);
     try {
       let response;
-      if (studentId && isAdmin()) {
-        response = await gpaApi.getStudentGPA(studentId);
+      const effectiveStudentId = isAdmin() ? activeStudentId : null;
+      if (isAdmin()) {
+        if (!effectiveStudentId) {
+          setGpaData(null);
+          return;
+        }
+        response = await gpaApi.getStudentGPA(effectiveStudentId);
       } else {
         response = await gpaApi.getMyGPA();
       }
       setGpaData(response.data);
     } catch (error) {
-      console.error('Failed to load GPA data:', error);
-      toast.error('Failed to load GPA data');
+      const message = error?.response?.data?.message || error?.message || 'Failed to load GPA data';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
-  }, [studentId, isAdmin]);
+  }, [activeStudentId, isAdmin]);
 
-
-  // Load GPA data when studentId changes (from URL or select)
+  // Load GPA data on mount (Student only)
   useEffect(() => {
-    if (isAdmin() && !studentId) {
-      setGpaData(null);
-      setIsLoading(false);
-      return;
-    }
-    if (isAdmin() && !searched) {
-      setIsLoading(false);
-      return;
-    }
+    if (isAdmin()) return;
     loadGpaData();
-  }, [loadGpaData, studentId, isAdmin, searched]);
+  }, [loadGpaData, isAdmin]);
 
-  // Simulate GPA when courses change
-  useEffect(() => {
-    const simulateCourses = simulatedCourses
-      .filter(c => c.grade && c.creditHours > 0)
+  const buildSimulateCoursesPayload = useCallback(() => {
+    return simulatedCourses
+      .filter(c => c.grade && Number(c.creditHours) > 0)
       .map(c => ({ creditHours: Number(c.creditHours), grade: c.grade }));
+  }, [simulatedCourses]);
 
-    if (simulateCourses.length === 0) {
-      setSimulatedGpa(null);
+  const handleAdminSimulate = useCallback(async () => {
+    const trimmed = String(adminStudentId || '').trim();
+    if (!trimmed) {
+      toast.error('StudentId is required');
+      return;
+    }
+    if (!/^\d+$/.test(trimmed) || Number(trimmed) <= 0) {
+      toast.error('StudentId must be a positive number');
       return;
     }
 
-    const timer = setTimeout(async () => {
-      try {
-        const response = await gpaApi.simulate(simulateCourses, studentId || null);
-        setSimulatedGpa(response.data);
-      } catch (error) {
-        console.error('Simulation failed:', error);
-      }
-    }, 500);
+    const studentId = Number(trimmed);
+    const simulateCourses = buildSimulateCoursesPayload();
 
-    return () => clearTimeout(timer);
-  }, [simulatedCourses, studentId]);
+    setIsLoading(true);
+    setIsSimulating(true);
+    try {
+      // 1) Fetch student info (GPA + enrollments)
+      setActiveStudentId(studentId);
+      const gpaRes = await gpaApi.getStudentGPA(studentId);
+      setGpaData(gpaRes.data);
+
+      // 2) Call simulate explicitly
+      if (simulateCourses.length === 0) {
+        setSimulatedGpa(null);
+        return;
+      }
+      const simRes = await gpaApi.simulate(simulateCourses, studentId);
+      setSimulatedGpa(simRes.data);
+    } catch (error) {
+      const message = error?.response?.data?.message || error?.message || 'Simulation failed';
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+      setIsSimulating(false);
+    }
+  }, [adminStudentId, buildSimulateCoursesPayload]);
 
   const handleGradeUpdate = async (enrollmentId) => {
     if (!newGrade) return;
@@ -183,55 +166,25 @@ const GpaPage = () => {
 
   const canEditGrades = isAdmin() || user?.role === 'Instructor';
 
+  const studentId = isAdmin() ? activeStudentId : paramStudentId;
+
   return (
     <div className="space-y-6">
       {/* Admin: Live student search/select with dropdown and frontend filtering */}
       {isAdmin() && (
         <div className="mb-4 relative">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Search Student</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Enter Student ID</label>
+          <div className="flex gap-2 items-center">
           <Input
-            value={studentSearch}
-            onChange={e => setStudentSearch(e.target.value)}
-            placeholder="Type ID, name, or email..."
+            value={adminStudentId}
+            onChange={e => setAdminStudentId(e.target.value)}
+            placeholder="Enter Student ID"
             className="w-96"
           />
-          {studentSearchLoading && <span className="ml-2 text-gray-500">Loading...</span>}
-          {studentSearch && studentOptions.length > 0 && (
-            <ul className="absolute z-10 w-96 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow mt-1 max-h-60 overflow-auto">
-              {studentOptions
-                .filter(s => {
-                  const search = studentSearch.toLowerCase();
-                  const name = (s.fullName || s.user?.fullName || '').toLowerCase();
-                  const email = (s.email || s.user?.email || '').toLowerCase();
-                  const id = String(s.studentProfile?.studentId || s.id);
-                  return (
-                    name.includes(search) ||
-                    email.includes(search) ||
-                    id.includes(search)
-                  );
-                })
-                .map(s => (
-                  <li
-                    key={s.studentProfile?.studentId || s.id}
-                    className="px-4 py-2 cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900"
-                    onClick={() => {
-                      setSelectedStudent({
-                        studentId: s.studentProfile?.studentId || s.id,
-                        fullName: s.fullName || s.user?.fullName,
-                        email: s.email || s.user?.email
-                      });
-                      setStudentSearch('');
-                      setStudentOptions([]);
-                    }}
-                  >
-                    {(s.studentProfile?.studentId || s.id) + ' - ' + (s.fullName || s.user?.fullName || '') + ' (' + (s.email || s.user?.email || '') + ')'}
-                  </li>
-                ))}
-            </ul>
-          )}
-          {searched && studentOptions.length === 0 && !studentSearchLoading && (
-            <div className="text-red-600 mt-2">No students found.</div>
-          )}
+          <Button onClick={handleAdminSimulate} loading={isSimulating}>
+            Simulate
+          </Button>
+          </div>
         </div>
       )}
       {/* Breadcrumb */}
@@ -246,7 +199,7 @@ const GpaPage = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {gpaData?.studentName ? `${gpaData.studentName}'s GPA` : 'My GPA'}
+            {gpaData?.studentName ? `${gpaData.studentName}'s GPA` : (isAdmin() ? 'Student GPA' : 'My GPA')}
           </h1>
           {gpaData?.studentEmail && (
             <p className="text-sm text-gray-500 dark:text-gray-400">{gpaData.studentEmail}</p>
