@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
@@ -38,6 +38,9 @@ const UsersPage = () => {
   const [totalItems, setTotalItems] = useState(0);
   const pageSize = 10;
 
+  const [sortField, setSortField] = useState(null);
+  const [sortDirection, setSortDirection] = useState('asc');
+
   const loadUsers = useCallback(async () => {
     if (!isAdmin()) {
       navigate('/dashboard');
@@ -66,6 +69,52 @@ const UsersPage = () => {
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
+
+  const handleSort = (field) => {
+    if (!field) return;
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const sortedUsers = useMemo(() => {
+    const list = Array.isArray(users) ? [...users] : [];
+    if (!sortField) return list;
+
+    const getValue = (user) => {
+      if (!user) return null;
+      switch (sortField) {
+        case 'name':
+          return (user.fullName || getFullName(user.firstName, user.lastName) || '').toString();
+        case 'createdAt':
+          return user.createdAt ? new Date(user.createdAt).getTime() : null;
+        default:
+          return user[sortField] ?? null;
+      }
+    };
+
+    list.sort((a, b) => {
+      const aVal = getValue(a);
+      const bVal = getValue(b);
+
+      if (aVal === bVal) return 0;
+      if (aVal == null) return 1;
+      if (bVal == null) return -1;
+
+      let comparison = 0;
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        comparison = aVal.localeCompare(bVal);
+      } else {
+        comparison = aVal < bVal ? -1 : 1;
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    return list;
+  }, [users, sortField, sortDirection]);
 
   const handleDelete = async () => {
     if (!deleteModal.user) return;
@@ -196,9 +245,12 @@ const UsersPage = () => {
 
         <Table
           columns={columns}
-          data={users}
+          data={sortedUsers}
           isLoading={isLoading}
           emptyMessage="No users found."
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={handleSort}
         />
 
         {totalPages > 1 && (
