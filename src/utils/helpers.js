@@ -274,7 +274,9 @@ export const normalizeCourse = (course) => {
     description: course.description ?? course.Description,
     categoryName:
       course.categoryName ??
+      course.courseCategoryName ??
       course.CategoryName ??
+      course.CourseCategoryName ??
       course.category?.name ??
       course.Category?.Name,
     courseCategoryId:
