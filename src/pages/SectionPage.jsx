@@ -11,7 +11,9 @@ import { roomApi } from "../api/roomApi";
 import { instructorApi } from "../api/instructorApi";
 import { timeSlotApi } from "../api/timeSlotApi";
 import { scheduleSlotApi } from "../api/scheduleSlotApi";
+import { scheduleApi } from "../api/scheduleApi";
 import toast from "react-hot-toast";
+import { useFetch } from "../hooks";
 
 const defaultForm = {
   semester: "",
@@ -39,6 +41,22 @@ const SectionPage = () => {
   const [timeSlots, setTimeSlots] = useState([]);
   const [dropdownLoading, setDropdownLoading] = useState(false);
   const [bookedTimeSlotIds, setBookedTimeSlotIds] = useState([]);
+
+  const {
+    data: sectionScheduleSlots,
+    isLoading: isLoadingSectionSlots,
+    error: sectionSlotsError,
+    refetch: refetchSectionSlots,
+    reset: resetSectionSlots,
+  } = useFetch(
+    () => (editId ? scheduleApi.getBySection(editId) : Promise.resolve([])),
+    [editId, modalOpen],
+    {
+      immediate: Boolean(editId && modalOpen),
+      initialData: [],
+      showErrorToast: false,
+    }
+  );
 
   useEffect(() => {
     fetchSections();
@@ -140,6 +158,7 @@ const SectionPage = () => {
       setEditId(null);
       setTimeSlots([]);
       setBookedTimeSlotIds([]);
+      resetSectionSlots();
     }
     setModalOpen(true);
   };
@@ -150,6 +169,7 @@ const SectionPage = () => {
     setEditId(null);
     setTimeSlots([]);
     setBookedTimeSlotIds([]);
+    resetSectionSlots();
   };
 
   const handleChange = (e) => {
@@ -391,6 +411,38 @@ const SectionPage = () => {
             </Button>
           </div>
         </form>
+
+        {editId && (
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Schedule Slots
+              </h3>
+              <Button size="sm" variant="outline" onClick={() => refetchSectionSlots()}>
+                Refresh
+              </Button>
+            </div>
+
+            {sectionSlotsError ? (
+              <div className="text-sm text-red-600 dark:text-red-400 mb-2">
+                {sectionSlotsError}
+              </div>
+            ) : null}
+
+            <Table
+              isLoading={isLoadingSectionSlots}
+              columns={[
+                { key: "scheduleSlotId", header: "ID" },
+                { key: "slotType", header: "Type" },
+                { key: "timeSlot", header: "Time" },
+                { key: "room", header: "Room" },
+                { key: "instructorName", header: "Instructor" },
+              ]}
+              data={Array.isArray(sectionScheduleSlots) ? sectionScheduleSlots : []}
+              emptyMessage="No schedule slots for this section."
+            />
+          </div>
+        )}
       </Modal>
     </Card>
   );
