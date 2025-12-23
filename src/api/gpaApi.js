@@ -20,9 +20,16 @@ const gpaApi = {
 
   // Simulate GPA
   simulate: (simulatedCourses, studentId = null) => {
+    const normalizedStudentId =
+      studentId === null || studentId === undefined || studentId === ""
+        ? null
+        : Number(studentId);
+
     return axiosInstance.post("/gpa/simulate", {
       simulatedCourses,
-      studentId,
+      studentId: Number.isFinite(normalizedStudentId)
+        ? normalizedStudentId
+        : null,
     });
   },
 };
