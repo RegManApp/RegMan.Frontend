@@ -47,6 +47,12 @@ const AnalyticsPage = () => {
   const [instructorStats, setInstructorStats] = useState([]);
   const [sectionCapacity, setSectionCapacity] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [chartsReady, setChartsReady] = useState(false);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setChartsReady(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     if (!isAdmin()) {
@@ -174,7 +180,7 @@ const AnalyticsPage = () => {
       )}
 
       {/* Enrollment Trends Chart */}
-      {enrollmentTrends.length > 0 && (
+      {chartsReady && enrollmentTrends.length > 0 && (
         <Card title="Enrollment Trends (Last 30 Days)">
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -236,7 +242,7 @@ const AnalyticsPage = () => {
       {/* GPA & Credits Distribution Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GPA Distribution Pie Chart */}
-        {gpaDistribution?.chartData && (
+        {chartsReady && gpaDistribution?.chartData && (
           <Card title={`GPA Distribution (Avg: ${gpaDistribution.summary?.averageGPA || 0})`}>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -271,7 +277,7 @@ const AnalyticsPage = () => {
         )}
 
         {/* Credits Distribution Bar Chart */}
-        {creditsDistribution?.chartData && (
+        {chartsReady && creditsDistribution?.chartData && (
           <Card title={`Student Classification (Avg Credits: ${creditsDistribution.summary?.averageCredits || 0})`}>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -435,7 +441,7 @@ const AnalyticsPage = () => {
       )}
 
       {/* Top Instructors with Bar Chart */}
-      {instructorStats.length > 0 && (
+      {chartsReady && instructorStats.length > 0 && (
         <Card title="Top Instructors by Student Count">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="h-80">
