@@ -293,7 +293,7 @@ const Sidebar = ({ isOpen = false, onClose }) => {
                   </span>
                 </div>
 
-                <div className="flex-1 h-0 overflow-y-auto overflow-x-hidden">
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain">
                   <SidebarContent
                     navigation={navigation}
                     sectionOpen={sectionOpen}
@@ -309,14 +309,14 @@ const Sidebar = ({ isOpen = false, onClose }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-20 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 pt-16">
+        <div className="flex flex-col flex-grow min-h-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 pt-16">
           <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
             <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
               RegMan
             </span>
           </div>
 
-          <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
+          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden overscroll-contain">
             <SidebarContent
               navigation={navigation}
               sectionOpen={sectionOpen}
