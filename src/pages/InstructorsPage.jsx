@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { instructorApi } from '../api';
 import { InstructorList, InstructorForm } from '../components/instructors';
@@ -8,6 +9,7 @@ import { PageHeader } from '../components/common';
 import { debounce } from '../utils/helpers';
 
 const InstructorsPage = () => {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
   
@@ -55,7 +57,7 @@ const InstructorsPage = () => {
       setInstructors(normalizedInstructors);
     } catch (error) {
       console.error('Failed to fetch instructors:', error);
-      toast.error('Failed to load instructors');
+      toast.error(t('instructors.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -99,16 +101,16 @@ const InstructorsPage = () => {
       const instructorId = formModal.instructor?.instructorId || formModal.instructor?.id;
       if (instructorId) {
         await instructorApi.update(instructorId, data);
-        toast.success('Instructor updated successfully');
+        toast.success(t('instructors.toasts.updated'));
       } else {
         await instructorApi.create(data);
-        toast.success('Instructor created successfully');
+        toast.success(t('instructors.toasts.created'));
       }
       handleCloseForm();
       fetchInstructors();
     } catch (error) {
       console.error('Failed to save instructor:', error);
-      toast.error(error.message || 'Failed to save instructor');
+      toast.error(t('instructors.errors.saveFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -117,11 +119,11 @@ const InstructorsPage = () => {
   const handleDelete = async (instructorId) => {
     try {
       await instructorApi.delete(instructorId);
-      toast.success('Instructor deleted successfully');
+      toast.success(t('instructors.toasts.deleted'));
       fetchInstructors();
     } catch (error) {
       console.error('Failed to delete instructor:', error);
-      toast.error(error.message || 'Failed to delete instructor');
+      toast.error(t('instructors.errors.deleteFailed'));
     }
   };
 
