@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { courseApi, smartScheduleApi } from '../api';
 import { PageHeader, Card, Button, Loading, EmptyState, SearchableSelect, Input, Select, Badge } from '../components/common';
@@ -16,6 +17,7 @@ const dayOptions = [
 ];
 
 export default function SmartScheduleBuilderPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
 
   const [courses, setCourses] = useState([]);
@@ -44,7 +46,7 @@ export default function SmartScheduleBuilderPage() {
         if (mounted) setCourses(items);
       } catch (e) {
         console.error(e);
-        toast.error('Failed to load courses');
+        toast.error(t('smartScheduleBuilder.errors.coursesFetchFailed'));
       } finally {
         if (mounted) setLoadingCourses(false);
       }
@@ -71,12 +73,12 @@ export default function SmartScheduleBuilderPage() {
     if (!id) return;
 
     if (selectedCourses.some((c) => (c.courseId || c.id) === id)) {
-      toast.error('Course already added');
+      toast.error(t('smartScheduleBuilder.errors.courseAlreadyAdded'));
       return;
     }
 
     if (selectedCourses.length >= 8) {
-      toast.error('Max 8 courses for Smart Builder');
+      toast.error(t('smartScheduleBuilder.errors.maxCourses', { max: 8 }));
       return;
     }
 
@@ -90,7 +92,7 @@ export default function SmartScheduleBuilderPage() {
 
   const build = async () => {
     if (selectedCourses.length === 0) {
-      toast.error('Add at least 1 course');
+      toast.error(t('smartScheduleBuilder.errors.minCourses', { min: 1 }));
       return;
     }
 
@@ -114,7 +116,7 @@ export default function SmartScheduleBuilderPage() {
       setResult(data);
     } catch (e) {
       console.error(e);
-      toast.error(e.message || 'Failed to build schedule');
+      toast.error(t('smartScheduleBuilder.errors.buildFailed'));
     } finally {
       setIsBuilding(false);
     }
