@@ -18,6 +18,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../utils/helpers';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
 
 const iconMap = {
   HomeIcon,
@@ -36,139 +38,141 @@ const iconMap = {
 
 const adminNavigation = [
   {
-    section: 'Core',
+    sectionKey: 'nav.core',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
-      { name: 'Students', href: '/students', icon: 'UsersIcon' },
-      { name: 'Instructors', href: '/instructors', icon: 'AcademicCapIcon' },
-      { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
-      { name: 'Sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Schedules', href: '/schedules', icon: 'CalendarDaysIcon' },
-      { name: 'Rooms', href: '/rooms', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
+      { labelKey: 'nav.dashboard', href: '/dashboard', icon: 'HomeIcon' },
+      { labelKey: 'nav.students', href: '/students', icon: 'UsersIcon' },
+      { labelKey: 'nav.instructors', href: '/instructors', icon: 'AcademicCapIcon' },
+      { labelKey: 'nav.courses', href: '/courses', icon: 'BookOpenIcon' },
+      { labelKey: 'nav.sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.schedules', href: '/schedules', icon: 'CalendarDaysIcon' },
+      { labelKey: 'nav.rooms', href: '/rooms', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
     ],
   },
   {
-    section: 'Support',
+    sectionKey: 'nav.support',
     items: [
-      { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
-      { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
-      { name: 'Withdraw Requests', href: '/admin/withdraw-requests', icon: 'ClipboardDocumentCheckIcon' },
+      { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
+      { labelKey: 'nav.withdrawRequests', href: '/admin/withdraw-requests', icon: 'ClipboardDocumentCheckIcon' },
     ],
   },
   {
-    section: 'Admin',
+    sectionKey: 'nav.admin',
     items: [
-      { name: 'Users', href: '/users', icon: 'UserGroupIcon' },
-      { name: 'Analytics', href: '/analytics', icon: 'ChartBarIcon' },
-      { name: 'GPA & Grades', href: '/gpa', icon: 'AcademicCapIcon' },
-      { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
-      { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Time Slots', href: '/time-slots', icon: 'ClockIcon' },
-      { name: 'Admin Settings', href: '/settings', icon: 'UserIcon' },
+      { labelKey: 'nav.users', href: '/users', icon: 'UserGroupIcon' },
+      { labelKey: 'nav.analytics', href: '/analytics', icon: 'ChartBarIcon' },
+      { labelKey: 'nav.gpaAndGrades', href: '/gpa', icon: 'AcademicCapIcon' },
+      { labelKey: 'nav.academicPlan', href: '/academic-plan', icon: 'AcademicCapIcon' },
+      { labelKey: 'nav.transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.timeSlots', href: '/time-slots', icon: 'ClockIcon' },
+      { labelKey: 'nav.adminSettings', href: '/settings', icon: 'UserIcon' },
     ],
   },
 ];
 
 const instructorNavigation = [
   {
-    section: 'Core',
+    sectionKey: 'nav.core',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
-      { name: 'My Courses', href: '/courses', icon: 'BookOpenIcon' },
-      { name: 'Sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Office Hours', href: '/office-hours', icon: 'ClockIcon' },
-      { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
+      { labelKey: 'nav.dashboard', href: '/dashboard', icon: 'HomeIcon' },
+      { labelKey: 'nav.myCourses', href: '/courses', icon: 'BookOpenIcon' },
+      { labelKey: 'nav.sections', href: '/sections', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.officeHours', href: '/office-hours', icon: 'ClockIcon' },
+      { labelKey: 'nav.calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
     ],
   },
   {
-    section: 'Support',
+    sectionKey: 'nav.support',
     items: [
-      { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
-      { name: 'Advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
-      { name: 'Profile', href: '/profile', icon: 'UserIcon' },
+      { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
+      { labelKey: 'nav.profile', href: '/profile', icon: 'UserIcon' },
     ],
   },
 ];
 
 const studentNavigation = [
   {
-    section: 'Core',
+    sectionKey: 'nav.core',
     items: [
-      { name: 'Dashboard', href: '/dashboard', icon: 'HomeIcon' },
-      { name: 'Courses', href: '/courses', icon: 'BookOpenIcon' },
-      { name: 'Smart Schedule', href: '/smart-schedule', icon: 'CalendarDaysIcon' },
-      { name: 'Cart', href: '/cart', icon: 'ClipboardDocumentListIcon' },
-      { name: 'My Enrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
-      { name: 'Book Office Hours', href: '/book-office-hours', icon: 'ClockIcon' },
+      { labelKey: 'nav.dashboard', href: '/dashboard', icon: 'HomeIcon' },
+      { labelKey: 'nav.courses', href: '/courses', icon: 'BookOpenIcon' },
+      { labelKey: 'nav.smartSchedule', href: '/smart-schedule', icon: 'CalendarDaysIcon' },
+      { labelKey: 'nav.cart', href: '/cart', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.myEnrollments', href: '/enrollments', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.calendar', href: '/calendar', icon: 'CalendarDaysIcon' },
+      { labelKey: 'nav.bookOfficeHours', href: '/book-office-hours', icon: 'ClockIcon' },
     ],
   },
   {
-    section: 'Support',
+    sectionKey: 'nav.support',
     items: [
-      { name: 'Chat', href: '/chat', icon: 'ChatIcon' },
-      { name: 'GPA & Grades', href: '/gpa', icon: 'AcademicCapIcon' },
-      { name: 'Academic Plan', href: '/academic-plan', icon: 'AcademicCapIcon' },
-      { name: 'Transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
-      { name: 'Withdraw Request', href: '/withdraw-request', icon: 'ClipboardDocumentCheckIcon' },
-      { name: 'Withdraw History', href: '/withdraw-history', icon: 'ClipboardDocumentCheckIcon' },
-      { name: 'Profile', href: '/profile', icon: 'UserIcon' },
+      { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.gpaAndGrades', href: '/gpa', icon: 'AcademicCapIcon' },
+      { labelKey: 'nav.academicPlan', href: '/academic-plan', icon: 'AcademicCapIcon' },
+      { labelKey: 'nav.transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.withdrawRequest', href: '/withdraw-request', icon: 'ClipboardDocumentCheckIcon' },
+      { labelKey: 'nav.withdrawHistory', href: '/withdraw-history', icon: 'ClipboardDocumentCheckIcon' },
+      { labelKey: 'nav.profile', href: '/profile', icon: 'UserIcon' },
     ],
   },
 ];
 
 const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
   const location = useLocation();
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
 
-  const sectionIdByName = useMemo(() => ({
-    Core: 'sidebar-section-core',
-    Support: 'sidebar-section-support',
-    Admin: 'sidebar-section-admin',
+  const sectionIdByKey = useMemo(() => ({
+    'nav.core': 'sidebar-section-core',
+    'nav.support': 'sidebar-section-support',
+    'nav.admin': 'sidebar-section-admin',
   }), []);
 
-  const isSectionOpen = (sectionName) => {
-    if (sectionName === 'Core') return sectionOpen.core;
-    if (sectionName === 'Support') return sectionOpen.support;
-    if (sectionName === 'Admin') return sectionOpen.admin;
+  const isSectionOpen = (sectionKey) => {
+    if (sectionKey === 'nav.core') return sectionOpen.core;
+    if (sectionKey === 'nav.support') return sectionOpen.support;
+    if (sectionKey === 'nav.admin') return sectionOpen.admin;
     return true;
   };
 
-  const toggleSection = (sectionName) => {
-    if (sectionName === 'Core') return onToggleSection('core');
-    if (sectionName === 'Support') return onToggleSection('support');
-    if (sectionName === 'Admin') return onToggleSection('admin');
+  const toggleSection = (sectionKey) => {
+    if (sectionKey === 'nav.core') return onToggleSection('core');
+    if (sectionKey === 'nav.support') return onToggleSection('support');
+    if (sectionKey === 'nav.admin') return onToggleSection('admin');
   };
 
   return (
     <nav className="flex-1 px-2 py-4 space-y-4 overflow-x-hidden">
       {navigation.map((group) => (
-        <div key={group.section}>
+        <div key={group.sectionKey}>
           <button
             type="button"
-            onClick={() => toggleSection(group.section)}
-            aria-expanded={isSectionOpen(group.section)}
-            aria-controls={sectionIdByName[group.section]}
+            onClick={() => toggleSection(group.sectionKey)}
+            aria-expanded={isSectionOpen(group.sectionKey)}
+            aria-controls={sectionIdByKey[group.sectionKey]}
             className={cn(
               'w-full flex items-center justify-between px-3 py-2 rounded-lg',
               'text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400',
               'focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500'
             )}
           >
-            <span>{group.section}</span>
-            {isSectionOpen(group.section) ? (
+            <span>{t(group.sectionKey)}</span>
+            {isSectionOpen(group.sectionKey) ? (
               <ChevronDownIcon className="h-4 w-4 flex-shrink-0" />
             ) : (
-              <ChevronRightIcon className="h-4 w-4 flex-shrink-0" />
+              <ChevronRightIcon className={cn('h-4 w-4 flex-shrink-0', isRtl && 'rtl-flip')} />
             )}
           </button>
 
           <div
-            id={sectionIdByName[group.section]}
+            id={sectionIdByKey[group.sectionKey]}
             className={cn(
               'grid transition-[grid-template-rows] duration-200 ease-in-out',
-              isSectionOpen(group.section) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+              isSectionOpen(group.sectionKey) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
             )}
           >
             <div className="overflow-hidden">
@@ -181,7 +185,7 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
 
                   return (
                     <NavLink
-                      key={item.name}
+                      key={item.labelKey}
                       to={item.href}
                       className={cn(
                         'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors overflow-x-hidden',
@@ -193,14 +197,15 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
                       {Icon && (
                         <Icon
                           className={cn(
-                            'mr-3 h-5 w-5 flex-shrink-0',
+                            'h-5 w-5 flex-shrink-0',
+                            isRtl ? 'ml-3' : 'mr-3',
                             isActive
                               ? 'text-primary-600 dark:text-primary-400'
                               : 'text-gray-400 group-hover:text-gray-500 dark:group-hover:text-gray-300'
                           )}
                         />
                       )}
-                      <span className="min-w-0 truncate">{item.name}</span>
+                      <span className="min-w-0 truncate">{t(item.labelKey)}</span>
                     </NavLink>
                   );
                 })}
@@ -215,6 +220,8 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
 
 const Sidebar = ({ isOpen = false, onClose }) => {
   const { isAdmin, isInstructor } = useAuth();
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
 
   // Collapse state is local to Sidebar (no persistence)
   const [sectionOpen, setSectionOpen] = useState({
@@ -259,11 +266,11 @@ const Sidebar = ({ isOpen = false, onClose }) => {
             <Transition.Child
               as={Fragment}
               enter="transition ease-in-out duration-300 transform"
-              enterFrom="-translate-x-full"
+              enterFrom={isRtl ? 'translate-x-full' : '-translate-x-full'}
               enterTo="translate-x-0"
               leave="transition ease-in-out duration-300 transform"
               leaveFrom="translate-x-0"
-              leaveTo="-translate-x-full"
+              leaveTo={isRtl ? 'translate-x-full' : '-translate-x-full'}
             >
               <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white dark:bg-gray-800">
                 <Transition.Child
@@ -275,21 +282,34 @@ const Sidebar = ({ isOpen = false, onClose }) => {
                   leaveFrom="opacity-100"
                   leaveTo="opacity-0"
                 >
-                  <div className="absolute top-0 right-0 -mr-12 pt-2">
+                  <div className={cn('absolute top-0 pt-2', isRtl ? 'left-0 -ml-12' : 'right-0 -mr-12')}>
                     <button
                       type="button"
-                      className="ml-1 flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                      className={cn(
+                        'flex h-10 w-10 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white',
+                        isRtl ? 'mr-1' : 'ml-1'
+                      )}
                       onClick={onClose}
                     >
-                      <span className="sr-only">Close sidebar</span>
+                      <span className="sr-only">{t('a11y.closeSidebar')}</span>
                       <XMarkIcon className="h-6 w-6 text-white" />
                     </button>
                   </div>
                 </Transition.Child>
 
-                <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
+                <div className="h-16 flex items-center justify-center gap-2 border-b border-gray-200 dark:border-gray-700">
+                  <img
+                    src="/logo-light.png"
+                    alt={t('app.name')}
+                    className="h-8 w-8 dark:hidden"
+                  />
+                  <img
+                    src="/logo-dark.png"
+                    alt={t('app.name')}
+                    className="h-8 w-8 hidden dark:block"
+                  />
                   <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
-                    RegMan
+                    {t('app.name')}
                   </span>
                 </div>
 
@@ -308,11 +328,24 @@ const Sidebar = ({ isOpen = false, onClose }) => {
       </Transition.Root>
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-20 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow min-h-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 pt-16">
-          <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700">
+      <div className={cn('hidden lg:fixed lg:inset-y-0 lg:z-20 lg:flex lg:w-64 lg:flex-col', isRtl ? 'lg:right-0' : 'lg:left-0')}>
+        <div className={cn(
+          'flex flex-col flex-grow min-h-0 bg-white dark:bg-gray-800 pt-16',
+          isRtl ? 'border-l border-gray-200 dark:border-gray-700' : 'border-r border-gray-200 dark:border-gray-700'
+        )}>
+          <div className="h-16 flex items-center justify-center gap-2 border-b border-gray-200 dark:border-gray-700">
+            <img
+              src="/logo-light.png"
+              alt={t('app.name')}
+              className="h-8 w-8 dark:hidden"
+            />
+            <img
+              src="/logo-dark.png"
+              alt={t('app.name')}
+              className="h-8 w-8 hidden dark:block"
+            />
             <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
-              RegMan
+              {t('app.name')}
             </span>
           </div>
 

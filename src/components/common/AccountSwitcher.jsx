@@ -4,8 +4,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { FiChevronDown, FiUserPlus, FiLogOut, FiTrash2, FiUsers, FiCheck, FiX, FiUser, FiSettings } from 'react-icons/fi';
 import { devToolsApi } from '../../api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const AccountSwitcher = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [showConfirmResetDemo, setShowConfirmResetDemo] = useState(false);
@@ -91,7 +93,7 @@ const AccountSwitcher = () => {
       // Clear saved accounts since tokens become irrelevant
       clearAllSavedAccounts();
       setSessionFromLoginResponse(response.data, true);
-      toast.success(`Switched to ${email}`);
+      toast.success(t('accountSwitcher.toasts.switchedToEmail', { email }));
       setIsOpen(false);
       setShowConfirmResetDemo(false);
       navigate('/dashboard');
@@ -106,7 +108,7 @@ const AccountSwitcher = () => {
     setDemoBusy(true);
     try {
       await devToolsApi.seed();
-      toast.success('Demo data seeded');
+      toast.success(t('accountSwitcher.toasts.demoSeeded'));
     } catch (e) {
       // axios interceptor already toasts
     } finally {
@@ -119,11 +121,11 @@ const AccountSwitcher = () => {
     try {
       await devToolsApi.reset();
       clearAllSavedAccounts();
-      toast.success('Demo database reset');
+      toast.success(t('accountSwitcher.toasts.demoReset'));
 
       const loginResponse = await devToolsApi.loginAs('admin@demo.local');
       setSessionFromLoginResponse(loginResponse.data, true);
-      toast.success('Logged in as admin@demo.local');
+      toast.success(t('accountSwitcher.toasts.loggedInAsAdminDemo'));
       setIsOpen(false);
     } catch (e) {
       // axios interceptor already toasts
@@ -177,7 +179,7 @@ const AccountSwitcher = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-900 dark:text-white truncate">
-                  {user.fullName || 'User'}
+                  {user.fullName || t('common.user')}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
                   {user.email}
@@ -194,7 +196,7 @@ const AccountSwitcher = () => {
                 className="mt-2 w-full px-3 py-1.5 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
                 <FiCheck className="w-4 h-4" />
-                Save this account
+                {t('accountSwitcher.saveThisAccount')}
               </button>
             )}
           </div>
@@ -203,7 +205,7 @@ const AccountSwitcher = () => {
           {otherAccounts.length > 0 && (
             <div className="py-2">
               <div className="px-4 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                Switch Account
+                {t('accountSwitcher.switchAccount')}
               </div>
               {otherAccounts.map((account) => (
                 <button
@@ -227,7 +229,7 @@ const AccountSwitcher = () => {
                   <button
                     onClick={(e) => handleRemoveAccount(e, account.id)}
                     className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                    title="Remove account"
+                    title={t('accountSwitcher.removeAccount')}
                   >
                     <FiX className="w-4 h-4" />
                   </button>
@@ -245,7 +247,7 @@ const AccountSwitcher = () => {
               className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
             >
               <FiUser className="w-4 h-4" />
-              Your Profile
+              {t('accountSwitcher.yourProfile')}
             </Link>
             <Link
               to="/settings"
@@ -253,7 +255,7 @@ const AccountSwitcher = () => {
               className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
             >
               <FiSettings className="w-4 h-4" />
-              Settings
+              {t('accountSwitcher.settings')}
             </Link>
 
             <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
@@ -263,7 +265,7 @@ const AccountSwitcher = () => {
               className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
             >
               <FiUserPlus className="w-4 h-4" />
-              Add another account
+              {t('accountSwitcher.addAnotherAccount')}
               <span className="ml-auto text-xs text-gray-400">
                 {savedAccounts.length}/10
               </span>
@@ -274,20 +276,20 @@ const AccountSwitcher = () => {
                 {showConfirmClear ? (
                   <div className="px-4 py-2 bg-red-50 dark:bg-red-900/20">
                     <p className="text-sm text-red-600 dark:text-red-400 mb-2">
-                      Clear all saved accounts?
+                      {t('accountSwitcher.confirmClearTitle')}
                     </p>
                     <div className="flex gap-2">
                       <button
                         onClick={handleClearAll}
                         className="flex-1 px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                       >
-                        Yes, clear all
+                        {t('accountSwitcher.confirmClearYes')}
                       </button>
                       <button
                         onClick={() => setShowConfirmClear(false)}
                         className="flex-1 px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                     </div>
                   </div>
@@ -297,7 +299,7 @@ const AccountSwitcher = () => {
                     className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 transition-colors"
                   >
                     <FiTrash2 className="w-4 h-4" />
-                    Clear all saved accounts
+                    {t('accountSwitcher.clearAllSavedAccounts')}
                   </button>
                 )}
               </>
@@ -310,7 +312,7 @@ const AccountSwitcher = () => {
                 <div className="px-4 py-2">
                   <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
                     <FiUsers className="w-4 h-4" />
-                    Demo Tools
+                    {t('accountSwitcher.demoTools')}
                   </div>
 
                   <div className="mt-2 grid grid-cols-3 gap-2">
@@ -342,13 +344,13 @@ const AccountSwitcher = () => {
                     onClick={handleDemoSeed}
                     className="mt-2 w-full px-3 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors disabled:opacity-50"
                   >
-                    Seed demo data
+                    {t('accountSwitcher.seedDemoData')}
                   </button>
 
                   {showConfirmResetDemo ? (
                     <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                       <p className="text-sm text-red-600 dark:text-red-400 mb-2">
-                        Reset demo database?
+                        {t('accountSwitcher.confirmResetDemoTitle')}
                       </p>
                       <div className="flex gap-2">
                         <button
@@ -356,14 +358,14 @@ const AccountSwitcher = () => {
                           onClick={handleDemoReset}
                           className="flex-1 px-3 py-1.5 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
                         >
-                          Yes, reset
+                          {t('accountSwitcher.confirmResetDemoYes')}
                         </button>
                         <button
                           disabled={demoBusy}
                           onClick={() => setShowConfirmResetDemo(false)}
                           className="flex-1 px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
                         >
-                          Cancel
+                          {t('common.cancel')}
                         </button>
                       </div>
                     </div>
@@ -373,7 +375,7 @@ const AccountSwitcher = () => {
                       onClick={() => setShowConfirmResetDemo(true)}
                       className="mt-2 w-full px-3 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      Reset demo database
+                      {t('accountSwitcher.resetDemoDatabase')}
                     </button>
                   )}
                 </div>
@@ -389,7 +391,7 @@ const AccountSwitcher = () => {
               className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
             >
               <FiLogOut className="w-4 h-4" />
-              Sign out
+              {t('accountSwitcher.signOut')}
             </button>
           </div>
         </div>

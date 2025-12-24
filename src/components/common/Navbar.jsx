@@ -16,10 +16,15 @@ import { cn, getFullName } from '../../utils/helpers';
 import Avatar from './Avatar';
 import AccountSwitcher from './AccountSwitcher';
 import NotificationBell from '../NotificationBell';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = ({ onMenuClick, showMenuButton = true }) => {
   const { user, logout } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
 
   return (
     <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 fixed top-0 left-0 right-0 z-30">
@@ -30,29 +35,33 @@ const Navbar = ({ onMenuClick, showMenuButton = true }) => {
             {showMenuButton && (
               <button
                 type="button"
-                className="lg:hidden -ml-2 p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700"
+                className={cn(
+                  'lg:hidden p-2 rounded-md text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700',
+                  isRtl ? '-mr-2' : '-ml-2'
+                )}
                 onClick={onMenuClick}
               >
-                <span className="sr-only">Open sidebar</span>
+                <span className="sr-only">{t('a11y.openSidebar')}</span>
                 <Bars3Icon className="h-6 w-6" />
               </button>
             )}
             <Link to="/" className="flex items-center">
               <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
-                RegMan
+                {t('app.name')}
               </span>
             </Link>
           </div>
 
           {/* Right side */}
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             {/* Theme toggle */}
             <button
               type="button"
               onClick={toggleTheme}
               className="p-2 rounded-lg text-gray-500 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:bg-gray-700"
             >
-              <span className="sr-only">Toggle theme</span>
+              <span className="sr-only">{t('a11y.toggleTheme')}</span>
               {isDarkMode ? (
                 <SunIcon className="h-5 w-5" />
               ) : (
