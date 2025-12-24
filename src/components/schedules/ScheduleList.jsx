@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Table, Button, Badge, SearchInput, Select, Card, ConfirmModal, EmptyState } from '../common';
 import { getDayOfWeekLabel } from '../../utils/constants';
@@ -15,6 +16,7 @@ const ScheduleList = ({
   onDayFilterChange,
   isAdmin = false,
 }) => {
+    const { t } = useTranslation();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, schedule: null });
 
   const handleDelete = () => {
@@ -186,9 +188,14 @@ const ScheduleList = ({
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, schedule: null })}
         onConfirm={handleDelete}
-        title="Delete Schedule"
-        message={`Are you sure you want to delete this schedule for ${deleteModal.schedule?.courseName || deleteModal.schedule?.SectionName || ''}? This action cannot be undone.`}
-        confirmText="Delete"
+        title={t('schedules.confirmDeleteTitle')}
+        message={t('schedules.confirmDeleteMessage', {
+          name:
+            deleteModal.schedule?.courseName ||
+            deleteModal.schedule?.SectionName ||
+            t('schedules.confirmDeleteNameFallback'),
+        })}
+        confirmText={t('common.delete')}
         variant="danger"
       />
     </>
