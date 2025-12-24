@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { userApi } from '../api/userApi';
 import {
@@ -21,6 +22,7 @@ import { getFullName, getRoleColor, formatDate } from '../utils/helpers';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const UsersPage = () => {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
 
@@ -60,7 +62,7 @@ const UsersPage = () => {
       setTotalItems(data.totalItems || data.length);
     } catch (error) {
       console.error('Failed to load users:', error);
-      toast.error('Failed to load users');
+      toast.error(t('users.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +123,7 @@ const UsersPage = () => {
 
     try {
       await userApi.delete(deleteModal.user.id);
-      toast.success('User deleted successfully');
+      toast.success(t('users.toasts.deleted'));
       setDeleteModal({ isOpen: false, user: null });
       loadUsers();
     } catch (error) {
@@ -146,13 +148,13 @@ const UsersPage = () => {
         await userApi.updateRole(formUser.id, formUser.role);
       }
       
-      toast.success('User updated successfully');
+      toast.success(t('users.toasts.updated'));
       setIsFormOpen(false);
       setFormUser(null);
       loadUsers();
     } catch (error) {
       console.error('Failed to update user:', error);
-      toast.error('Failed to update user');
+      toast.error(t('users.errors.updateFailed'));
     } finally {
       setIsFormLoading(false);
     }
@@ -333,9 +335,11 @@ const UsersPage = () => {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, user: null })}
         onConfirm={handleDelete}
-        title="Delete User"
-        message={`Are you sure you want to delete ${deleteModal.user?.fullName || 'this user'}? This action cannot be undone.`}
-        confirmText="Delete"
+        title={t('users.confirmDeleteTitle')}
+        message={t('users.confirmDeleteMessage', {
+          name: deleteModal.user?.fullName || t('users.confirmDeleteNameFallback'),
+        })}
+        confirmText={t('common.delete')}
         variant="danger"
       />
     </div>
