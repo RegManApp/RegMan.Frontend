@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { adminApi } from "../api/adminApi";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { Card, Button, Table } from "../components/common";
 
 const AdminWithdrawRequestsPage = () => {
+  const { t } = useTranslation();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -13,7 +15,7 @@ const AdminWithdrawRequestsPage = () => {
       const res = await adminApi.getWithdrawRequests();
       setRequests(res.data || []);
     } catch (error) {
-      toast.error("Failed to load withdraw requests");
+      toast.error(t('adminWithdrawRequests.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -26,20 +28,20 @@ const AdminWithdrawRequestsPage = () => {
   const handleApprove = async (requestId) => {
     try {
       await adminApi.approveWithdrawRequest(requestId);
-      toast.success("Request approved");
+      toast.success(t('adminWithdrawRequests.toasts.approved'));
       loadRequests();
     } catch (error) {
-      toast.error("Failed to approve request");
+      toast.error(t('adminWithdrawRequests.errors.approveFailed'));
     }
   };
 
   const handleDeny = async (requestId) => {
     try {
       await adminApi.denyWithdrawRequest(requestId);
-      toast.success("Request denied");
+      toast.success(t('adminWithdrawRequests.toasts.denied'));
       loadRequests();
     } catch (error) {
-      toast.error("Failed to deny request");
+      toast.error(t('adminWithdrawRequests.errors.denyFailed'));
     }
   };
 
