@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { roomApi } from '../api/roomApi';
 import { Button, Modal, Input, Table } from '../components/common';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const defaultForm = {
   building: '',
@@ -12,6 +13,7 @@ const defaultForm = {
 };
 
 const RoomPage = () => {
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -25,7 +27,7 @@ const RoomPage = () => {
       const res = await roomApi.getAll();
       setRooms(Array.isArray(res.data) ? res.data : res.data.items || []);
     } catch {
-      toast.error('Failed to fetch rooms');
+      toast.error(t('rooms.errors.fetchFailed'));
     }
     setLoading(false);
   };
@@ -60,41 +62,41 @@ const RoomPage = () => {
     try {
       if (editId) {
         await roomApi.update({ ...form, roomId: editId });
-        toast.success('Room updated');
+        toast.success(t('rooms.toasts.updated'));
       } else {
         await roomApi.create(form);
-        toast.success('Room created');
+        toast.success(t('rooms.toasts.created'));
       }
       fetchRooms();
       handleCloseModal();
     } catch {
-      toast.error('Failed to save room');
+      toast.error(t('rooms.errors.saveFailed'));
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Delete this room?')) return;
+    if (!window.confirm(t('rooms.confirmDelete'))) return;
     try {
       await roomApi.delete(id);
-      toast.success('Room deleted');
+      toast.success(t('rooms.toasts.deleted'));
       fetchRooms();
     } catch {
-      toast.error('Failed to delete room');
+      toast.error(t('rooms.errors.deleteFailed'));
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Rooms</h1>
-        <Button onClick={() => handleOpenModal()}>Add Room</Button>
+        <h1 className="text-2xl font-bold">{t('nav.rooms')}</h1>
+        <Button onClick={() => handleOpenModal()}>{t('rooms.addRoom')}</Button>
       </div>
       <Table
         columns={[
-          { key: 'roomId', header: 'ID' },
+          { key: 'roomId', header: t('common.id') },
           {
             key: 'building',
-            header: 'Building',
+            header: t('rooms.fields.building'),
             render: (value, row) => (
               <button
                 className="text-primary-600 underline hover:text-primary-800"
@@ -105,19 +107,19 @@ const RoomPage = () => {
               </button>
             ),
           },
-          { key: 'roomNumber', header: 'Room Number' },
-          { key: 'capacity', header: 'Capacity' },
-          { key: 'type', header: 'Type' },
+          { key: 'roomNumber', header: t('rooms.fields.roomNumber') },
+          { key: 'capacity', header: t('rooms.fields.capacity') },
+          { key: 'type', header: t('rooms.fields.type') },
           {
             key: 'actions',
-            header: 'Actions',
+            header: t('common.actions'),
             render: (_, row) => (
               <div className="flex gap-2">
                 <Button size="sm" onClick={() => handleOpenModal(row)}>
-                  Edit
+                  {t('common.edit')}
                 </Button>
                 <Button size="sm" variant="danger" onClick={() => handleDelete(row.roomId || row.id)}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               </div>
             ),
@@ -126,17 +128,17 @@ const RoomPage = () => {
         data={rooms}
         isLoading={loading}
       />
-      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? 'Edit Room' : 'Add Room'}>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? t('rooms.editTitle') : t('rooms.addTitle')}>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Building" name="building" value={form.building} onChange={handleChange} required />
-          <Input label="Room Number" name="roomNumber" value={form.roomNumber} onChange={handleChange} required />
-          <Input label="Capacity" name="capacity" value={form.capacity} onChange={handleChange} required type="number" min={1} />
-          <Input label="Type" name="type" value={form.type} onChange={handleChange} required />
+          <Input label={t('rooms.fields.building')} name="building" value={form.building} onChange={handleChange} required />
+          <Input label={t('rooms.fields.roomNumber')} name="roomNumber" value={form.roomNumber} onChange={handleChange} required />
+          <Input label={t('rooms.fields.capacity')} name="capacity" value={form.capacity} onChange={handleChange} required type="number" min={1} />
+          <Input label={t('rooms.fields.type')} name="type" value={form.type} onChange={handleChange} required />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={handleCloseModal}>
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button type="submit">{editId ? 'Update' : 'Create'}</Button>
+            <Button type="submit">{editId ? t('common.update') : t('common.create')}</Button>
           </div>
         </form>
       </Modal>
