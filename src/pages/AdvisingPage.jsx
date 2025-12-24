@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { advisingApi } from '../api/advisingApi';
 import {
@@ -26,6 +27,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const AdvisingPage = () => {
+  const { t } = useTranslation();
   const { user, isAdmin, isInstructor } = useAuth();
   
   const [enrollments, setEnrollments] = useState([]);
@@ -76,7 +78,7 @@ const AdvisingPage = () => {
       setTotalItems(data.totalItems || 0);
     } catch (error) {
       console.error('Failed to load enrollments:', error);
-      toast.error('Failed to load pending enrollments');
+      toast.error(t('advising.errors.pendingFetchFailed'));
     } finally {
       setIsLoading(false);
       setIsInitialLoad(false);
@@ -92,12 +94,12 @@ const AdvisingPage = () => {
     setIsProcessing(true);
     try {
       await advisingApi.approveEnrollment(enrollmentId);
-      toast.success('Enrollment approved successfully');
+      toast.success(t('advising.toasts.approved'));
       loadStats();
       loadEnrollments();
     } catch (error) {
       console.error('Failed to approve:', error);
-      toast.error('Failed to approve enrollment');
+      toast.error(t('advising.errors.approveFailed'));
     } finally {
       setIsProcessing(false);
     }
@@ -105,21 +107,21 @@ const AdvisingPage = () => {
 
   const handleDecline = async () => {
     if (!declineModal.enrollment || !declineReason.trim()) {
-      toast.error('Please provide a reason for declining');
+      toast.error(t('advising.errors.declineReasonRequired'));
       return;
     }
 
     setIsProcessing(true);
     try {
       await advisingApi.declineEnrollment(declineModal.enrollment.enrollmentId, declineReason);
-      toast.success('Enrollment declined');
+      toast.success(t('advising.toasts.declined'));
       setDeclineModal({ isOpen: false, enrollment: null });
       setDeclineReason('');
       loadStats();
       loadEnrollments();
     } catch (error) {
       console.error('Failed to decline:', error);
-      toast.error('Failed to decline enrollment');
+      toast.error(t('advising.errors.declineFailed'));
     } finally {
       setIsProcessing(false);
     }
