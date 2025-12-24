@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table, Button, Badge, SearchInput, Card, ConfirmModal, EmptyState } from '../common';
@@ -19,6 +20,7 @@ const InstructorList = ({
   pageSize = 10,
   onPageChange,
 }) => {
+    const { t } = useTranslation();
   const navigate = useNavigate();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, instructor: null });
   const [sortField, setSortField] = useState(null);
@@ -195,9 +197,11 @@ const InstructorList = ({
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, instructor: null })}
         onConfirm={handleDelete}
-        title="Delete Instructor"
-        message={`Are you sure you want to delete ${deleteModal.instructor?.fullName || 'this instructor'}? This action cannot be undone.`}
-        confirmText="Delete"
+        title={t('instructors.confirmDeleteTitle')}
+        message={t('instructors.confirmDeleteMessage', {
+          name: deleteModal.instructor?.fullName || t('instructors.confirmDeleteNameFallback'),
+        })}
+        confirmText={t('common.delete')}
         variant="danger"
       />
     </>
