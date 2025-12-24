@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { calendarApi } from '../api/calendarApi';
 import { adminApi } from '../api/adminApi';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -15,6 +16,7 @@ import {
 } from 'react-icons/fi';
 
 const CalendarPage = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
@@ -61,7 +63,7 @@ const CalendarPage = () => {
       setEvents(data);
     } catch (error) {
       console.error('Error fetching events:', error);
-      toast.error('Failed to load calendar events');
+      toast.error(t('calendar.errors.fetchFailed'));
     } finally {
       setLoading(false);
     }
