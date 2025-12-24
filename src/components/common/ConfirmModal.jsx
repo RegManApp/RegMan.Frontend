@@ -1,18 +1,25 @@
 import Modal from './Modal';
 import Button from './Button';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 
 const ConfirmModal = ({
   isOpen,
   onClose,
   onConfirm,
-  title = 'Confirm Action',
-  message = 'Are you sure you want to perform this action?',
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  title,
+  message,
+  confirmText,
+  cancelText,
   variant = 'danger',
   loading = false,
 }) => {
+  const { t } = useTranslation();
+  const resolvedTitle = title ?? t('common.confirmModal.title');
+  const resolvedMessage = message ?? t('common.confirmModal.message');
+  const resolvedConfirmText = confirmText ?? t('common.confirm');
+  const resolvedCancelText = cancelText ?? t('common.cancel');
+
   return (
     <Modal
       isOpen={isOpen}
@@ -26,10 +33,10 @@ const ConfirmModal = ({
         </div>
         <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
           <h3 className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
-            {title}
+            {resolvedTitle}
           </h3>
           <div className="mt-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">{message}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{resolvedMessage}</p>
           </div>
         </div>
       </div>
@@ -40,14 +47,14 @@ const ConfirmModal = ({
           loading={loading}
           disabled={loading}
         >
-          {confirmText}
+          {resolvedConfirmText}
         </Button>
         <Button
           variant="outline"
           onClick={onClose}
           disabled={loading}
         >
-          {cancelText}
+          {resolvedCancelText}
         </Button>
       </div>
     </Modal>
