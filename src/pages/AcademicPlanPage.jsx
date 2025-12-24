@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import academicPlanApi from "../api/academicPlanApi";
 import { useAuth } from "../contexts/AuthContext";
 import Card from "../components/common/Card";
@@ -12,6 +13,7 @@ const defaultPlan = { name: "", description: "" };
 const defaultAssign = { studentId: "", planId: "" };
 
 const AcademicPlanPage = () => {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +33,7 @@ const AcademicPlanPage = () => {
       const res = await academicPlanApi.getMyProgress();
       setProgress(res.data);
     } catch {
-      toast.error("Failed to fetch academic progress");
+      toast.error(t('academicPlan.errors.progressFetchFailed'));
     }
     setLoading(false);
   };
@@ -43,7 +45,7 @@ const AcademicPlanPage = () => {
       const res = await academicPlanApi.getAll();
       setPlans(res.data);
     } catch {
-      toast.error("Failed to fetch academic plans");
+      toast.error(t('academicPlan.errors.fetchFailed'));
     }
     setLoading(false);
   };
@@ -81,26 +83,26 @@ const AcademicPlanPage = () => {
     try {
       if (editId) {
         await academicPlanApi.update({ ...form, academicPlanId: editId });
-        toast.success("Academic plan updated");
+        toast.success(t('academicPlan.toasts.updated'));
       } else {
         await academicPlanApi.create(form);
-        toast.success("Academic plan created");
+        toast.success(t('academicPlan.toasts.created'));
       }
       fetchPlans();
       handleCloseModal();
     } catch {
-      toast.error("Failed to save academic plan");
+      toast.error(t('academicPlan.errors.saveFailed'));
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this academic plan?")) return;
+    if (!window.confirm(t('academicPlan.confirmDelete'))) return;
     try {
       await academicPlanApi.delete(id);
-      toast.success("Academic plan deleted");
+      toast.success(t('academicPlan.toasts.deleted'));
       fetchPlans();
     } catch {
-      toast.error("Failed to delete academic plan");
+      toast.error(t('academicPlan.errors.deleteFailed'));
     }
   };
 
@@ -109,10 +111,10 @@ const AcademicPlanPage = () => {
     e.preventDefault();
     try {
       await academicPlanApi.assignStudent(assignForm);
-      toast.success("Plan assigned to student");
+      toast.success(t('academicPlan.toasts.assigned'));
       setAssignModal(false);
     } catch {
-      toast.error("Failed to assign plan");
+      toast.error(t('academicPlan.errors.assignFailed'));
     }
   };
 
@@ -123,7 +125,7 @@ const AcademicPlanPage = () => {
       const res = await academicPlanApi.getCourses(plan.academicPlanId || plan.id);
       setCourses(res.data);
     } catch {
-      toast.error("Failed to fetch courses");
+      toast.error(t('academicPlan.errors.coursesFetchFailed'));
     }
   };
 
