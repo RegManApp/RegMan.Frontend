@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { analyticsApi } from '../api/analyticsApi';
@@ -36,6 +37,7 @@ import {
 } from 'recharts';
 
 const AnalyticsPage = () => {
+  const { t } = useTranslation();
   const { isAdmin } = useAuth();
   const navigate = useNavigate();
   
@@ -90,7 +92,7 @@ const AnalyticsPage = () => {
         setSectionCapacity(capacityRes.data);
       } catch (error) {
         console.error('Failed to load analytics:', error);
-        toast.error('Failed to load analytics data');
+        toast.error(t('analytics.errors.fetchFailed'));
       } finally {
         setIsLoading(false);
       }
