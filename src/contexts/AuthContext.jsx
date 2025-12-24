@@ -1,6 +1,7 @@
 import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import { authApi } from '../api/authApi';
 import toast from 'react-hot-toast';
+import i18n from '../i18n';
 
 // Parse JWT token to extract payload
 const parseJwt = (token) => {
@@ -275,10 +276,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('rememberMe', rememberMe.toString());
 
       dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: user });
-      toast.success('Login successful!');
+      toast.success(i18n.t('auth.loginSuccess'));
       return user;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Login failed';
+      const errorMessage = error.response?.data?.message || error.message || i18n.t('auth.loginFailed');
       dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
       throw error;
     }
@@ -300,11 +301,11 @@ export const AuthProvider = ({ children }) => {
       };
       
       await authApi.register(transformedData);
-      toast.success('Registration successful! Please login.');
+      toast.success(i18n.t('auth.registrationSuccess'));
       dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
       return true;
     } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Registration failed';
+      const errorMessage = error.response?.data?.message || error.message || i18n.t('auth.registrationFailed');
       dispatch({ type: AUTH_ACTIONS.LOGIN_FAILURE, payload: errorMessage });
       throw error;
     }
@@ -329,7 +330,7 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem('refreshToken');
       sessionStorage.removeItem('user');
       dispatch({ type: AUTH_ACTIONS.LOGOUT });
-      toast.success('Logged out successfully');
+      toast.success(i18n.t('auth.logoutSuccess'));
     }
   }, []);
 
@@ -389,14 +390,14 @@ export const AuthProvider = ({ children }) => {
 
   const getInstructorDegreeLabel = useCallback(() => {
     const titles = {
-      'TeachingAssistant': 'Teaching Assistant',
-      'AssistantLecturer': 'Assistant Lecturer',
-      'Lecturer': 'Lecturer',
-      'AssistantProfessor': 'Assistant Professor',
-      'AssociateProfessor': 'Associate Professor',
-      'Professor': 'Professor'
+      'TeachingAssistant': i18n.t('instructorTitles.TeachingAssistant'),
+      'AssistantLecturer': i18n.t('instructorTitles.AssistantLecturer'),
+      'Lecturer': i18n.t('instructorTitles.Lecturer'),
+      'AssistantProfessor': i18n.t('instructorTitles.AssistantProfessor'),
+      'AssociateProfessor': i18n.t('instructorTitles.AssociateProfessor'),
+      'Professor': i18n.t('instructorTitles.Professor')
     };
-    return titles[state.user?.instructorTitle] || state.user?.instructorTitle || 'Instructor';
+    return titles[state.user?.instructorTitle] || state.user?.instructorTitle || i18n.t('instructorTitles.Instructor');
   }, [state.user]);
 
   // Save current account to saved accounts list
@@ -432,7 +433,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       // Add new account (limit to MAX_SAVED_ACCOUNTS)
       if (savedAccounts.length >= MAX_SAVED_ACCOUNTS) {
-        toast.error(`Maximum ${MAX_SAVED_ACCOUNTS} accounts can be saved`);
+        toast.error(i18n.t('auth.maxSavedAccounts', { max: MAX_SAVED_ACCOUNTS }));
         return;
       }
       savedAccounts.push(accountData);
@@ -441,20 +442,20 @@ export const AuthProvider = ({ children }) => {
     // Save to localStorage
     localStorage.setItem('savedAccounts', JSON.stringify(savedAccounts));
     dispatch({ type: AUTH_ACTIONS.SET_SAVED_ACCOUNTS, payload: savedAccounts });
-    toast.success('Account saved for quick switch');
+    toast.success(i18n.t('auth.accountSaved'));
   }, [state.user, state.savedAccounts]);
 
   // Switch to a saved account
   const switchAccount = useCallback(async (accountId) => {
     const account = state.savedAccounts.find(acc => acc.id === accountId);
     if (!account) {
-      toast.error('Account not found');
+      toast.error(i18n.t('auth.accountNotFound'));
       return;
     }
     
     // Check if token is expired
     if (isTokenExpired(account.accessToken)) {
-      toast.error('Session expired. Please login again.');
+      toast.error(i18n.t('auth.sessionExpired'));
       removeAccount(accountId);
       return;
     }
@@ -489,7 +490,7 @@ export const AuthProvider = ({ children }) => {
     
     localStorage.setItem('user', JSON.stringify(user));
     dispatch({ type: AUTH_ACTIONS.LOGIN_SUCCESS, payload: user });
-    toast.success(`Switched to ${account.fullName || account.email}`);
+    toast.success(i18n.t('auth.switchedTo', { name: account.fullName || account.email }));
   }, [state.savedAccounts, state.user, saveCurrentAccount]);
 
   // Remove a saved account
@@ -497,7 +498,7 @@ export const AuthProvider = ({ children }) => {
     const savedAccounts = state.savedAccounts.filter(acc => acc.id !== accountId);
     localStorage.setItem('savedAccounts', JSON.stringify(savedAccounts));
     dispatch({ type: AUTH_ACTIONS.SET_SAVED_ACCOUNTS, payload: savedAccounts });
-    toast.success('Account removed from saved list');
+    toast.success(i18n.t('auth.accountRemoved'));
   }, [state.savedAccounts]);
 
   // Get saved accounts (excluding current user)
@@ -509,7 +510,7 @@ export const AuthProvider = ({ children }) => {
   const clearAllSavedAccounts = useCallback(() => {
     localStorage.removeItem('savedAccounts');
     dispatch({ type: AUTH_ACTIONS.SET_SAVED_ACCOUNTS, payload: [] });
-    toast.success('All saved accounts cleared');
+    toast.success(i18n.t('auth.accountsCleared'));
   }, []);
 
   const value = {

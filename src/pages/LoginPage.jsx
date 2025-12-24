@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LoginForm } from '../components/auth';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -28,13 +30,13 @@ const LoginPage = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-            RegMan
+            {t('app.name')}
           </h1>
           <h2 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-            Sign in to your account
+            {t('authPages.login.title')}
           </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Student Management System
+            {t('authPages.login.subtitle')}
           </p>
         </div>
 

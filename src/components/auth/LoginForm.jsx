@@ -3,19 +3,21 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
-import { loginSchema } from '../../utils/validators';
+import { useTranslation } from 'react-i18next';
+import { getLoginSchema } from '../../utils/validators';
 import { Button, Input } from '../common';
 
 const LoginForm = ({ onSubmit, isLoading }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(getLoginSchema(t)),
     defaultValues: {
       email: '',
       password: '',
@@ -30,9 +32,9 @@ const LoginForm = ({ onSubmit, isLoading }) => {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <Input
-        label="Email"
+        label={t('authPages.fields.email')}
         type="email"
-        placeholder="Enter your email"
+        placeholder={t('authPages.placeholders.email')}
         icon={EnvelopeIcon}
         error={errors.email?.message}
         {...register('email')}
@@ -40,9 +42,9 @@ const LoginForm = ({ onSubmit, isLoading }) => {
 
       <div className="relative">
         <Input
-          label="Password"
+          label={t('authPages.fields.password')}
           type={showPassword ? 'text' : 'password'}
-          placeholder="Enter your password"
+          placeholder={t('authPages.placeholders.password')}
           icon={LockClosedIcon}
           error={errors.password?.message}
           {...register('password')}
@@ -52,7 +54,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
           className="absolute right-3 top-8 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           onClick={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? 'Hide' : 'Show'}
+          {showPassword ? t('authPages.actions.hide') : t('authPages.actions.show')}
         </button>
       </div>
 
@@ -65,14 +67,14 @@ const LoginForm = ({ onSubmit, isLoading }) => {
             className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
           />
           <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-            Remember me
+            {t('authPages.actions.rememberMe')}
           </span>
         </label>
         <Link
           to="/forgot-password"
           className="text-sm text-primary-600 hover:text-primary-500"
         >
-          Forgot password?
+          {t('authPages.actions.forgotPassword')}
         </Link>
       </div>
 
@@ -82,16 +84,16 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         loading={isLoading}
         disabled={isLoading}
       >
-        Sign in
+        {t('authPages.actions.signIn')}
       </Button>
 
       <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-        Don't have an account?{' '}
+        {t('authPages.login.noAccount')}{' '}
         <Link
           to="/register"
           className="font-medium text-primary-600 hover:text-primary-500"
         >
-          Sign up
+          {t('authPages.actions.signUp')}
         </Link>
       </p>
     </form>
