@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { studentApi } from '../api/studentApi';
 import { userApi } from '../api/userApi';
@@ -8,6 +9,7 @@ import { StudentList, StudentForm, StudentDetails } from '../components/students
 import { PageLoading, Breadcrumb } from '../components/common';
 
 const StudentsPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useAuth();
@@ -41,7 +43,7 @@ const StudentsPage = () => {
       setTotalItems(data.totalItems || data.length);
     } catch (error) {
       console.error('Failed to load students:', error);
-      toast.error('Failed to load students');
+      toast.error(t('students.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +56,7 @@ const StudentsPage = () => {
       setSelectedStudent(response.data);
     } catch (error) {
       console.error('Failed to load student details:', error);
-      toast.error('Failed to load student details');
+      toast.error(t('students.errors.detailsFetchFailed'));
       navigate('/students');
     } finally {
       setIsLoading(false);
@@ -92,7 +94,7 @@ const StudentsPage = () => {
   const handleDelete = async (studentId) => {
     try {
       await studentApi.delete(studentId);
-      toast.success('Student deleted successfully');
+      toast.success(t('students.toasts.deleted'));
       loadStudents();
     } catch (error) {
       console.error('Failed to delete student:', error);
@@ -104,10 +106,10 @@ const StudentsPage = () => {
     try {
       if (formStudent?.id) {
         await studentApi.update(formStudent.id, data);
-        toast.success('Student updated successfully');
+        toast.success(t('students.toasts.updated'));
       } else {
         await studentApi.create(data);
-        toast.success('Student created successfully');
+        toast.success(t('students.toasts.created'));
       }
       setIsFormOpen(false);
       setFormStudent(null);
