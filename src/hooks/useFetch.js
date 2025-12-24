@@ -1,5 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import toast from 'react-hot-toast';
+import { useState, useEffect, useCallback } from "react";
+import toast from "react-hot-toast";
+import i18n from "../i18n";
+import { getApiErrorMessageKey } from "../utils/i18nError";
 
 /**
  * Custom hook for data fetching with loading, error, and refetch capabilities
@@ -21,38 +23,50 @@ export const useFetch = (fetchFn, dependencies = [], options = {}) => {
   const [error, setError] = useState(null);
   const [isRefetching, setIsRefetching] = useState(false);
 
-  const execute = useCallback(async (...args) => {
-    setIsLoading(true);
-    setError(null);
+  const execute = useCallback(
+    async (...args) => {
+      setIsLoading(true);
+      setError(null);
 
-    try {
-      const response = await fetchFn(...args);
-      const result = response?.data ?? response;
-      setData(result);
-      onSuccess?.(result);
-      return result;
-    } catch (err) {
-      const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
-      setError(errorMessage);
-      if (showErrorToast) {
-        toast.error(errorMessage);
+      try {
+        const response = await fetchFn(...args);
+        const result = response?.data ?? response;
+        setData(result);
+        onSuccess?.(result);
+        return result;
+      } catch (err) {
+        const messageKey = getApiErrorMessageKey(err);
+        const translated = messageKey ? i18n.t(messageKey) : null;
+        const errorMessage =
+          translated ||
+          err.response?.data?.message ||
+          err.message ||
+          i18n.t("errors.generic");
+        setError(errorMessage);
+        if (showErrorToast) {
+          toast.error(errorMessage);
+        }
+        onError?.(err);
+        throw err;
+      } finally {
+        setIsLoading(false);
       }
-      onError?.(err);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [fetchFn, onSuccess, onError, showErrorToast]);
+    },
+    [fetchFn, onSuccess, onError, showErrorToast]
+  );
 
-  const refetch = useCallback(async (...args) => {
-    setIsRefetching(true);
-    try {
-      const result = await execute(...args);
-      return result;
-    } finally {
-      setIsRefetching(false);
-    }
-  }, [execute]);
+  const refetch = useCallback(
+    async (...args) => {
+      setIsRefetching(true);
+      try {
+        const result = await execute(...args);
+        return result;
+      } finally {
+        setIsRefetching(false);
+      }
+    },
+    [execute]
+  );
 
   useEffect(() => {
     if (immediate) {
@@ -108,9 +122,12 @@ export const usePaginatedFetch = (fetchFn, options = {}) => {
     }
   );
 
-  const goToPage = useCallback((newPage) => {
-    setPage(Math.max(1, Math.min(newPage, totalPages)));
-  }, [totalPages]);
+  const goToPage = useCallback(
+    (newPage) => {
+      setPage(Math.max(1, Math.min(newPage, totalPages)));
+    },
+    [totalPages]
+  );
 
   const nextPage = useCallback(() => {
     goToPage(page + 1);

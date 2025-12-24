@@ -1,5 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
+import i18n from "../i18n";
+import { getApiErrorMessageKey } from "../utils/i18nError";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -38,7 +40,7 @@ axiosInstance.interceptors.response.use(
     if (data && typeof data === "object" && "success" in data) {
       if (!data.success) {
         // API returned success: false
-        const errorMessage = data.message || "An error occurred";
+        const errorMessage = data.message || i18n.t("errors.generic");
         if (data.errors) {
           const errorMessages = Object.values(data.errors).flat().join(", ");
           toast.error(errorMessages || errorMessage);
@@ -57,7 +59,10 @@ axiosInstance.interceptors.response.use(
 
     if (response) {
       const apiResponse = response.data;
-      const message = apiResponse?.message || "An error occurred";
+      const messageKey = getApiErrorMessageKey(error);
+      const translated = messageKey ? i18n.t(messageKey) : null;
+      const message =
+        translated || apiResponse?.message || i18n.t("errors.generic");
 
       switch (response.status) {
         case 401:
@@ -70,13 +75,15 @@ axiosInstance.interceptors.response.use(
           sessionStorage.removeItem("refreshToken");
           sessionStorage.removeItem("user");
           window.location.href = "/login";
-          toast.error("Session expired. Please login again.");
+          toast.error(i18n.t("auth.sessionExpired"));
           break;
         case 403:
-          toast.error("You do not have permission to perform this action.");
+          toast.error(i18n.t("errors.permissionDenied"));
           break;
         case 404:
-          toast.error(message || "Resource not found.");
+          toast.error(
+            apiResponse?.message || i18n.t("errors.resourceNotFound")
+          );
           break;
         case 400:
           if (apiResponse?.errors) {
@@ -89,13 +96,13 @@ axiosInstance.interceptors.response.use(
           }
           break;
         case 500:
-          toast.error("Server error. Please try again later.");
+          toast.error(i18n.t("errors.serverErrorTryLater"));
           break;
         default:
           toast.error(message);
       }
     } else {
-      toast.error("Network error. Please check your connection.");
+      toast.error(i18n.t("errors.networkErrorCheckConnection"));
     }
 
     return Promise.reject(error);
