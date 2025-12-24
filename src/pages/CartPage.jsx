@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import cartApi from "../api/cartApi";
 import adminApi from "../api/adminApi";
 import enrollmentApi from "../api/enrollmentApi";
 import CartList from "../components/cart/CartList";
 
 const CartPage = () => {
+  const { t } = useTranslation();
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [registrationEndDate, setRegistrationEndDate] = useState("");
@@ -17,7 +19,7 @@ const CartPage = () => {
       const response = await cartApi.viewCart();
       setCartItems(response.data?.items || response.data || []);
     } catch (error) {
-      toast.error("Failed to load cart");
+      toast.error(t('cart.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -28,38 +30,42 @@ const CartPage = () => {
     adminApi.getRegistrationEndDate().then((res) => {
       setRegistrationEndDate(res.data?.registrationEndDate || res.data?.registrationEndDate || "");
     });
-    enrollmentApi.getMyEnrollments().then((res) => {
-      setEnrollments(res.data || []);
-    });
+    enrollmentApi
+      .getMyEnrollments()
+      .then((res) => {
+        const data = res?.data;
+        setEnrollments(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setEnrollments([]));
   }, []);
 
   const handleRemove = async (cartItemId) => {
     try {
       await cartApi.removeFromCart(cartItemId);
-      toast.success("Removed from cart");
+      toast.success(t('courses.toasts.removedFromCart'));
       loadCart();
     } catch (error) {
-      toast.error("Failed to remove item");
+      toast.error(t('cart.errors.removeFailed'));
     }
   };
 
   const handleEnroll = async () => {
     try {
       await cartApi.enroll();
-      toast.success("Enrolled successfully");
+      toast.success(t('cart.toasts.enrolled'));
       loadCart();
     } catch (error) {
-      toast.error("Failed to enroll");
+      toast.error(t('cart.errors.enrollFailed'));
     }
   };
 
   const handleCheckout = async () => {
     try {
       await cartApi.checkout();
-      toast.success("Checkout successful");
+      toast.success(t('cart.toasts.checkoutSuccess'));
       loadCart();
     } catch (error) {
-      toast.error("Checkout failed");
+      toast.error(t('cart.errors.checkoutFailed'));
     }
   };
 
@@ -75,10 +81,14 @@ const CartPage = () => {
     const enrollmentId = getEnrollmentId(courseId);
     if (enrollmentId) {
       await enrollmentApi.drop(enrollmentId);
-      toast.success('Course dropped');
-      enrollmentApi.getMyEnrollments().then((res) => {
-        setEnrollments(res.data || []);
-      });
+      toast.success(t('courses.toasts.dropped'));
+      enrollmentApi
+        .getMyEnrollments()
+        .then((res) => {
+          const data = res?.data;
+          setEnrollments(Array.isArray(data) ? data : []);
+        })
+        .catch(() => setEnrollments([]));
       loadCart();
     }
   };
