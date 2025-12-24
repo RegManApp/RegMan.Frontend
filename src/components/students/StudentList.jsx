@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -28,6 +29,7 @@ const StudentList = ({
   pageSize,
   onPageChange,
 }) => {
+    const { t } = useTranslation();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, student: null });
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
@@ -244,9 +246,11 @@ const StudentList = ({
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, student: null })}
         onConfirm={handleConfirmDelete}
-        title="Delete Student"
-        message={`Are you sure you want to delete ${deleteModal.student?.fullName || 'this student'}? This action cannot be undone.`}
-        confirmText="Delete"
+        title={t('students.confirmDeleteTitle')}
+        message={t('students.confirmDeleteMessage', {
+          name: deleteModal.student?.fullName || t('students.confirmDeleteNameFallback'),
+        })}
+        confirmText={t('common.delete')}
         variant="danger"
       />
     </div>
