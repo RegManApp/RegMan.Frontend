@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { courseApi } from '../api/courseApi';
 import { enrollmentApi } from '../api/enrollmentApi';
@@ -16,6 +17,7 @@ import { instructorApi } from '../api/instructorApi';
 import { sectionApi } from '../api/sectionApi';
 
 const CoursesPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin, isStudent, isInstructor, user } = useAuth();
@@ -105,7 +107,7 @@ const CoursesPage = () => {
       setTotalItems(data?.totalItems || data?.TotalItems || items.length || 0);
     } catch (error) {
       console.error('Failed to load courses:', error);
-      toast.error('Failed to load courses');
+      toast.error(t('courses.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -147,7 +149,7 @@ const CoursesPage = () => {
       }
     } catch (error) {
       console.error('Failed to load course details:', error);
-      toast.error('Failed to load course details');
+      toast.error(t('courses.errors.detailsFetchFailed'));
       navigate('/courses');
     } finally {
       setIsLoading(false);
@@ -239,7 +241,7 @@ const CoursesPage = () => {
   const handleDelete = async (courseId) => {
     try {
       await courseApi.delete(courseId);
-      toast.success('Course deleted successfully');
+      toast.success(t('courses.toasts.deleted'));
       loadCourses();
     } catch (error) {
       console.error('Failed to delete course:', error);
@@ -251,10 +253,10 @@ const CoursesPage = () => {
     try {
       if (formCourse?.id) {
         await courseApi.update(formCourse.id, data);
-        toast.success('Course updated successfully');
+        toast.success(t('courses.toasts.updated'));
       } else {
         await courseApi.create(data);
-        toast.success('Course created successfully');
+        toast.success(t('courses.toasts.created'));
       }
       setIsFormOpen(false);
       setFormCourse(null);
@@ -287,7 +289,7 @@ const CoursesPage = () => {
     );
     if (item) {
       await cartApi.removeFromCart(item.cartItemId || item.id);
-      toast.success('Removed from cart');
+      toast.success(t('courses.toasts.removedFromCart'));
       loadCartItems();
     }
   };
@@ -295,7 +297,7 @@ const CoursesPage = () => {
     const enrollment = myEnrollments.find((e) => e.courseId === courseId);
     if (enrollment) {
       await enrollmentApi.drop(enrollment.enrollmentId);
-      toast.success('Course dropped');
+      toast.success(t('courses.toasts.dropped'));
       loadMyEnrollments();
     }
   };
