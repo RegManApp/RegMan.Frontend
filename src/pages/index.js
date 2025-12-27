@@ -29,3 +29,4 @@ export { default as AdminWithdrawRequestsPage } from "./AdminWithdrawRequestsPag
 export { default as NotificationsPage } from "./NotificationsPage";
 export { default as SmartScheduleBuilderPage } from "./SmartScheduleBuilderPage";
 export { default as WithdrawHistoryPage } from "./WithdrawHistoryPage";
+export { default as WelcomePage } from "./WelcomePage";

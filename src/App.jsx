@@ -31,6 +31,7 @@ import {
   NotificationsPage,
   SmartScheduleBuilderPage,
   WithdrawHistoryPage,
+  WelcomePage
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
@@ -48,6 +49,7 @@ function App() {
         <Router>
           <Routes>
             {/* Public Routes */}
+            <Route path="/" element={<WelcomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
