@@ -33,6 +33,10 @@ export async function startConnection() {
     .withAutomaticReconnect()
     .build();
 
+  // Prevent noisy warnings if the server pushes presence updates
+  // before any page registers its own handler.
+  connection.on("UserPresenceChanged", () => {});
+
   startingPromise = connection
     .start()
     .then(() => connection)

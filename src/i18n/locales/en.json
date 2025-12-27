@@ -671,6 +671,8 @@
       "fetchFailed": "Failed to load courses",
       "detailsFetchFailed": "Failed to load course details",
       "addToCartFailed": "Failed to add course to cart",
+      "alreadyInCart": "This course is already in your cart",
+      "courseNotFound": "Course not found",
       "dropFailed": "Failed to drop course"
     },
     "toasts": {
@@ -951,8 +953,11 @@
       "withdraw": "Withdraw"
     },
     "special": {
+      "registrationStarts": "Registration Starts",
       "registrationEnds": "Registration Ends",
-      "withdrawPeriod": "Withdraw Period"
+      "withdrawPeriod": "Withdraw Period",
+      "withdrawStarts": "Withdraw Starts",
+      "withdrawEnds": "Withdraw Ends"
     },
     "errors": {
       "fetchFailed": "Failed to load calendar events"

@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { calendarApi } from '../api/calendarApi';
-import { adminApi } from '../api/adminApi';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import {
@@ -30,29 +29,6 @@ const CalendarPage = () => {
 
   useEffect(() => {
     fetchEvents();
-    // Fetch registration/withdraw dates and add to calendar events
-    adminApi.getRegistrationEndDate().then((res) => {
-      const regDate = res.data?.registrationEndDate;
-      const withdrawStart = res.data?.withdrawStartDate;
-      const withdrawEnd = res.data?.withdrawEndDate;
-      const dateEvents = [];
-      if (regDate) {
-        dateEvents.push({
-          titleKey: 'calendar.special.registrationEnds',
-          date: regDate,
-          type: 'registration',
-        });
-      }
-      if (withdrawStart && withdrawEnd) {
-        dateEvents.push({
-          titleKey: 'calendar.special.withdrawPeriod',
-          date: withdrawStart,
-          endDate: withdrawEnd,
-          type: 'withdraw',
-        });
-      }
-      setEvents((prev) => [...prev, ...dateEvents]);
-    });
   }, [year, month]);
 
   const fetchEvents = async () => {

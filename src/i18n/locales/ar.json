@@ -952,8 +952,11 @@
       "withdraw": "انسحاب"
     },
     "special": {
+      "registrationStarts": "بداية التسجيل",
       "registrationEnds": "نهاية التسجيل",
-      "withdrawPeriod": "فترة الانسحاب"
+      "withdrawPeriod": "فترة الانسحاب",
+      "withdrawStarts": "بداية الانسحاب",
+      "withdrawEnds": "نهاية الانسحاب"
     },
     "errors": {
       "fetchFailed": "فشل تحميل أحداث التقويم"
@@ -1098,6 +1101,8 @@
       "fetchFailed": "فشل تحميل المقررات",
       "detailsFetchFailed": "فشل تحميل تفاصيل المقرر",
       "addToCartFailed": "فشلت إضافة المقرر إلى السلة",
+      "alreadyInCart": "هذا المقرر موجود بالفعل في سلتك",
+      "courseNotFound": "المقرر غير موجود",
       "dropFailed": "فشل حذف المقرر"
     },
     "toasts": {

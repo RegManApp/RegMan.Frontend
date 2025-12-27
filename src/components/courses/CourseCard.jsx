@@ -20,7 +20,7 @@ const CourseCard = ({
   onDrop,
   onAddToCart,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const [isDropping, setIsDropping] = useState(false);
 
@@ -38,7 +38,16 @@ const CourseCard = ({
       toast.success(t('courses.toasts.addedToCart'));
       await onAddToCart?.(course.id);
     } catch (error) {
-      toast.error(t('courses.errors.addToCartFailed'));
+      const status = error?.response?.status;
+      if (status === 409) {
+        toast.error(t('courses.errors.alreadyInCart'));
+      } else if (status === 404) {
+        toast.error(t('courses.errors.courseNotFound'));
+      } else {
+        const serverMessage = error?.response?.data?.message;
+        const isArabic = (i18n?.language || '').toLowerCase().startsWith('ar');
+        toast.error(!isArabic && serverMessage ? serverMessage : t('courses.errors.addToCartFailed'));
+      }
     } finally {
       setIsAdding(false);
     }

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -41,8 +41,8 @@ const AdminCartManagementPage = () => {
     [t]
   );
 
-  const handleSearch = async () => {
-    const q = (searchQuery || "").trim();
+  const handleSearch = async (overrideQuery) => {
+    const q = (overrideQuery ?? searchQuery ?? "").trim();
     if (!q) {
       setSearchResults([]);
       setSelectedStudent(null);
@@ -61,6 +61,23 @@ const AdminCartManagementPage = () => {
       setIsSearching(false);
     }
   };
+
+  // Live search (debounced) to match GPA/Transcript UX.
+  useEffect(() => {
+    const q = (searchQuery || "").trim();
+    if (!q) {
+      setSearchResults([]);
+      setSelectedStudent(null);
+      setCartItems([]);
+      return;
+    }
+
+    const handle = setTimeout(() => {
+      handleSearch(q);
+    }, 350);
+
+    return () => clearTimeout(handle);
+  }, [searchQuery]);
 
   const loadStudentCart = async (studentUserId) => {
     setIsLoadingCart(true);
