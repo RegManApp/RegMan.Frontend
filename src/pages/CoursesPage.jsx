@@ -224,9 +224,12 @@ const CoursesPage = () => {
     (!registrationStart || now >= registrationStart) && (!registrationEnd || now <= registrationEnd);
 
   const isEnrolled = (courseId) => {
-    return myEnrollments.some(
-      (e) => e.courseId === courseId && e.status === 'Enrolled'
-    );
+    return myEnrollments.some((e) => {
+      if (e.courseId !== courseId) return false;
+      // Backend sends numeric enum: 0=Pending, 1=Enrolled, 2=Dropped, ...
+      // Some legacy UI paths may still send strings.
+      return e.status === 1 || e.status === 0 || e.status === 'Enrolled' || e.status === 'Pending';
+    });
   };
 
   const handleEdit = (course) => {

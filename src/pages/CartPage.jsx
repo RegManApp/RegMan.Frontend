@@ -61,7 +61,7 @@ const CartPage = () => {
       toast.success(t('cart.toasts.enrolled'));
       loadCart();
     } catch (error) {
-      toast.error(t('cart.errors.enrollFailed'));
+      // axiosInstance interceptor already shows a meaningful API message
     }
   };
 
@@ -71,7 +71,7 @@ const CartPage = () => {
       toast.success(t('cart.toasts.checkoutSuccess'));
       loadCart();
     } catch (error) {
-      toast.error(t('cart.errors.checkoutFailed'));
+      // axiosInstance interceptor already shows a meaningful API message
     }
   };
 
