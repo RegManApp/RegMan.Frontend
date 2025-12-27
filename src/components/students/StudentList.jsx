@@ -29,7 +29,7 @@ const StudentList = ({
   pageSize,
   onPageChange,
 }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, student: null });
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
@@ -101,7 +101,7 @@ const StudentList = ({
       sortable: true,
       render: (_, student) => (
         <span className="font-mono text-sm">
-          {student.studentProfile?.studentId || student.id?.substring(0, 8) || 'N/A'}
+          {student.studentProfile?.studentId || student.id?.substring(0, 8) || t('common.notAvailable')}
         </span>
       ),
     },
@@ -111,7 +111,7 @@ const StudentList = ({
       sortable: true,
       render: (_, student) => {
         const fullName = student.fullName || student.user?.fullName || getFullName(student.user?.firstName, student.user?.lastName);
-        const initials = fullName?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
+        const initials = fullName?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || t('common.initialsFallback');
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">

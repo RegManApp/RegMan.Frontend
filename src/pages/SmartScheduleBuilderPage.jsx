@@ -5,20 +5,34 @@ import { useAuth } from '../contexts/AuthContext';
 import { courseApi, smartScheduleApi } from '../api';
 import { PageHeader, Card, Button, Loading, EmptyState, SearchableSelect, Input, Select, Badge } from '../components/common';
 
-const dayOptions = [
-  { value: '', label: 'None' },
-  { value: 'Monday', label: 'Monday' },
-  { value: 'Tuesday', label: 'Tuesday' },
-  { value: 'Wednesday', label: 'Wednesday' },
-  { value: 'Thursday', label: 'Thursday' },
-  { value: 'Friday', label: 'Friday' },
-  { value: 'Saturday', label: 'Saturday' },
-  { value: 'Sunday', label: 'Sunday' },
+const buildDayOptions = (t) => [
+  { value: '', label: t('smartScheduleBuilder.days.none') },
+  { value: 'Monday', label: t('common.days.monday') },
+  { value: 'Tuesday', label: t('common.days.tuesday') },
+  { value: 'Wednesday', label: t('common.days.wednesday') },
+  { value: 'Thursday', label: t('common.days.thursday') },
+  { value: 'Friday', label: t('common.days.friday') },
+  { value: 'Saturday', label: t('common.days.saturday') },
+  { value: 'Sunday', label: t('common.days.sunday') },
 ];
+
+const getDayKey = (value) => {
+  const v = String(value || '').toLowerCase();
+  if (v === 'sunday') return 'sunday';
+  if (v === 'monday') return 'monday';
+  if (v === 'tuesday') return 'tuesday';
+  if (v === 'wednesday') return 'wednesday';
+  if (v === 'thursday') return 'thursday';
+  if (v === 'friday') return 'friday';
+  if (v === 'saturday') return 'saturday';
+  return null;
+};
 
 export default function SmartScheduleBuilderPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+
+  const dayOptions = useMemo(() => buildDayOptions(t), [t]);
 
   const [courses, setCourses] = useState([]);
   const [loadingCourses, setLoadingCourses] = useState(true);
@@ -125,30 +139,30 @@ export default function SmartScheduleBuilderPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Smart Schedule Builder"
-        description="Deterministic recommendations with clear explanations."
+        title={t('nav.smartSchedule')}
+        description={t('smartScheduleBuilder.description')}
       />
 
       <Card>
         <div className="p-6 space-y-6">
           {loadingCourses ? (
-            <Loading text="Loading courses..." />
+            <Loading text={t('smartScheduleBuilder.loading.courses')} />
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <SearchableSelect
                   name="course"
-                  label="Add course"
+                  label={t('smartScheduleBuilder.fields.addCourse')}
                   options={courseOptions}
                   value={selectedCourse ? (selectedCourse.courseId || selectedCourse.id) : ''}
                   onChange={(opt) => setSelectedCourse(opt)}
                   getOptionLabel={(opt) => opt.label || `${opt.courseCode || ''} ${opt.courseName || ''}`.trim()}
                   getOptionValue={(opt) => opt.courseId || opt.id}
-                  placeholder="Search course code or name..."
+                  placeholder={t('smartScheduleBuilder.placeholders.searchCourse')}
                 />
                 <div className="flex items-end gap-2">
                   <Button onClick={addCourse} disabled={!selectedCourse}>
-                    Add
+                    {t('common.add')}
                   </Button>
                   <Button
                     variant="outline"
@@ -158,17 +172,17 @@ export default function SmartScheduleBuilderPage() {
                     }}
                     disabled={selectedCourses.length === 0 && !result}
                   >
-                    Reset
+                    {t('common.reset')}
                   </Button>
                 </div>
               </div>
 
               <div>
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Selected courses
+                  {t('smartScheduleBuilder.sections.selectedCourses')}
                 </div>
                 {selectedCourses.length === 0 ? (
-                  <div className="text-sm text-gray-500 dark:text-gray-400">No courses selected yet.</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{t('smartScheduleBuilder.empty.selectedCourses')}</div>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {selectedCourses.map((c) => {
@@ -179,7 +193,7 @@ export default function SmartScheduleBuilderPage() {
                           key={id}
                           onClick={() => removeCourse(id)}
                           className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm"
-                          title="Remove"
+                          title={t('common.remove')}
                         >
                           <span className="text-gray-900 dark:text-white">{label}</span>
                           <span className="text-gray-400">×</span>
@@ -192,25 +206,25 @@ export default function SmartScheduleBuilderPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Input
-                  label="Earliest start (HH:mm)"
+                  label={t('smartScheduleBuilder.fields.earliestStart')}
                   value={earliestStart}
                   onChange={(e) => setEarliestStart(e.target.value)}
-                  placeholder="09:00"
+                  placeholder={t('smartScheduleBuilder.placeholders.earliestStart')}
                 />
                 <Input
-                  label="Latest end (HH:mm)"
+                  label={t('smartScheduleBuilder.fields.latestEnd')}
                   value={latestEnd}
                   onChange={(e) => setLatestEnd(e.target.value)}
-                  placeholder="18:00"
+                  placeholder={t('smartScheduleBuilder.placeholders.latestEnd')}
                 />
                 <Select
-                  label="Avoid day (hard)"
+                  label={t('smartScheduleBuilder.fields.avoidDayHard')}
                   value={avoidDay}
                   onChange={(e) => setAvoidDay(e.target.value)}
                   options={dayOptions}
                 />
                 <Select
-                  label="Prefer day off (soft)"
+                  label={t('smartScheduleBuilder.fields.preferDayOffSoft')}
                   value={preferredDayOff}
                   onChange={(e) => setPreferredDayOff(e.target.value)}
                   options={dayOptions}
@@ -225,13 +239,13 @@ export default function SmartScheduleBuilderPage() {
                   onChange={(e) => setPreferCompact(e.target.checked)}
                 />
                 <label htmlFor="preferCompact" className="text-sm text-gray-700 dark:text-gray-200">
-                  Prefer compact schedule (fewer gaps)
+                  {t('smartScheduleBuilder.fields.preferCompact')}
                 </label>
               </div>
 
               <div>
                 <Button onClick={build} disabled={isBuilding}>
-                  {isBuilding ? 'Building…' : 'Build Schedule'}
+                  {isBuilding ? t('smartScheduleBuilder.actions.building') : t('smartScheduleBuilder.actions.build')}
                 </Button>
               </div>
             </>
@@ -243,21 +257,30 @@ export default function SmartScheduleBuilderPage() {
         <div className="p-6">
           {!result ? (
             <EmptyState
-              title="No recommendation yet"
-              description="Select courses and click Build Schedule."
+              title={t('smartScheduleBuilder.empty.recommendationTitle')}
+              description={t('smartScheduleBuilder.empty.recommendationDescription')}
             />
           ) : (
             <div className="space-y-6">
               <div className="flex flex-wrap gap-3">
-                <Badge variant="info">Scheduled: {result.metrics?.coursesScheduled}/{result.metrics?.coursesRequested}</Badge>
-                <Badge variant="info">Days: {result.metrics?.distinctClassDays ?? 0}</Badge>
-                <Badge variant="info">Gaps: {result.metrics?.totalGapMinutes ?? 0} min</Badge>
-                {result.metrics?.earliestClassStart && <Badge variant="info">Earliest: {result.metrics.earliestClassStart}</Badge>}
-                {result.metrics?.latestClassEnd && <Badge variant="info">Latest: {result.metrics.latestClassEnd}</Badge>}
+                <Badge variant="info">
+                  {t('smartScheduleBuilder.metrics.scheduled', {
+                    scheduled: result.metrics?.coursesScheduled ?? 0,
+                    requested: result.metrics?.coursesRequested ?? 0,
+                  })}
+                </Badge>
+                <Badge variant="info">{t('smartScheduleBuilder.metrics.days', { count: result.metrics?.distinctClassDays ?? 0 })}</Badge>
+                <Badge variant="info">{t('smartScheduleBuilder.metrics.gaps', { minutes: result.metrics?.totalGapMinutes ?? 0 })}</Badge>
+                {result.metrics?.earliestClassStart && (
+                  <Badge variant="info">{t('smartScheduleBuilder.metrics.earliest', { time: result.metrics.earliestClassStart })}</Badge>
+                )}
+                {result.metrics?.latestClassEnd && (
+                  <Badge variant="info">{t('smartScheduleBuilder.metrics.latest', { time: result.metrics.latestClassEnd })}</Badge>
+                )}
               </div>
 
               <div>
-                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Recommended sections</div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('smartScheduleBuilder.sections.recommended')}</div>
                 {result.recommendedSections?.length ? (
                   <div className="space-y-3">
                     {result.recommendedSections.map((r) => (
@@ -267,13 +290,17 @@ export default function SmartScheduleBuilderPage() {
                             {r.courseCode} {r.courseName} — {r.sectionName}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            Seats: {r.availableSeats}{r.instructorName ? ` • ${r.instructorName}` : ''}
+                            {t('smartScheduleBuilder.labels.seats', { seats: r.availableSeats ?? 0 })}{r.instructorName ? ` • ${r.instructorName}` : ''}
                           </div>
                         </div>
                         <div className="mt-2 text-sm text-gray-700 dark:text-gray-200">
                           {r.slots?.map((s, idx) => (
                             <div key={`${r.sectionId}-${idx}`}>
-                              {s.day}: {s.start}–{s.end} • {s.roomName || 'Room'} • {s.slotType}
+                              {(() => {
+                                const key = getDayKey(s.day);
+                                const label = key ? t(`common.days.${key}`) : String(s.day || '');
+                                return label;
+                              })()}: {s.start}–{s.end} • {s.roomName || t('common.room')} • {s.slotType}
                             </div>
                           ))}
                         </div>
@@ -281,13 +308,13 @@ export default function SmartScheduleBuilderPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-sm text-gray-500 dark:text-gray-400">No sections could be scheduled.</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{t('smartScheduleBuilder.empty.noSectionsScheduled')}</div>
                 )}
               </div>
 
               {result.unscheduledCourses?.length ? (
                 <div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Couldn’t schedule</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('smartScheduleBuilder.sections.couldNotSchedule')}</div>
                   <div className="space-y-2">
                     {result.unscheduledCourses.map((u) => (
                       <div key={u.courseId} className="text-sm text-gray-700 dark:text-gray-200">
@@ -300,7 +327,7 @@ export default function SmartScheduleBuilderPage() {
 
               {result.explanation?.length ? (
                 <div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Explanation</div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('smartScheduleBuilder.sections.explanation')}</div>
                   <div className="space-y-2">
                     {result.explanation.map((line, idx) => (
                       <div key={idx} className="text-sm text-gray-700 dark:text-gray-200">{line}</div>

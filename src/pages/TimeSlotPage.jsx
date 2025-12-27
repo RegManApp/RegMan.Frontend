@@ -36,6 +36,18 @@ const normalizeDay = (value) => {
   return value;
 };
 
+const getDayKey = (value) => {
+  const v = String(value || '').toLowerCase();
+  if (v === 'sunday') return 'sunday';
+  if (v === 'monday') return 'monday';
+  if (v === 'tuesday') return 'tuesday';
+  if (v === 'wednesday') return 'wednesday';
+  if (v === 'thursday') return 'thursday';
+  if (v === 'friday') return 'friday';
+  if (v === 'saturday') return 'saturday';
+  return null;
+};
+
 const TimeSlotPage = () => {
   const { t } = useTranslation();
   const modal = useModal(false);
@@ -123,10 +135,10 @@ const TimeSlotPage = () => {
 
   const columns = useMemo(
     () => [
-      { key: "timeSlotId", header: "ID", sortable: true },
+      { key: "timeSlotId", header: t('common.id'), sortable: true },
       {
         key: "roomId",
-        header: "Room",
+        header: t('timeSlots.fields.room'),
         sortable: true,
         render: (value) => {
           const room = roomById.get(String(value));
@@ -135,37 +147,41 @@ const TimeSlotPage = () => {
       },
       {
         key: "day",
-        header: "Day",
+        header: t('timeSlots.fields.day'),
         sortable: true,
-        render: (value) => normalizeDay(value),
+        render: (value) => {
+          const normalized = normalizeDay(value);
+          const key = getDayKey(normalized);
+          return key ? t(`common.days.${key}`) : normalized;
+        },
       },
       {
         key: "startTime",
-        header: "Start Time",
+        header: t('timeSlots.fields.startTime'),
         render: (value) => normalizeTime(value),
       },
       {
         key: "endTime",
-        header: "End Time",
+        header: t('timeSlots.fields.endTime'),
         render: (value) => normalizeTime(value),
       },
       {
         key: "actions",
-        header: "Actions",
+        header: t('common.actions'),
         render: (_, row) => (
           <Button size="sm" variant="outline" onClick={() => openEditModal(row)}>
-            Edit
+            {t('common.edit')}
           </Button>
         ),
       },
     ],
-    [roomById]
+    [roomById, t]
   );
 
   return (
-    <Card title="Time Slots">
+    <Card title={t('nav.timeSlots')}>
       <div className="mb-4 flex justify-end">
-        <Button onClick={openCreateModal}>Add Time Slot</Button>
+        <Button onClick={openCreateModal}>{t('timeSlots.actions.addTimeSlot')}</Button>
       </div>
       {timeSlotsError ? (
         <div className="mb-3 text-sm text-red-600 dark:text-red-400">{timeSlotsError}</div>
@@ -179,11 +195,11 @@ const TimeSlotPage = () => {
       <Modal
         isOpen={modal.isOpen}
         onClose={closeModal}
-        title={modal.data?.mode === "edit" ? "Edit Time Slot" : "Add Time Slot"}
+        title={modal.data?.mode === "edit" ? t('timeSlots.modals.editTitle') : t('timeSlots.modals.createTitle')}
       >
         <form onSubmit={form.handleSubmit} className="space-y-4">
           <label className="block">
-            Room
+            {t('timeSlots.fields.room')}
             <select
               name="roomId"
               value={form.values.roomId}
@@ -191,7 +207,7 @@ const TimeSlotPage = () => {
               className="block w-full border rounded p-2"
               required
             >
-              <option value="">Select a room</option>
+              <option value="">{t('timeSlots.placeholders.selectRoom')}</option>
               {rooms.map((room) => (
                 <option key={room.roomId} value={room.roomId}>
                   {room.building} - {room.roomNumber}
@@ -200,7 +216,7 @@ const TimeSlotPage = () => {
             </select>
           </label>
           <label className="block">
-            Day
+            {t('timeSlots.fields.day')}
             <select
               name="day"
               value={form.values.day}
@@ -209,12 +225,12 @@ const TimeSlotPage = () => {
               required
             >
               {daysOfWeek.map((d) => (
-                <option key={d} value={d}>{d}</option>
+                <option key={d} value={d}>{t(`common.days.${getDayKey(d) || 'monday'}`)}</option>
               ))}
             </select>
           </label>
           <Input
-            label="Start Time"
+            label={t('timeSlots.fields.startTime')}
             name="startTime"
             value={form.values.startTime}
             onChange={form.handleChange}
@@ -222,7 +238,7 @@ const TimeSlotPage = () => {
             type="time"
           />
           <Input
-            label="End Time"
+            label={t('timeSlots.fields.endTime')}
             name="endTime"
             value={form.values.endTime}
             onChange={form.handleChange}
@@ -231,10 +247,10 @@ const TimeSlotPage = () => {
           />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={closeModal}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={form.isSubmitting || isLoadingRooms}>
-              {modal.data?.mode === "edit" ? "Save" : "Create"}
+              {modal.data?.mode === "edit" ? t('common.save') : t('common.create')}
             </Button>
           </div>
         </form>

@@ -1,12 +1,13 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { Modal, Select, Button } from '../common';
 
 // SlotType enum matching backend
 const SLOT_TYPES = [
-  { value: '0', label: 'Lecture' },
-  { value: '1', label: 'Lab' },
-  { value: '2', label: 'Tutorial' },
+  { value: '0', key: 'lecture' },
+  { value: '1', key: 'lab' },
+  { value: '2', key: 'tutorial' },
 ];
 
 const ScheduleForm = ({
@@ -20,6 +21,7 @@ const ScheduleForm = ({
   instructors = [],
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const isEditing = Boolean(schedule?.scheduleSlotId || schedule?.id);
 
   const {
@@ -90,8 +92,9 @@ const ScheduleForm = ({
 
   // Helper to format day name
   const getDayName = (dayNum) => {
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[dayNum] || 'Unknown';
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const key = dayKeys[dayNum];
+    return key ? t(`common.days.${key}`) : t('common.notAvailable');
   };
 
   // Helper to format time
@@ -109,10 +112,10 @@ const ScheduleForm = ({
   };
 
   const sectionOptions = [
-    { value: '', label: 'Select Section' },
+    { value: '', label: t('schedules.form.placeholders.selectSection') },
     ...sections.map((section) => {
       const sectionId = section.sectionId || section.id;
-      const courseName = section.courseSummary?.courseName || section.courseName || section.course?.courseName || 'Unknown Course';
+      const courseName = section.courseSummary?.courseName || section.courseName || section.course?.courseName || t('common.notAvailable');
       const courseCode = section.courseSummary?.courseCode || section.courseCode || '';
       const sectionName = section.sectionName || `Section ${sectionId}`;
       return {
@@ -123,7 +126,7 @@ const ScheduleForm = ({
   ];
 
   const roomOptions = [
-    { value: '', label: 'Select Room' },
+    { value: '', label: t('schedules.form.placeholders.selectRoom') },
     ...rooms.map((room) => ({
       value: (room.roomId || room.id)?.toString() || '',
       label: `${room.building || ''} ${room.roomNumber || ''} (Cap: ${room.capacity || 0})`,
@@ -131,7 +134,7 @@ const ScheduleForm = ({
   ];
 
   const timeSlotOptions = [
-    { value: '', label: 'Select Time Slot' },
+    { value: '', label: t('schedules.form.placeholders.selectTimeSlot') },
     ...timeSlots.map((slot) => ({
       value: (slot.timeSlotId || slot.id)?.toString() || '',
       label: `${getDayName(slot.day)} ${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}`,
@@ -139,62 +142,67 @@ const ScheduleForm = ({
   ];
 
   const instructorOptions = [
-    { value: '', label: 'Select Instructor' },
+    { value: '', label: t('schedules.form.placeholders.selectInstructor') },
     ...instructors.map((instructor) => ({
       value: (instructor.instructorId || instructor.id)?.toString() || '',
-      label: instructor.fullName || `${instructor.firstName || ''} ${instructor.lastName || ''}`.trim() || 'Unknown',
+      label: instructor.fullName || `${instructor.firstName || ''} ${instructor.lastName || ''}`.trim() || t('common.notAvailable'),
     })),
   ];
+
+  const slotTypeOptions = SLOT_TYPES.map((slotType) => ({
+    value: slotType.value,
+    label: t(`sections.slotTypes.${slotType.key}`),
+  }));
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Edit Schedule Slot' : 'Add New Schedule Slot'}
+      title={isEditing ? t('schedules.form.editTitle') : t('schedules.form.createTitle')}
       size="lg"
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         <Select
-          label="Section"
+          label={t('schedules.form.fields.section')}
           options={sectionOptions}
           error={errors.sectionId?.message}
-          {...register('sectionId', { required: 'Section is required' })}
+          {...register('sectionId', { required: t('schedules.form.validation.sectionRequired') })}
         />
 
         <Select
-          label="Instructor"
+          label={t('schedules.form.fields.instructor')}
           options={instructorOptions}
           error={errors.instructorId?.message}
-          {...register('instructorId', { required: 'Instructor is required' })}
+          {...register('instructorId', { required: t('schedules.form.validation.instructorRequired') })}
         />
 
         <Select
-          label="Room"
+          label={t('schedules.form.fields.room')}
           options={roomOptions}
           error={errors.roomId?.message}
-          {...register('roomId', { required: 'Room is required' })}
+          {...register('roomId', { required: t('schedules.form.validation.roomRequired') })}
         />
 
         <Select
-          label="Time Slot"
+          label={t('schedules.form.fields.timeSlot')}
           options={timeSlotOptions}
           error={errors.timeSlotId?.message}
-          {...register('timeSlotId', { required: 'Time slot is required' })}
+          {...register('timeSlotId', { required: t('schedules.form.validation.timeSlotRequired') })}
         />
 
         <Select
-          label="Slot Type"
-          options={SLOT_TYPES}
+          label={t('schedules.form.fields.slotType')}
+          options={slotTypeOptions}
           error={errors.slotType?.message}
           {...register('slotType')}
         />
 
         <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" loading={isLoading}>
-            {isEditing ? 'Update' : 'Create'} Schedule
+            {isEditing ? t('schedules.form.actions.updateSchedule') : t('schedules.form.actions.createSchedule')}
           </Button>
         </div>
       </form>

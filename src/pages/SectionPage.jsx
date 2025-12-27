@@ -244,32 +244,32 @@ const SectionPage = () => {
   };
 
   return (
-    <Card title="Sections">
+    <Card title={t('nav.sections')}>
       <div className="mb-4 flex justify-end">
         {/* Simplified button logic: only disable if no rooms available */}
         <Button
           onClick={() => handleOpenModal()}
           disabled={rooms.length === 0}
-          title={rooms.length === 0 ? 'No rooms available' : ''}
+          title={rooms.length === 0 ? t('sections.messages.noRoomsAvailable') : ''}
         >
-          Add Section
+          {t('sections.actions.addSection')}
         </Button>
       </div>
       {(!loading && sections.length === 0) ? (
-        <div className="text-center text-gray-500 py-8">No sections available.</div>
+        <div className="text-center text-gray-500 py-8">{t('sections.empty.noSections')}</div>
       ) : (
         <Table
           columns={[
-            { key: "sectionId", header: "ID" },
-            { key: "semester", header: "Semester" },
+            { key: "sectionId", header: t('common.id') },
+            { key: "semester", header: t('sections.fields.semester') },
             {
               key: "year",
-              header: "Year",
+              header: t('sections.fields.year'),
               render: (val) => val ? (typeof val === 'string' ? val.slice(0, 4) : new Date(val).getFullYear()) : ""
             },
             {
               key: "instructorId",
-              header: "Instructor",
+              header: t('sections.fields.instructor'),
               render: (val, row) => {
                 const inst = instructors.find(i => i.id === String(val) || i.instructorId === String(val));
                 return inst ? inst.fullName : val;
@@ -277,16 +277,16 @@ const SectionPage = () => {
             },
             {
               key: "courseId",
-              header: "Course",
+              header: t('sections.fields.course'),
               render: (val, row) => {
                 const course = courses.find(c => String(c.id) === String(val) || String(c.courseId) === String(val));
                 return course ? (course.courseName || course.name || course.courseCode) : val;
               }
             },
-            { key: "availableSeats", header: "Seats" },
+            { key: "availableSeats", header: t('sections.fields.availableSeats') },
             {
               key: "roomId",
-              header: "Room",
+              header: t('sections.fields.room'),
               render: (val, row) => {
                 const room = rooms.find(r => String(r.id) === String(val) || String(r.roomId) === String(val));
                 return room ? (room.roomNumber || room.name || val) : val;
@@ -294,7 +294,7 @@ const SectionPage = () => {
             },
             {
               key: "timeSlotId",
-              header: "Time Slot",
+              header: t('sections.fields.timeSlot'),
               render: (val, row) => {
                 const slot = timeSlots.find(s => String(s.timeSlotId) === String(val) || String(s.id) === String(val));
                 return slot ? `${slot.day || ''} ${slot.startTime || ''} - ${slot.endTime || ''}`.trim() : val;
@@ -302,19 +302,23 @@ const SectionPage = () => {
             },
             {
               key: "slotType",
-              header: "Type",
-              render: (val) => val || "Lecture"
+              header: t('common.type'),
+              render: (val) => {
+                const normalized = String(val || 'Lecture');
+                const key = normalized.toLowerCase() === 'lecture' ? 'lecture' : null;
+                return key ? t(`sections.slotTypes.${key}`) : normalized;
+              }
             },
             {
               key: "actions",
-              header: "Actions",
+              header: t('common.actions'),
               render: (_val, row) => (
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => handleOpenModal(row)}>
-                    Edit
+                    {t('common.edit')}
                   </Button>
                   <Button size="sm" variant="danger" onClick={() => handleDelete(row.sectionId || row.id)}>
-                    Delete
+                    {t('common.delete')}
                   </Button>
                 </div>
               ),
@@ -324,15 +328,15 @@ const SectionPage = () => {
           isLoading={loading}
         />
       )}
-      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? "Edit Section" : "Add Section"}>
+      <Modal isOpen={modalOpen} onClose={handleCloseModal} title={editId ? t('sections.modals.editTitle') : t('sections.modals.createTitle')}>
         {form.roomId && timeSlots.length === 0 && (
           <div className="text-red-600 text-sm mb-2">
-            No time slots exist for the selected room. Please add a time slot before creating a section.
+            {t('sections.errors.noTimeSlotsForSelectedRoom')}
           </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Semester<span className="text-red-500 ml-1">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{t('sections.fields.semester')}<span className="text-red-500 ml-1">*</span></label>
             <select
               name="semester"
               value={form.semester}
@@ -340,15 +344,15 @@ const SectionPage = () => {
               required
               className="block w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary-500"
             >
-              <option value="" disabled>Choose semester</option>
-              <option value="Fall">Fall</option>
-              <option value="Spring">Spring</option>
-              <option value="Summer">Summer</option>
+              <option value="" disabled>{t('sections.placeholders.chooseSemester')}</option>
+              <option value="Fall">{t('enums.semester.fall')}</option>
+              <option value="Spring">{t('enums.semester.spring')}</option>
+              <option value="Summer">{t('enums.semester.summer')}</option>
             </select>
           </div>
-          <Input label="Year" name="year" value={form.year} onChange={handleChange} required />
+          <Input label={t('sections.fields.year')} name="year" value={form.year} onChange={handleChange} required />
           <SearchableSelect
-            label="Instructor"
+            label={t('sections.fields.instructor')}
             name="instructorId"
             value={form.instructorId}
             onChange={handleSelectChange("instructorId")}
@@ -359,7 +363,7 @@ const SectionPage = () => {
             disabled={dropdownLoading}
           />
           <SearchableSelect
-            label="Course"
+            label={t('sections.fields.course')}
             name="courseId"
             value={form.courseId}
             onChange={handleSelectChange("courseId")}
@@ -370,7 +374,7 @@ const SectionPage = () => {
             disabled={dropdownLoading}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Available Seats<span className="text-red-500 ml-1">*</span></label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">{t('sections.fields.availableSeats')}<span className="text-red-500 ml-1">*</span></label>
             <select
               name="availableSeats"
               value={form.availableSeats}
@@ -378,14 +382,14 @@ const SectionPage = () => {
               required
               className="block w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary-500"
             >
-              <option value="" disabled>Choose seats</option>
+              <option value="" disabled>{t('sections.placeholders.chooseSeats')}</option>
               {Array.from({ length: 31 }, (_, i) => 30 + i).map(seats => (
                 <option key={seats} value={seats}>{seats}</option>
               ))}
             </select>
           </div>
           <SearchableSelect
-            label="Room"
+            label={t('sections.fields.room')}
             name="roomId"
             value={form.roomId}
             onChange={handleSelectChange("roomId")}
@@ -396,7 +400,7 @@ const SectionPage = () => {
             disabled={dropdownLoading}
           />
           <SearchableSelect
-            label="Time Slot"
+            label={t('sections.fields.timeSlot')}
             name="timeSlotId"
             value={form.timeSlotId}
             onChange={handleSelectChange("timeSlotId")}
@@ -411,13 +415,13 @@ const SectionPage = () => {
             required
             disabled={dropdownLoading || !form.roomId}
           />
-          <Input label="Slot Type" name="slotType" value={form.slotType} onChange={handleChange} required />
+          <Input label={t('sections.fields.slotType')} name="slotType" value={form.slotType} onChange={handleChange} required />
           <div className="flex justify-end gap-2">
             <Button type="button" variant="secondary" onClick={handleCloseModal}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={form.roomId && timeSlots.length === 0}>
-              {editId ? "Update" : "Create"}
+              {editId ? t('common.update') : t('common.create')}
             </Button>
           </div>
         </form>
@@ -426,10 +430,10 @@ const SectionPage = () => {
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                Schedule Slots
+                {t('sections.scheduleSlots.title')}
               </h3>
               <Button size="sm" variant="outline" onClick={() => refetchSectionSlots()}>
-                Refresh
+                {t('common.refresh')}
               </Button>
             </div>
 
@@ -442,14 +446,14 @@ const SectionPage = () => {
             <Table
               isLoading={isLoadingSectionSlots}
               columns={[
-                { key: "scheduleSlotId", header: "ID" },
-                { key: "slotType", header: "Type" },
-                { key: "timeSlot", header: "Time" },
-                { key: "room", header: "Room" },
-                { key: "instructorName", header: "Instructor" },
+                { key: "scheduleSlotId", header: t('common.id') },
+                { key: "slotType", header: t('common.type') },
+                { key: "timeSlot", header: t('common.time') },
+                { key: "room", header: t('common.room') },
+                { key: "instructorName", header: t('sections.fields.instructor') },
               ]}
               data={Array.isArray(sectionScheduleSlots) ? sectionScheduleSlots : []}
-              emptyMessage="No schedule slots for this section."
+              emptyMessage={t('sections.scheduleSlots.empty')}
             />
           </div>
         )}

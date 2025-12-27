@@ -277,7 +277,7 @@ const GpaPage = () => {
                       <div className="text-sm text-gray-500 dark:text-gray-400">{enrollment.courseCode}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {enrollment.sectionName || 'N/A'} - {enrollment.semester}
+                      {enrollment.sectionName || t('common.notAvailable')} - {enrollment.semester}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {enrollment.creditHours}
@@ -303,12 +303,12 @@ const GpaPage = () => {
                               : 'bg-red-100 text-red-800'
                             : 'bg-gray-100 text-gray-800'
                         }`}>
-                          {enrollment.grade || 'N/A'}
+                          {enrollment.grade || t('common.notAvailable')}
                         </span>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {enrollment.gradePoints?.toFixed(1) ?? '-'}
+                      {enrollment.gradePoints?.toFixed(1) ?? t('common.notAvailable')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -433,7 +433,7 @@ const GpaPage = () => {
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400">{t('gpa.simulatedGpa')}</div>
               <div className="text-2xl font-bold text-primary-600">
-                {simulatedGpa ? simulatedGpa.simulatedGPA.toFixed(2) : '-'}
+                {simulatedGpa ? simulatedGpa.simulatedGPA.toFixed(2) : t('common.notAvailable')}
               </div>
             </div>
             <div>

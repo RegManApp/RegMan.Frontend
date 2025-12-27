@@ -7,8 +7,10 @@ import {
   Table,
 } from '../common';
 import { getFullName, getStatusColor, formatDate } from '../../utils/helpers';
+import { useTranslation } from 'react-i18next';
 
 const StudentDetails = ({ student, onEdit, onBack }) => {
+  const { t } = useTranslation();
   if (!student) return null;
 
   // Get the full name from either fullName or user.fullName
@@ -39,7 +41,7 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
     {
       key: 'grade',
       header: 'Grade',
-      render: (value) => value || '-',
+      render: (value) => value || t('common.notAvailable'),
     },
     {
       key: 'status',
@@ -66,10 +68,10 @@ const StudentDetails = ({ student, onEdit, onBack }) => {
                 {studentName}
               </h2>
               <p className="text-gray-500 dark:text-gray-400">
-                ID: {student.studentProfile?.studentId || student.id?.substring(0, 8) || 'N/A'}
+                ID: {student.studentProfile?.studentId || student.id?.substring(0, 8) || t('common.notAvailable')}
               </p>
               <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 mt-2">
-                {student.role || 'Student'}
+                {student.role || t('enums.userRole.student')}
               </Badge>
             </div>
           </div>

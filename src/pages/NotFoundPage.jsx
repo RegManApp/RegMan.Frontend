@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/common';
+import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="text-center">
@@ -9,14 +12,14 @@ const NotFoundPage = () => {
           404
         </h1>
         <h2 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">
-          Page not found
+          {t('notFound.title')}
         </h2>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Sorry, we couldn't find the page you're looking for.
+          {t('notFound.description')}
         </p>
         <div className="mt-6">
           <Link to="/dashboard">
-            <Button>Go back home</Button>
+            <Button>{t('notFound.goHome')}</Button>
           </Link>
         </div>
       </div>

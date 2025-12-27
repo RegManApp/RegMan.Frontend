@@ -29,7 +29,7 @@ const InstructorDetailPage = () => {
         const res = await instructorApi.getById(id);
         setInstructor(res?.data ?? res);
       } catch (error) {
-        console.error('Failed to fetch instructor:', error);
+        console.error(error);
         toast.error(t('instructors.errors.detailsFetchFailed'));
         navigate('/instructors');
       } finally {
@@ -44,7 +44,7 @@ const InstructorDetailPage = () => {
         const schedulesData = res?.data ?? res;
         setSchedules(Array.isArray(schedulesData) ? schedulesData : schedulesData?.items || []);
       } catch (error) {
-        console.error('Failed to fetch schedules:', error);
+        console.error(error);
         setSchedules([]);
       } finally {
         setIsLoadingSchedules(false);
@@ -76,7 +76,7 @@ const InstructorDetailPage = () => {
       const updatedRes = await instructorApi.getById(id);
       setInstructor(updatedRes?.data ?? updatedRes);
     } catch (error) {
-      console.error('Failed to update instructor:', error);
+      console.error(error);
       toast.error(t('instructors.errors.updateFailed'));
     } finally {
       setIsSubmitting(false);
@@ -91,27 +91,27 @@ const InstructorDetailPage = () => {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Access Denied
+          {t('common.accessDeniedTitle')}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          You don't have permission to view this page.
+          {t('common.accessDeniedMessage')}
         </p>
       </div>
     );
   }
 
   if (isLoading) {
-    return <Loading text="Loading instructor details..." />;
+    return <Loading text={t('instructors.detailsPage.loading')} />;
   }
 
   if (!instructor) {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Instructor Not Found
+          {t('instructors.detailsPage.notFoundTitle')}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          The instructor you're looking for doesn't exist.
+          {t('instructors.detailsPage.notFoundMessage')}
         </p>
       </div>
     );
@@ -120,8 +120,12 @@ const InstructorDetailPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Instructor Details"
-        description={`Viewing details for ${instructor.fullName || instructor.user?.firstName + ' ' + instructor.user?.lastName}`}
+        title={t('instructors.detailsPage.title')}
+        description={t('instructors.detailsPage.description', {
+          name:
+            instructor.fullName ||
+            instructor.user?.firstName + ' ' + instructor.user?.lastName,
+        })}
       />
 
       <InstructorDetails

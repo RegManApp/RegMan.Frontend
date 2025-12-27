@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createEnrollmentSchema, updateEnrollmentSchema } from '../../utils/validators';
@@ -15,6 +16,7 @@ const EnrollmentForm = ({
   sections = [],
   isLoading,
 }) => {
+  const { t } = useTranslation();
   const isEditing = !!enrollment?.enrollmentId || !!enrollment?.id;
 
   const {
@@ -66,7 +68,7 @@ const EnrollmentForm = ({
 
   // Student options using User.Id (string) as value
   const studentOptions = students.map((student) => {
-    const name = student.fullName || student.user?.fullName || 'Unknown';
+    const name = student.fullName || student.user?.fullName || t('common.notAvailable');
     const studentNumber = student.studentProfile?.studentId || student.studentId || '';
     return {
       value: student.id, // User.Id (string GUID)
@@ -102,7 +104,7 @@ const EnrollmentForm = ({
   }));
 
   const gradeOptions = [
-    { value: '', label: 'No Grade' },
+    { value: '', label: t('enrollments.form.noGrade') },
     ...GRADES.map((grade) => ({
       value: grade,
       label: grade,
@@ -115,23 +117,23 @@ const EnrollmentForm = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Edit Enrollment' : 'Create New Enrollment'}
+      title={isEditing ? t('enrollments.form.editTitle') : t('enrollments.form.createTitle')}
       size="md"
     >
       <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
         {!isEditing && (
           <>
             <Select
-              label="Student"
-              placeholder="Select a student (search by ID or name)"
+              label={t('enrollments.form.fields.student')}
+              placeholder={t('enrollments.form.placeholders.selectStudent')}
               options={studentOptions}
               error={errors.studentUserId?.message}
               filterOption={filterStudentOption}
               {...register('studentUserId')}
             />
             <Select
-              label="Section"
-              placeholder="Select a section to enroll in"
+              label={t('enrollments.form.fields.section')}
+              placeholder={t('enrollments.form.placeholders.selectSection')}
               options={sectionOptions}
               error={errors.sectionId?.message}
               {...register('sectionId')}
@@ -143,7 +145,7 @@ const EnrollmentForm = ({
           <>
             <div className="space-y-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <p className="text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Student: </span>
+                <span className="text-gray-500 dark:text-gray-400">{t('enrollments.form.summary.student')}: </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {getFullName(
                     enrollment?.student?.user?.firstName,
@@ -152,28 +154,28 @@ const EnrollmentForm = ({
                 </span>
               </p>
               <p className="text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Course: </span>
+                <span className="text-gray-500 dark:text-gray-400">{t('enrollments.form.summary.course')}: </span>
                 <span className="font-medium text-gray-900 dark:text-white">
                   {enrollment?.course?.courseName} ({enrollment?.course?.courseCode})
                 </span>
               </p>
               <p className="text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Semester: </span>
+                <span className="text-gray-500 dark:text-gray-400">{t('enrollments.form.summary.semester')}: </span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {enrollment?.semester || '-'}
+                  {enrollment?.semester || t('common.notAvailable')}
                 </span>
               </p>
             </div>
 
             <Select
-              label="Status"
+              label={t('enrollments.form.fields.status')}
               options={statusOptions}
               error={errors.status?.message}
               {...register('status', { valueAsNumber: true })}
             />
 
             <Select
-              label="Grade"
+              label={t('enrollments.form.fields.grade')}
               options={gradeOptions}
               error={errors.grade?.message}
               {...register('grade')}
@@ -183,10 +185,10 @@ const EnrollmentForm = ({
 
         <div className="flex justify-end gap-3 pt-4">
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" loading={isLoading}>
-            {isEditing ? 'Update Enrollment' : 'Create Enrollment'}
+            {isEditing ? t('enrollments.form.actions.updateEnrollment') : t('enrollments.form.actions.createEnrollment')}
           </Button>
         </div>
       </form>

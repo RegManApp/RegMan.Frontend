@@ -2,15 +2,10 @@ import { useMemo } from "react";
 import { Button, Card, Input, Table, TablePagination } from "../components/common";
 import { withdrawRequestsApi } from "../api/withdrawRequestsApi";
 import { useFetch, useTable } from "../hooks";
-
-const formatDateTime = (value) => {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleString();
-};
+import { useTranslation } from 'react-i18next';
 
 const WithdrawHistoryPage = () => {
+  const { t, i18n } = useTranslation();
   const {
     data: requests,
     isLoading,
@@ -19,6 +14,8 @@ const WithdrawHistoryPage = () => {
   } = useFetch(() => withdrawRequestsApi.getMyWithdrawRequests(), [], {
     initialData: [],
   });
+
+  const locale = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en-US';
 
   const rows = useMemo(() => requests || [], [requests]);
 
@@ -30,13 +27,13 @@ const WithdrawHistoryPage = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <Card title="Withdraw History">
+      <Card title={t('nav.withdrawHistory')}>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-end gap-3">
             <div className="flex-1">
               <Input
-                label="Search"
-                placeholder="Search by enrollment, status, reason..."
+                label={t('common.search')}
+                placeholder={t('withdrawHistory.placeholders.search')}
                 value={table.searchQuery}
                 onChange={(e) => table.setSearchQuery(e.target.value)}
               />
@@ -47,7 +44,7 @@ const WithdrawHistoryPage = () => {
               onClick={() => refetch()}
               disabled={isLoading}
             >
-              Refresh
+              {t('common.refresh')}
             </Button>
           </div>
 
@@ -58,27 +55,27 @@ const WithdrawHistoryPage = () => {
           <Table
             isLoading={isLoading}
             columns={[
-              { key: "requestId", header: "Request ID", sortable: true },
-              { key: "enrollmentId", header: "Enrollment ID", sortable: true },
-              { key: "status", header: "Status", sortable: true },
+              { key: "requestId", header: t('withdrawHistory.columns.requestId'), sortable: true },
+              { key: "enrollmentId", header: t('withdrawHistory.columns.enrollmentId'), sortable: true },
+              { key: "status", header: t('withdrawHistory.columns.status'), sortable: true },
               {
                 key: "submittedAtUtc",
-                header: "Submitted",
+                header: t('withdrawHistory.columns.submitted'),
                 sortable: true,
-                render: (value) => formatDateTime(value),
+                render: (value) => (value ? new Date(value).toLocaleString(locale) : t('common.notAvailable')),
               },
               {
                 key: "reviewedAtUtc",
-                header: "Reviewed",
+                header: t('withdrawHistory.columns.reviewed'),
                 sortable: true,
-                render: (value) => formatDateTime(value),
+                render: (value) => (value ? new Date(value).toLocaleString(locale) : t('common.notAvailable')),
               },
               {
                 key: "reason",
-                header: "Reason",
+                header: t('withdrawHistory.columns.reason'),
                 render: (value) => (
                   <span className="block max-w-[28rem] truncate" title={value || ""}>
-                    {value || "-"}
+                    {value || t('common.notAvailable')}
                   </span>
                 ),
               },
@@ -87,7 +84,7 @@ const WithdrawHistoryPage = () => {
             sortField={table.sortField}
             sortDirection={table.sortDirection}
             onSort={table.handleSort}
-            emptyMessage="No withdraw requests yet."
+            emptyMessage={t('withdrawHistory.empty')}
           />
 
           {table.totalItems > 0 && (

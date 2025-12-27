@@ -20,7 +20,7 @@ const InstructorList = ({
   pageSize = 10,
   onPageChange,
 }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, instructor: null });
   const [sortField, setSortField] = useState(null);
@@ -85,7 +85,7 @@ const InstructorList = ({
   const columns = [
     {
       key: 'fullName',
-      header: 'Name',
+      header: t('instructors.table.name'),
       sortable: true,
       render: (_, instructor) => (
         <div>
@@ -98,21 +98,21 @@ const InstructorList = ({
     },
     {
       key: 'degree',
-      header: 'Degree',
+      header: t('instructors.table.degree'),
       render: (value, instructor) => (
         <Badge variant="info" size="sm">
-          {getInstructorDegreeLabel(instructor.degree) || instructor.degreeDisplay || '-'}
+          {getInstructorDegreeLabel(instructor.degree) || instructor.degreeDisplay || t('common.notAvailable')}
         </Badge>
       ),
     },
     {
       key: 'department',
-      header: 'Department',
-      render: (value) => value || '-',
+      header: t('instructors.table.department'),
+      render: (value) => value || t('common.notAvailable'),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('common.actions'),
       render: (_, instructor) => (
         <div className="flex items-center gap-2">
           <Button
@@ -121,7 +121,7 @@ const InstructorList = ({
             icon={EyeIcon}
             onClick={() => navigate(`/instructors/${instructor.instructorId || instructor.id}`)}
           >
-            View
+            {t('instructors.actions.view')}
           </Button>
           <Button
             variant="ghost"
@@ -129,7 +129,7 @@ const InstructorList = ({
             icon={PencilIcon}
             onClick={() => onEdit?.(instructor)}
           >
-            Edit
+            {t('common.edit')}
           </Button>
           <Button
             variant="ghost"
@@ -138,7 +138,7 @@ const InstructorList = ({
             className="text-red-600 hover:text-red-700 dark:text-red-400"
             onClick={() => setDeleteModal({ isOpen: true, instructor })}
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </div>
       ),
@@ -149,12 +149,10 @@ const InstructorList = ({
     return (
       <Card>
         <EmptyState
-          title="No instructors yet"
-          description="Get started by adding your first instructor."
+          title={t('instructors.empty.title')}
+          description={t('instructors.empty.description')}
           action={
-            <Button icon={PlusIcon} onClick={onCreate}>
-              Add Instructor
-            </Button>
+            <Button icon={PlusIcon} onClick={onCreate}>{t('instructors.actions.add')}</Button>
           }
         />
       </Card>
@@ -169,19 +167,17 @@ const InstructorList = ({
             value={searchQuery}
             onChange={onSearchChange}
             onClear={() => onSearchChange?.('')}
-            placeholder="Search instructors..."
+            placeholder={t('instructors.searchPlaceholder')}
             className="w-full sm:w-80"
           />
-          <Button icon={PlusIcon} onClick={onCreate}>
-            Add Instructor
-          </Button>
+          <Button icon={PlusIcon} onClick={onCreate}>{t('instructors.actions.add')}</Button>
         </div>
 
         <Table
           columns={columns}
           data={sortedInstructors}
           isLoading={isLoading}
-          emptyMessage="No instructors found."
+          emptyMessage={t('instructors.empty.table')}
           sortField={sortField}
           sortDirection={sortDirection}
           onSort={handleSort}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../api/notificationApi';
 import {
@@ -11,6 +12,7 @@ import {
 import { FiBell, FiCheck, FiTrash2, FiX } from 'react-icons/fi';
 
 const NotificationBell = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -41,7 +43,7 @@ const NotificationBell = () => {
 
     startNotificationsConnection()
       .then(() => onNotificationReceived(handler))
-      .catch((e) => console.error('Failed to start notifications hub', e));
+      .catch((e) => console.error(e));
 
     return () => {
       try {
@@ -165,10 +167,16 @@ const NotificationBell = () => {
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
 
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    if (diffInSeconds < 60) return t('notifications.time.justNow');
+    if (diffInSeconds < 3600) {
+      return t('notifications.time.minutesAgo', { count: Math.floor(diffInSeconds / 60) });
+    }
+    if (diffInSeconds < 86400) {
+      return t('notifications.time.hoursAgo', { count: Math.floor(diffInSeconds / 3600) });
+    }
+    if (diffInSeconds < 604800) {
+      return t('notifications.time.daysAgo', { count: Math.floor(diffInSeconds / 86400) });
+    }
     return date.toLocaleDateString();
   };
 
@@ -179,7 +187,7 @@ const NotificationBell = () => {
       <button
         onClick={handleToggle}
         className="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-        aria-label="Notifications"
+        aria-label={t('notifications.a11y.openNotifications')}
       >
         <FiBell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -193,19 +201,20 @@ const NotificationBell = () => {
         <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
           {/* Header */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-white">{t('nav.notifications')}</h3>
             <div className="flex items-center gap-2">
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
                   className="text-xs text-primary-600 dark:text-primary-400 hover:underline"
                 >
-                  Mark all as read
+                  {t('notifications.actions.markAllRead')}
                 </button>
               )}
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                aria-label={t('common.close')}
               >
                 <FiX className="w-4 h-4" />
               </button>
@@ -220,18 +229,18 @@ const NotificationBell = () => {
               </div>
             ) : loadError ? (
               <div className="py-8 text-center text-gray-500 dark:text-gray-400">
-                <p>Couldn't load notifications.</p>
+                <p>{t('notifications.errors.fetchFailed')}</p>
                 <button
                   onClick={fetchNotifications}
                   className="mt-2 text-sm text-primary-600 dark:text-primary-400 hover:underline"
                 >
-                  Retry
+                  {t('common.retry')}
                 </button>
               </div>
             ) : notifications.length === 0 ? (
               <div className="py-8 text-center text-gray-500 dark:text-gray-400">
                 <FiBell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No notifications</p>
+                <p>{t('notifications.empty')}</p>
               </div>
             ) : (
               notifications.map((notification) => (

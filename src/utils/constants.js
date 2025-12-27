@@ -1,5 +1,7 @@
 // Application constants
 
+import i18n from "../i18n";
+
 export const APP_NAME = import.meta.env.VITE_APP_NAME || "RegMan";
 export const APP_VERSION = import.meta.env.VITE_APP_VERSION || "1.0.0";
 
@@ -138,7 +140,7 @@ export const TOAST_DURATION = 4000;
 // Helper functions for enums
 export const getStudentLevelLabel = (value) => {
   const level = STUDENT_LEVELS.find((l) => l.value === value);
-  return level?.label || "Unknown";
+  return level?.label || i18n.t("common.notAvailable");
 };
 
 export const getEnrollmentStatusLabel = (value) => {
@@ -151,30 +153,30 @@ export const getEnrollmentStatusLabel = (value) => {
   }
   // Handle numeric values
   const status = ENROLLMENT_STATUSES.find((s) => s.value === value);
-  return status?.label || "Unknown";
+  return status?.label || i18n.t("common.notAvailable");
 };
 
 export const getDayOfWeekLabel = (value) => {
   const day = DAYS_OF_WEEK.find((d) => d.value === value);
-  return day?.label || "Unknown";
+  return day?.label || i18n.t("common.notAvailable");
 };
 
 export const getInstructorDegreeLabel = (value) => {
   // Handle numeric values
   if (typeof value === "number") {
     const degree = INSTRUCTOR_DEGREES.find((d) => d.value === value);
-    return degree?.label || "Instructor";
+    return degree?.label || i18n.t("common.notAvailable");
   }
   // Handle string values
   const degree = INSTRUCTOR_DEGREE_STRINGS[value];
-  return degree?.label || value || "Instructor";
+  return degree?.label || value || i18n.t("common.notAvailable");
 };
 
 export const getInstructorDegreeShortLabel = (value) => {
   if (typeof value === "number") {
     const degree = INSTRUCTOR_DEGREES.find((d) => d.value === value);
-    return degree?.shortLabel || "Instr.";
+    return degree?.shortLabel || i18n.t("common.notAvailable");
   }
   const degree = INSTRUCTOR_DEGREE_STRINGS[value];
-  return degree?.shortLabel || value || "Instr.";
+  return degree?.shortLabel || value || i18n.t("common.notAvailable");
 };

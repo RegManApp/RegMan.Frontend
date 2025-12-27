@@ -56,7 +56,7 @@ const InstructorsPage = () => {
       }));
       setInstructors(normalizedInstructors);
     } catch (error) {
-      console.error('Failed to fetch instructors:', error);
+      console.error(error);
       toast.error(t('instructors.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
@@ -109,7 +109,7 @@ const InstructorsPage = () => {
       handleCloseForm();
       fetchInstructors();
     } catch (error) {
-      console.error('Failed to save instructor:', error);
+      console.error(error);
       toast.error(t('instructors.errors.saveFailed'));
     } finally {
       setIsSubmitting(false);
@@ -122,7 +122,7 @@ const InstructorsPage = () => {
       toast.success(t('instructors.toasts.deleted'));
       fetchInstructors();
     } catch (error) {
-      console.error('Failed to delete instructor:', error);
+      console.error(error);
       toast.error(t('instructors.errors.deleteFailed'));
     }
   };
@@ -135,10 +135,10 @@ const InstructorsPage = () => {
     return (
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-          Access Denied
+          {t('common.accessDeniedTitle')}
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mt-2">
-          You don't have permission to view this page.
+          {t('common.accessDeniedMessage')}
         </p>
       </div>
     );
@@ -147,8 +147,8 @@ const InstructorsPage = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Instructors"
-        description="Manage instructors and their information"
+        title={t('nav.instructors')}
+        description={t('instructors.page.description')}
       />
 
       <InstructorList

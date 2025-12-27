@@ -7,6 +7,8 @@ import {
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import Button from './Button';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
 
 const Table = ({
   columns,
@@ -15,9 +17,13 @@ const Table = ({
   sortField,
   sortDirection,
   onSort,
-  emptyMessage = 'No data available',
+  emptyMessage,
   className,
 }) => {
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
+  const resolvedEmptyMessage = emptyMessage ?? t('table.empty');
+
   const getSortIcon = (field) => {
     if (sortField !== field) {
       return <ChevronUpDownIcon className="w-4 h-4 text-gray-400" />;
@@ -50,13 +56,13 @@ const Table = ({
                 key={column.key}
                 scope="col"
                 className={cn(
-                  'px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider',
+                  `px-4 py-3 ${isRtl ? 'text-right' : 'text-left'} text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider`,
                   column.sortable && 'cursor-pointer select-none hover:bg-gray-100 dark:hover:bg-gray-700',
                   column.className
                 )}
                 onClick={() => column.sortable && onSort?.(column.key)}
               >
-                <div className="flex items-center gap-1">
+                <div className={cn('flex items-center gap-1', isRtl && 'flex-row-reverse justify-end')}>
                   {column.header}
                   {column.sortable && getSortIcon(column.key)}
                 </div>
@@ -71,7 +77,7 @@ const Table = ({
                 colSpan={columns.length}
                 className="px-4 py-8 text-center text-gray-500 dark:text-gray-400"
               >
-                {emptyMessage}
+                {resolvedEmptyMessage}
               </td>
             </tr>
           ) : (
@@ -109,38 +115,41 @@ export const TablePagination = ({
   onPageChange,
   className,
 }) => {
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
+  const PrevIcon = isRtl ? ChevronRightIcon : ChevronLeftIcon;
+  const NextIcon = isRtl ? ChevronLeftIcon : ChevronRightIcon;
+
   const startItem = (page - 1) * pageSize + 1;
   const endItem = Math.min(page * pageSize, totalItems);
 
   return (
     <div className={cn('flex items-center justify-between px-4 py-3', className)}>
       <div className="text-sm text-gray-700 dark:text-gray-300">
-        Showing <span className="font-medium">{startItem}</span> to{' '}
-        <span className="font-medium">{endItem}</span> of{' '}
-        <span className="font-medium">{totalItems}</span> results
+        {t('pagination.showing', { start: startItem, end: endItem, total: totalItems })}
       </div>
-      <div className="flex items-center gap-2">
+      <div className={cn('flex items-center gap-2', isRtl && 'flex-row-reverse')}>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          icon={ChevronLeftIcon}
+          icon={PrevIcon}
         >
-          Previous
+          {t('pagination.previous')}
         </Button>
         <span className="text-sm text-gray-700 dark:text-gray-300">
-          Page {page} of {totalPages}
+          {t('pagination.pageOf', { page, total: totalPages })}
         </span>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          icon={ChevronRightIcon}
-          iconPosition="right"
+          icon={NextIcon}
+          iconPosition={isRtl ? 'left' : 'right'}
         >
-          Next
+          {t('pagination.next')}
         </Button>
       </div>
     </div>

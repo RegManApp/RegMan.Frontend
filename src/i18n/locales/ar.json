@@ -3,6 +3,7 @@
     "name": "RegMan"
   },
   "common": {
+    "home": "الرئيسية",
     "language": "اللغة",
     "english": "EN",
     "arabic": "AR",
@@ -19,7 +20,14 @@
     "back": "رجوع",
     "search": "بحث",
     "select": "اختيار",
+    "initialsFallback": "??",
+    "viewAll": "عرض الكل",
     "user": "مستخدم",
+    "unknown": "غير معروف",
+    "na": "غير متاح",
+    "notAvailable": "غير متاح",
+    "notAssigned": "غير مخصص",
+    "notApplied": "غير مطبّق",
     "id": "المعرّف",
     "actions": "الإجراءات",
     "edit": "تعديل",
@@ -27,13 +35,321 @@
     "create": "إنشاء",
     "update": "تحديث",
     "confirm": "تأكيد",
+    "retry": "إعادة المحاولة",
     "confirmModal": {
       "title": "تأكيد الإجراء",
       "message": "هل أنت متأكد أنك تريد تنفيذ هذا الإجراء؟"
     },
     "prompts": {
       "cancelReasonOptional": "أدخل سبب الإلغاء (اختياري):"
+    },
+    "days": {
+      "sunday": "الأحد",
+      "monday": "الاثنين",
+      "tuesday": "الثلاثاء",
+      "wednesday": "الأربعاء",
+    "schedules": {
+      "form": {
+        "titles": {
+          "create": "إنشاء جدول",
+          "edit": "تعديل الجدول"
+        },
+        "fields": {
+          "instructor": "المدرس",
+          "course": "المقرر",
+          "section": "الشعبة",
+          "day": "اليوم",
+          "type": "النوع",
+          "startTime": "وقت البدء",
+          "endTime": "وقت الانتهاء",
+          "room": "القاعة"
+        },
+        "placeholders": {
+          "selectInstructor": "اختر مدرسًا",
+          "selectCourse": "اختر مقررًا",
+          "selectSection": "اختر شعبة",
+          "selectDay": "اختر يومًا",
+          "selectType": "اختر نوعًا",
+          "selectStartTime": "اختر وقت البدء",
+          "selectEndTime": "اختر وقت الانتهاء",
+          "enterRoom": "أدخل القاعة"
+        },
+        "validation": {
+          "instructorRequired": "المدرس مطلوب",
+          "courseRequired": "المقرر مطلوب",
+          "sectionRequired": "الشعبة مطلوبة",
+          "dayRequired": "اليوم مطلوب",
+          "typeRequired": "النوع مطلوب",
+          "startTimeRequired": "وقت البدء مطلوب",
+          "endTimeRequired": "وقت الانتهاء مطلوب",
+          "roomRequired": "القاعة مطلوبة",
+          "endAfterStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء"
+        },
+        "actions": {
+          "createSchedule": "إنشاء جدول",
+          "updateSchedule": "تحديث الجدول"
+        }
+      }
+    },
+      "thursday": "الخميس",
+      "friday": "الجمعة",
+      "saturday": "السبت"
+    },
+    "email": "البريد الإلكتروني",
+    "city": "المدينة",
+    "viewDetails": "عرض التفاصيل",
+    "refresh": "تحديث",
+    "tryAgain": "يرجى المحاولة مرة أخرى.",
+    "accessDeniedTitle": "تم رفض الوصول",
+    "accessDeniedMessage": "ليس لديك إذن لعرض هذه الصفحة.",
+    "room": "قاعة",
+    "day": "اليوم",
+    "time": "الوقت",
+    "type": "النوع"
+  },
+
+  "enrollments": {
+    "form": {
+      "titles": {
+        "create": "تسجيل جديد",
+        "edit": "تعديل التسجيل"
+      },
+      "fields": {
+        "student": "الطالب",
+        "course": "المقرر",
+        "section": "الشعبة",
+        "semester": "الفصل الدراسي",
+        "grade": "الدرجة"
+      },
+      "placeholders": {
+        "selectStudent": "اختر طالبًا",
+        "selectCourse": "اختر مقررًا",
+        "selectSection": "اختر شعبة",
+        "selectSemester": "اختر فصلًا دراسيًا",
+        "selectGrade": "اختر درجة"
+      },
+      "summary": {
+        "title": "ملخص التسجيل",
+        "student": "الطالب",
+        "course": "المقرر",
+        "section": "الشعبة",
+        "semester": "الفصل الدراسي",
+        "grade": "الدرجة"
+      },
+      "noGrade": "بدون درجة",
+      "actions": {
+        "create": "إنشاء",
+        "update": "تحديث"
+      }
     }
+  },
+  "dashboard": {
+    "page": {
+      "welcomeUser": "مرحبًا، {{name}}"
+    },
+    "timeline": {
+      "title": "الجدول الزمني للتسجيل",
+      "subtitle": "فترات التسجيل والانسحاب",
+      "statusLabel": "الحالة:",
+      "closesIn": "• يُغلق خلال {{time}}",
+      "endsIn": "• ينتهي خلال {{time}}",
+      "nextChangeIn": "• التغيير التالي خلال {{time}}",
+      "registrationRange": "التسجيل: {{start}} → {{end}} (UTC)",
+      "withdrawRange": "الانسحاب: {{start}} → {{end}} (UTC)",
+      "actionsBlocked": "إجراءات التسجيل غير متاحة خارج الفترات المسموحة.",
+      "phase": {
+        "open": "مفتوح",
+        "withdraw": "فترة الانسحاب",
+        "closed": "مغلق"
+      }
+    },
+    "admin": {
+      "stats": {
+        "totalStudents": "إجمالي الطلاب",
+        "totalCourses": "إجمالي المقررات",
+        "activeEnrollments": "التسجيلات النشطة",
+        "totalUsers": "إجمالي المستخدمين",
+        "vsLastMonth": "مقارنة بالشهر الماضي"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "addStudent": "إضافة طالب",
+        "createCourse": "إنشاء مقرر",
+        "newEnrollment": "تسجيل جديد",
+        "instructors": "المدرسون",
+        "manageUsers": "إدارة المستخدمين"
+      },
+      "recentEnrollments": {
+        "title": "آخر التسجيلات",
+        "empty": "لا توجد تسجيلات حديثة"
+      },
+      "recentStudents": {
+        "title": "آخر الطلاب",
+        "empty": "لا يوجد طلاب بعد"
+      },
+      "table": {
+        "student": "الطالب",
+        "course": "المقرر",
+        "date": "التاريخ",
+        "status": "الحالة"
+      }
+    },
+    "student": {
+      "fallbackStudent": "طالب",
+      "welcomeBack": "مرحبًا بعودتك، {{name}}!",
+      "overview": "إليك نظرة عامة على تقدمك الأكاديمي.",
+      "stats": {
+        "enrolledCourses": "المقررات المسجلة",
+        "completedCourses": "المقررات المكتملة",
+        "currentGpa": "المعدل الحالي",
+        "totalCredits": "إجمالي الساعات"
+      },
+      "actions": {
+        "browseCourses": "تصفح المقررات"
+      },
+      "myCourses": {
+        "title": "مقرراتي",
+        "subtitle": "{{count}} تسجيل نشط"
+      },
+      "courseMeta": "{{credits}} ساعات • {{semester}}",
+      "currentSemester": "الحالي",
+      "gradeLabel": "الدرجة: {{grade}}",
+      "inProgress": "قيد التقدم",
+      "emptyActive": {
+        "title": "لا توجد تسجيلات نشطة",
+        "description": "أنت غير مسجل في أي مقرر. تصفح المقررات المتاحة للبدء."
+      },
+      "recommended": {
+        "title": "مقررات مقترحة",
+        "subtitle": "مقررات متاحة قد تهمك"
+      },
+      "completed": {
+        "title": "المقررات المكتملة",
+        "subtitle": "سجلك الأكاديمي",
+        "headers": {
+          "course": "المقرر",
+          "credits": "الساعات",
+          "grade": "الدرجة",
+          "completed": "اكتمل"
+        }
+      }
+    },
+    "instructor": {
+      "fallbackInstructor": "مدرس",
+      "welcomeBack": "مرحبًا بعودتك، {{name}}!",
+      "department": "القسم: {{department}}",
+      "timelineSubtitle": "عرض زمني للقراءة فقط",
+      "degree": {
+        "teachingAssistant": "مساعد تدريس",
+        "assistantLecturer": "محاضر مساعد",
+        "lecturer": "محاضر",
+        "assistantProfessor": "أستاذ مساعد",
+        "associateProfessor": "أستاذ مشارك",
+        "professor": "أستاذ",
+        "instructor": "مدرس"
+      },
+      "blurb": {
+        "professor": "إدارة مقرراتك، الإشراف على الطلاب، ومراجعة الأبحاث.",
+        "lecturer": "إدارة المحاضرات وتقدم الطلاب.",
+        "ta": "المساعدة في الشُّعب والمعامل ودعم الطلاب."
+      },
+      "stats": {
+        "coursesTeaching": "المقررات التي تُدرِّسها",
+        "weeklyClasses": "الحصص الأسبوعية",
+        "todaysClasses": "حصص اليوم",
+        "teachingDays": "أيام التدريس"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "mySchedule": "جدولي",
+        "myCourses": "مقرراتي",
+        "viewStudents": "عرض الطلاب",
+        "reports": "التقارير"
+      },
+      "today": {
+        "title": "جدول اليوم",
+        "subtitle": "حصص يوم {{day}}",
+        "viewFullSchedule": "عرض الجدول الكامل",
+        "room": "القاعة: {{room}}",
+        "emptyTitle": "لا توجد حصص اليوم",
+        "emptyDescription": "ليس لديك حصص مجدولة لهذا اليوم."
+      },
+      "weekly": {
+        "title": "نظرة أسبوعية",
+        "subtitle": "جدول تدريسك هذا الأسبوع",
+        "noClasses": "لا توجد حصص"
+      }
+    }
+  },
+
+  "welcome": {
+    "logoAlt": "شعار RegMan",
+    "scrollToTop": "العودة للأعلى",
+    "nav": {
+      "home": "الرئيسية",
+      "features": "الميزات",
+      "about": "حول",
+      "contact": "تواصل",
+      "contribute": "ساهم"
+    },
+    "actions": {
+      "login": "تسجيل الدخول",
+      "register": "إنشاء حساب"
+    },
+    "hero": {
+      "title": "مرحبًا بك في RegMan",
+      "subtitle": "RegMan هو نظام شامل لإدارة شؤون الطلاب. يمكنك بسهولة إدارة الخطط الأكاديمية والمقررات والتسجيلات وغير ذلك عبر منصة بسيطة وسهلة الاستخدام."
+    },
+    "features": {
+      "title": "الميزات",
+      "cards": {
+        "manageCourses": {
+          "title": "إدارة المقررات",
+          "body": "أنشئ وحدث ونظّم المقررات بسهولة."
+        },
+        "trackProgress": {
+          "title": "تتبع التقدم",
+          "body": "راقب تقدمك الأكاديمي وابقَ على أهدافك."
+        },
+        "bookOfficeHours": {
+          "title": "حجز ساعات المكتب",
+          "body": "احجز لقاءات مع المدرسين بسهولة."
+        },
+        "analytics": {
+          "title": "لوحة التحليلات",
+          "body": "احصل على رؤى حول البيانات الأكاديمية وبيانات المنصة."
+        }
+      }
+    },
+    "about": {
+      "title": "حول RegMan",
+      "body": "نحن فريق من المطورين الشغوفين رأينا عن قرب مدى تشتت وتعقيد أنظمة إدارة الجامعات. RegMan هو حلنا المبتكر لتبسيط سير العمل الأكاديمي، وجعل إدارة المقررات والتسجيلات والجداول والأداء الأكاديمي أسهل من أي وقت مضى. هدفنا هو توفير منصة سلسة وبديهية للطلاب والمدرسين والإداريين تجمع كل شيء في مكان واحد، لتتمكن من التركيز على ما يهم حقًا: التعلم والتعليم."
+    },
+    "contribute": {
+      "title": "ساهم في RegMan",
+      "viewOnGithub": "عرض على GitHub",
+      "submitIdeas": "إرسال الأفكار"
+    },
+    "contact": {
+      "title": "تواصل معنا",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "اسمك",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "بريدك الإلكتروني",
+      "messageLabel": "الرسالة",
+      "messagePlaceholder": "اكتب رسالتك",
+      "submit": "إرسال"
+    }
+  },
+
+  "table": {
+    "empty": "لا توجد بيانات"
+  },
+  "pagination": {
+    "showing": "عرض {{start}} إلى {{end}} من أصل {{total}} نتيجة",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "الصفحة {{page}} من {{total}}"
   },
   "nav": {
     "core": "الأساسي",
@@ -72,7 +388,9 @@
   "a11y": {
     "openSidebar": "فتح الشريط الجانبي",
     "closeSidebar": "إغلاق الشريط الجانبي",
-    "toggleTheme": "تبديل السمة"
+    "toggleTheme": "تبديل السمة",
+    "tabs": "علامات التبويب",
+    "breadcrumb": "مسار التنقل"
   },
   "errors": {
     "generic": "حدث خطأ ما",
@@ -117,8 +435,93 @@
     "difference": "الفرق",
     "addCourse": "إضافة مقرر"
   },
+  "chat": {
+    "loadingConversations": "جارٍ تحميل المحادثات...",
+    "conversations": {
+      "title": "الدردشات"
+    },
+    "composer": {
+      "placeholder": "اكتب رسالة...",
+      "send": "إرسال"
+    },
+    "errors": {
+      "couldNotLoadTitle": "تعذر تحميل الدردشة",
+      "couldNotLoadDescription": "يرجى المحاولة مرة أخرى."
+    },
+    "empty": {
+      "noConversationsTitle": "لا توجد محادثات بعد",
+      "noConversationsDescription": "عند بدء الدردشة مع شخص ما، ستظهر المحادثات هنا."
+    }
+  },
   "toasts": {
     "gradeUpdated": "تم تحديث الدرجة بنجاح"
+  },
+  "enums": {
+    "enrollmentStatus": {
+      "pending": "قيد الانتظار",
+      "enrolled": "مسجل",
+      "dropped": "منسحب",
+      "completed": "مكتمل",
+      "declined": "مرفوض"
+    },
+    "studentLevel": {
+      "freshman": "سنة أولى",
+      "sophomore": "سنة ثانية",
+      "junior": "سنة ثالثة",
+      "senior": "سنة رابعة"
+    },
+    "userRole": {
+      "admin": "مسؤول",
+      "student": "طالب",
+      "instructor": "مدرس"
+    },
+    "officeHourStatus": {
+      "available": "متاح",
+      "booked": "محجوز",
+      "cancelled": "ملغي"
+    },
+    "officeHourBookingStatus": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "cancelled": "ملغي",
+      "completed": "مكتمل",
+      "noShow": "لم يحضر"
+    },
+    "semester": {
+      "fall": "الخريف",
+      "spring": "الربيع",
+      "summer": "الصيف"
+    },
+    "instructorDegree": {
+      "lecturer": "محاضر",
+      "assistantProfessor": "أستاذ مساعد",
+      "associateProfessor": "أستاذ مشارك",
+      "professor": "أستاذ"
+    }
+  },
+  "notifications": {
+    "empty": "لا توجد إشعارات",
+    "errors": {
+      "fetchFailed": "تعذر تحميل الإشعارات."
+    },
+    "actions": {
+      "markAllRead": "تحديد الكل كمقروء",
+      "markRead": "تحديد كمقروء"
+    },
+    "a11y": {
+      "openNotifications": "الإشعارات"
+    },
+    "time": {
+      "justNow": "الآن",
+      "minutesAgo": "منذ {{count}} د",
+      "hoursAgo": "منذ {{count}} س",
+      "daysAgo": "منذ {{count}} ي"
+    }
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "عذرًا، لم نتمكن من العثور على الصفحة التي تبحث عنها.",
+    "goHome": "العودة إلى الرئيسية"
   },
   "withdrawRequests": {
     "requestWithdraw": "طلب انسحاب",
@@ -134,6 +537,28 @@
     "toasts": {
       "submitted": "تم إرسال طلب الانسحاب"
     }
+  },
+  "withdrawHistory": {
+    "placeholders": {
+      "search": "ابحث حسب التسجيل أو الحالة أو السبب..."
+    },
+    "columns": {
+      "requestId": "معرّف الطلب",
+      "enrollmentId": "معرّف التسجيل",
+      "status": "الحالة",
+      "submitted": "تاريخ الإرسال",
+      "reviewed": "تاريخ المراجعة",
+      "reason": "السبب"
+    },
+    "empty": "لا توجد طلبات انسحاب بعد."
+  },
+  "notificationsPage": {
+    "description": "آخر التحديثات والتنبيهات.",
+    "loading": "جارٍ تحميل الإشعارات...",
+    "errors": {
+      "loadFailedTitle": "تعذر تحميل الإشعارات"
+    },
+    "emptyDescription": "أنت على اطلاع بكل شيء."
   },
   "transcript": {
     "addTranscript": "إضافة سجل",
@@ -206,7 +631,28 @@
     "confirmDropStudentFallback": "هذا الطالب",
     "confirmDropCourseFallback": "هذا المقرر",
     "actions": {
-      "drop": "إسقاط"
+      "drop": "إسقاط",
+      "create": "إنشاء تسجيل"
+    },
+    "filters": {
+      "allStatuses": "كل الحالات"
+    },
+    "searchPlaceholder": "ابحث في التسجيلات...",
+    "emptySearch": "لا توجد تسجيلات تطابق بحثك.",
+    "empty": {
+      "title": "لا توجد تسجيلات",
+      "descriptionAdmin": "أنشئ تسجيلًا للبدء.",
+      "descriptionStudent": "ليس لديك تسجيلات بعد. تصفح المقررات للتسجيل.",
+      "table": "لم يتم العثور على تسجيلات"
+    },
+    "table": {
+      "student": "الطالب",
+      "course": "المقرر",
+      "semester": "الفصل الدراسي",
+      "enrolledOn": "تاريخ التسجيل",
+      "grade": "الدرجة",
+      "status": "الحالة",
+      "actions": "الإجراءات"
     },
     "errors": {
       "fetchFailed": "فشل تحميل التسجيلات",
@@ -251,6 +697,51 @@
     }
   },
   "advising": {
+    "page": {
+      "title": "إرشاد تسجيل المقررات",
+      "subtitle": "مراجعة واعتماد طلبات تسجيل المقررات للطلاب"
+    },
+    "stats": {
+      "pending": "معلّق",
+      "approved": "مقبول",
+      "declined": "مرفوض",
+      "todayRequests": "طلبات اليوم"
+    },
+    "sections": {
+      "pendingRequestsTitle": "طلبات التسجيل المعلّقة"
+    },
+    "search": {
+      "placeholder": "ابحث باسم الطالب أو المقرر..."
+    },
+    "table": {
+      "student": "الطالب",
+      "studentMeta": "المعدل: {{gpa}} | الساعات: {{credits}}",
+      "course": "المقرر",
+      "courseCodeSection": "{{courseCode}} - الشعبة {{sectionName}}",
+      "creditHours": "{{count}} ساعات معتمدة",
+      "instructor": "المدرس",
+      "requestDate": "تاريخ الطلب"
+    },
+    "empty": {
+      "title": "لا توجد طلبات معلّقة",
+      "description": "تمت معالجة جميع طلبات التسجيل. تحقق لاحقًا لطلبات جديدة.",
+      "table": "لا توجد تسجيلات معلّقة."
+    },
+    "decline": {
+      "title": "رفض التسجيل",
+      "warningTitle": "أنت على وشك رفض طلب التسجيل هذا",
+      "labels": {
+        "student": "الطالب",
+        "course": "المقرر"
+      },
+      "reasonLabel": "سبب الرفض",
+      "reasonPlaceholder": "مثال: متطلبات سابقة غير مكتملة، تجاوز الساعات، تعارض في الجدول..."
+    },
+    "actions": {
+      "approve": "موافقة",
+      "decline": "رفض",
+      "declineEnrollment": "رفض التسجيل"
+    },
     "errors": {
       "pendingFetchFailed": "فشل تحميل التسجيلات المعلقة",
       "approveFailed": "فشل الموافقة على التسجيل",
@@ -263,6 +754,44 @@
     }
   },
   "calendar": {
+    "subtitle": "اعرض جدولك والأحداث القادمة",
+    "view": {
+      "month": "شهر",
+      "list": "قائمة"
+    },
+    "legend": {
+      "officeHours": "الساعات المكتبية",
+      "bookings": "الحجوزات",
+      "classes": "الحصص",
+      "teaching": "التدريس",
+      "registrationEnds": "نهاية التسجيل",
+      "withdrawPeriod": "فترة الانسحاب"
+    },
+    "actions": {
+      "today": "اليوم"
+    },
+    "more": "+{{count}} المزيد",
+    "selectDate": "اختر تاريخًا",
+    "empty": {
+      "noEventsOnDay": "لا توجد أحداث في هذا اليوم",
+      "selectDateHint": "انقر على تاريخ لعرض الأحداث"
+    },
+    "upcoming": {
+      "title": "الأحداث القادمة",
+      "empty": "لا توجد أحداث قادمة هذا الشهر"
+    },
+    "eventType": {
+      "officeHour": "ساعة مكتبية",
+      "booking": "حجز",
+      "class": "حصة",
+      "teaching": "تدريس",
+      "registration": "تسجيل",
+      "withdraw": "انسحاب"
+    },
+    "special": {
+      "registrationEnds": "نهاية التسجيل",
+      "withdrawPeriod": "فترة الانسحاب"
+    },
     "errors": {
       "fetchFailed": "فشل تحميل أحداث التقويم"
     }
@@ -281,6 +810,68 @@
     }
   },
   "analytics": {
+    "page": {
+      "title": "تحليلات النظام",
+      "subtitle": "نظرة شاملة على نظام إدارة الطلاب"
+    },
+    "stats": {
+      "totalUsers": "إجمالي المستخدمين",
+      "students": "الطلاب",
+      "courses": "المقررات",
+      "enrollments": "التسجيلات"
+    },
+    "sections": {
+      "enrollmentTrendsTitle": "اتجاهات التسجيل (آخر 30 يومًا)",
+      "gpaDistributionTitle": "توزيع المعدل (المتوسط: {{avg}})",
+      "studentClassificationTitle": "تصنيف الطلاب (متوسط الساعات: {{avgCredits}})",
+      "userBreakdownTitle": "توزيع المستخدمين",
+      "enrollmentStatusTitle": "حالة التسجيل",
+      "topCoursesTitle": "أكثر المقررات تسجيلًا",
+      "topInstructorsTitle": "أفضل المدرسين حسب عدد الطلاب",
+      "sectionCapacityTitle": "نظرة عامة على سعة الشعب"
+    },
+    "labels": {
+      "students": "الطلاب",
+      "sections": "الشعب",
+      "instructors": "المدرسون",
+      "administrators": "المسؤولون",
+      "pendingApproval": "بانتظار الموافقة",
+      "activeEnrollments": "تسجيلات نشطة",
+      "declined": "مرفوض"
+    },
+    "enrollmentTrends": {
+      "series": {
+        "total": "الإجمالي",
+        "approved": "مقبول",
+        "pending": "معلّق",
+        "declined": "مرفوض"
+      }
+    },
+    "gpaDistribution": {
+      "sliceLabel": "{{name}}: {{value}} ({{percent}}%)"
+    },
+    "tables": {
+      "topCourses": {
+        "course": "المقرر",
+        "credits": "الساعات",
+        "sections": "الشعب",
+        "total": "الإجمالي",
+        "active": "نشط",
+        "pending": "معلّق"
+      },
+      "topInstructors": {
+        "instructor": "المدرس",
+        "sections": "الشعب",
+        "students": "الطلاب"
+      },
+      "sectionCapacity": {
+        "totalSections": "إجمالي الشعب",
+        "full": "ممتلئ",
+        "almostFull": "شبه ممتلئ",
+        "empty": "فارغ",
+        "avgUtilization": "متوسط الإشغال"
+      }
+    },
     "errors": {
       "fetchFailed": "فشل تحميل بيانات التحليلات"
     }
@@ -318,6 +909,28 @@
     "confirmDeleteTitle": "حذف المقرر",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف \"{{courseName}}\"؟ سيتم أيضًا حذف جميع التسجيلات. لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteNameFallback": "هذا المقرر",
+    "enroll": "تسجيل",
+    "actions": {
+      "edit": "تعديل المقرر"
+    },
+    "details": {
+      "creditHours": "ساعات معتمدة",
+      "enrolled": "المسجلون",
+      "enrolledCount": "{{count}}",
+      "category": "التصنيف",
+      "enrolledStudents": {
+        "title": "الطلاب المسجلون",
+        "subtitle": "{{count}} طالب/طالبة مسجل(ة)",
+        "empty": "لا يوجد طلاب مسجلون",
+        "table": {
+          "student": "الطالب",
+          "semester": "الفصل الدراسي",
+          "enrolledOn": "تاريخ التسجيل",
+          "grade": "الدرجة",
+          "status": "الحالة"
+        }
+      }
+    },
     "errors": {
       "fetchFailed": "فشل تحميل المقررات",
       "detailsFetchFailed": "فشل تحميل تفاصيل المقرر",
@@ -337,6 +950,22 @@
     "confirmDeleteTitle": "حذف المستخدم",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteNameFallback": "هذا المستخدم",
+    "searchPlaceholder": "ابحث عن المستخدمين...",
+    "empty": "لم يتم العثور على مستخدمين.",
+    "table": {
+      "name": "الاسم",
+      "role": "الدور",
+      "created": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "form": {
+      "editTitle": "تعديل المستخدم",
+      "fullName": "الاسم الكامل",
+      "address": "العنوان",
+      "role": "الدور",
+      "selectRole": "اختر الدور",
+      "updateAction": "تحديث المستخدم"
+    },
     "errors": {
       "fetchFailed": "فشل تحميل المستخدمين",
       "updateFailed": "فشل تحديث المستخدم"
@@ -350,6 +979,31 @@
     "confirmDeleteTitle": "حذف الطالب",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteNameFallback": "هذا الطالب",
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "phoneNumber": "رقم الهاتف",
+      "dateOfBirth": "تاريخ الميلاد",
+      "address": "العنوان",
+      "enrollmentDate": "تاريخ الالتحاق",
+      "studentLevel": "المستوى الدراسي",
+      "enrolled": "تاريخ التسجيل"
+    },
+    "placeholders": {
+      "email": "أدخل البريد الإلكتروني",
+      "password": "أدخل كلمة المرور",
+      "firstName": "أدخل الاسم الأول",
+      "lastName": "أدخل اسم العائلة",
+      "phoneNumber": "أدخل رقم الهاتف",
+      "address": "أدخل العنوان",
+      "city": "أدخل المدينة"
+    },
+    "form": {
+      "createTitle": "إنشاء طالب",
+      "editTitle": "تعديل طالب",
+      "createAction": "إنشاء",
+      "updateAction": "تحديث"
+    },
     "errors": {
       "fetchFailed": "فشل تحميل الطلاب",
       "detailsFetchFailed": "فشل تحميل تفاصيل الطالب"
@@ -361,12 +1015,74 @@
     }
   },
   "timeSlots": {
+    "fields": {
+      "room": "القاعة",
+      "day": "اليوم",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء"
+    },
+    "actions": {
+      "addTimeSlot": "إضافة فترة زمنية"
+    },
+    "modals": {
+      "createTitle": "إضافة فترة زمنية",
+      "editTitle": "تعديل الفترة الزمنية"
+    },
+    "placeholders": {
+      "selectRoom": "اختر قاعة"
+    },
     "toasts": {
       "updated": "تم تحديث الفترة الزمنية",
       "created": "تم إنشاء الفترة الزمنية"
     }
   },
   "smartScheduleBuilder": {
+    "description": "توصيات محددة مع شرح واضح.",
+    "loading": {
+      "courses": "جارٍ تحميل المقررات..."
+    },
+    "days": {
+      "none": "بدون"
+    },
+    "fields": {
+      "addCourse": "إضافة مقرر",
+      "earliestStart": "أبكر بدء (HH:mm)",
+      "latestEnd": "آخر انتهاء (HH:mm)",
+      "avoidDayHard": "تجنب يوم (إلزامي)",
+      "preferDayOffSoft": "تفضيل يوم عطلة (اختياري)",
+      "preferCompact": "تفضيل جدول متقارب (فواصل أقل)"
+    },
+    "placeholders": {
+      "searchCourse": "ابحث برمز المقرر أو الاسم...",
+      "earliestStart": "09:00",
+      "latestEnd": "18:00"
+    },
+    "actions": {
+      "build": "إنشاء الجدول",
+      "building": "جارٍ الإنشاء…"
+    },
+    "sections": {
+      "selectedCourses": "المقررات المختارة",
+      "recommended": "الشعب المقترحة",
+      "couldNotSchedule": "تعذر جدولة",
+      "explanation": "الشرح"
+    },
+    "labels": {
+      "seats": "المقاعد: {{seats}}"
+    },
+    "metrics": {
+      "scheduled": "تمت الجدولة: {{scheduled}}/{{requested}}",
+      "days": "الأيام: {{count}}",
+      "gaps": "الفواصل: {{minutes}} دقيقة",
+      "earliest": "الأبكر: {{time}}",
+      "latest": "الأحدث: {{time}}"
+    },
+    "empty": {
+      "selectedCourses": "لم يتم اختيار مقررات بعد.",
+      "recommendationTitle": "لا توجد توصية بعد",
+      "recommendationDescription": "اختر المقررات ثم اضغط إنشاء الجدول.",
+      "noSectionsScheduled": "لا يمكن جدولة أي شعب."
+    },
     "errors": {
       "coursesFetchFailed": "فشل تحميل المقررات",
       "courseAlreadyAdded": "تمت إضافة المقرر بالفعل",
@@ -377,10 +1093,47 @@
   },
   "sections": {
     "confirmDelete": "هل تريد حذف هذه الشعبة؟",
+    "actions": {
+      "addSection": "إضافة شعبة"
+    },
+    "messages": {
+      "noRoomsAvailable": "لا توجد قاعات متاحة"
+    },
+    "empty": {
+      "noSections": "لا توجد شعب متاحة."
+    },
+    "fields": {
+      "semester": "الفصل",
+      "year": "السنة",
+      "instructor": "المدرس",
+      "course": "المقرر",
+      "availableSeats": "المقاعد",
+      "room": "القاعة",
+      "timeSlot": "الفترة الزمنية",
+      "slotType": "نوع الفترة"
+    },
+    "placeholders": {
+      "chooseSemester": "اختر الفصل",
+      "chooseSeats": "اختر عدد المقاعد"
+    },
+    "modals": {
+      "createTitle": "إضافة شعبة",
+      "editTitle": "تعديل شعبة"
+    },
+    "slotTypes": {
+      "lecture": "محاضرة",
+      "lab": "مختبر",
+      "tutorial": "تمرين"
+    },
+    "scheduleSlots": {
+      "title": "خانات الجدولة",
+      "empty": "لا توجد خانات جدولة لهذه الشعبة."
+    },
     "errors": {
       "fetchFailed": "فشل جلب الشعب",
       "dropdownFetchFailed": "فشل تحميل بيانات القوائم",
       "timeSlotsForRoomFailed": "فشل تحميل الفترات الزمنية للقاعة",
+      "noTimeSlotsForSelectedRoom": "لا توجد فترات زمنية للقاعة المختارة. يرجى إضافة فترة زمنية قبل إنشاء شعبة.",
       "selectRoomAndTimeSlot": "يرجى اختيار قاعة وفترة زمنية.",
       "saveFailed": "فشل حفظ الشعبة",
       "deleteFailed": "فشل حذف الشعبة"
@@ -406,12 +1159,187 @@
     }
   },
   "profile": {
+    "cards": {
+      "personalInformation": "المعلومات الشخصية",
+      "security": "الأمان"
+    },
+    "fields": {
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "memberSince": "عضو منذ",
+      "role": "الدور",
+      "accountStatus": "حالة الحساب",
+      "status": "الحالة"
+    },
+    "actions": {
+      "editProfile": "تعديل الملف الشخصي",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "status": {
+      "active": "نشط"
+    },
+    "common": {
+      "quickActions": "إجراءات سريعة"
+    },
+    "security": {
+      "description": "حدّث كلمة المرور للحفاظ على أمان حسابك.",
+      "fields": {
+        "currentPassword": "كلمة المرور الحالية",
+        "newPassword": "كلمة المرور الجديدة",
+        "confirmNewPassword": "تأكيد كلمة المرور الجديدة"
+      }
+    },
+    "admin": {
+      "title": "معلومات المسؤول",
+      "sections": {
+        "details": "التفاصيل",
+        "permissions": "الصلاحيات"
+      },
+      "fields": {
+        "accessLevel": "مستوى الوصول"
+      },
+      "role": {
+        "systemAdministrator": "مسؤول النظام"
+      },
+      "access": {
+        "full": "وصول كامل"
+      },
+      "permissions": {
+        "userManagement": "إدارة المستخدمين",
+        "courseManagement": "إدارة المقررات",
+        "enrollmentControl": "التحكم بالتسجيل",
+        "systemSettings": "إعدادات النظام",
+        "reportsAndAnalytics": "التقارير والتحليلات"
+      },
+      "quickActions": {
+        "manageUsers": "إدارة المستخدمين",
+        "manageCourses": "إدارة المقررات",
+        "viewEnrollments": "عرض التسجيلات"
+      }
+    },
+    "student": {
+      "title": "المعلومات الأكاديمية",
+      "sections": {
+        "programInformation": "معلومات البرنامج",
+        "academicProgress": "التقدم الأكاديمي",
+        "gpaAndStatus": "المعدل والحالة",
+        "emergencyContact": "جهة الاتصال للطوارئ"
+      },
+      "fields": {
+        "studentId": "معرّف الطالب",
+        "program": "البرنامج",
+        "degree": "الدرجة العلمية",
+        "curriculum": "الخطة الدراسية",
+        "college": "الكلية",
+        "department": "القسم",
+        "completedCredits": "الساعات المكتملة",
+        "registeredCredits": "الساعات المسجلة",
+        "totalRequiredCredits": "إجمالي الساعات المطلوبة",
+        "progress": "التقدم",
+        "termCreditLimit": "الحد الأقصى لساعات الفصل",
+        "academicStanding": "الوضع الأكاديمي",
+        "classification": "التصنيف",
+        "graduationStatus": "حالة التخرج"
+      },
+      "values": {
+        "programUndergraduate": "برنامج بكالوريوس",
+        "degreeBachelorOfScience": "بكالوريوس علوم",
+        "collegeInformationTechnology": "كلية تقنية المعلومات",
+        "departmentComputerScience": "قسم علوم الحاسب"
+      },
+      "standing": {
+        "deansList": "قائمة العميد",
+        "goodStanding": "حالة جيدة",
+        "academicProbation": "إنذار أكاديمي"
+      },
+      "progressComplete": "{{percent}}% مكتمل",
+      "gpaOutOf": "من أصل {{max}}"
+    },
+    "instructor": {
+      "title": "معلومات المدرس",
+      "sections": {
+        "positionDetails": "تفاصيل المنصب",
+        "department": "القسم",
+        "ranksReference": "مرجع الرتب الأكاديمية"
+      },
+      "fields": {
+        "instructorId": "معرّف المدرس",
+        "title": "المسمى",
+        "academicRank": "الرتبة الأكاديمية",
+        "department": "القسم",
+        "office": "المكتب"
+      },
+      "quickActions": {
+        "mySections": "مقرراتي",
+        "mySchedule": "جدولي"
+      },
+      "ranks": {
+        "ta": {
+          "label": "مساعد تدريس",
+          "description": "يساعد في التدريس والمعامل"
+        },
+        "lecturer": {
+          "label": "محاضر",
+          "description": "يدرّس المقررات ويدعم الطلاب"
+        },
+        "assistantProfessor": {
+          "label": "أستاذ مساعد",
+          "description": "رتبة أكاديمية للمستوى الأول"
+        },
+        "associateProfessor": {
+          "label": "أستاذ مشارك",
+          "description": "رتبة أكاديمية للمستوى المتوسط"
+        },
+        "professor": {
+          "label": "أستاذ",
+          "description": "رتبة أكاديمية وبحثية عليا"
+        }
+      }
+    },
+    "other": {
+      "title": "الملف الشخصي",
+      "limitedAccessMessage": "حسابك لديه وصول محدود إلى تفاصيل الملف الشخصي."
+    },
     "toasts": {
       "updated": "تم تحديث الملف الشخصي بنجاح",
       "passwordChanged": "تم تغيير كلمة المرور بنجاح"
     }
   },
   "officeHours": {
+    "title": "ساعاتي المكتبية",
+    "subtitle": "إدارة الساعات المكتبية وحجوزات الطلاب",
+    "actions": {
+      "addOfficeHour": "إضافة ساعة مكتبية",
+      "goToCurrentWeek": "الانتقال للأسبوع الحالي",
+      "markComplete": "وضع علامة مكتمل",
+      "markNoShow": "وضع علامة عدم الحضور",
+      "addNotes": "إضافة ملاحظات",
+      "saveNotes": "حفظ الملاحظات"
+    },
+    "sections": {
+      "bookings": "الحجوزات"
+    },
+    "empty": {
+      "title": "لا توجد ساعات مكتبية هذا الأسبوع",
+      "description": "انقر على \"إضافة ساعة مكتبية\" لإنشاء واحدة"
+    },
+    "fields": {
+      "date": "التاريخ",
+      "startTime": "وقت البدء",
+      "endTime": "وقت الانتهاء",
+      "notesOptional": "ملاحظات (اختياري)",
+      "repeatWeekly": "تكرار أسبوعيًا",
+      "purposeLabel": "الغرض:"
+    },
+    "placeholders": {
+      "notesOptional": "أي معلومات إضافية للطلاب...",
+      "meetingNotes": "ملاحظات حول اللقاء..."
+    },
+    "modals": {
+      "createTitle": "إنشاء ساعة مكتبية",
+      "notesTitle": "إضافة ملاحظات",
+      "meetingWith": "لقاء مع {{name}}"
+    },
     "confirmDelete": "هل أنت متأكد من حذف هذه الساعة المكتبية؟",
     "errors": {
       "fetchFailed": "فشل تحميل الساعات المكتبية",
@@ -437,6 +1365,16 @@
     "confirmDeleteTitle": "حذف المدرس",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟ لا يمكن التراجع عن هذا الإجراء.",
     "confirmDeleteNameFallback": "هذا المدرس",
+    "page": {
+      "description": "إدارة المدرّسين ومعلوماتهم"
+    },
+    "detailsPage": {
+      "title": "تفاصيل المدرّس",
+      "description": "عرض تفاصيل {{name}}",
+      "loading": "جارٍ تحميل تفاصيل المدرّس...",
+      "notFoundTitle": "لم يتم العثور على المدرّس",
+      "notFoundMessage": "المدرّس الذي تبحث عنه غير موجود."
+    },
     "errors": {
       "fetchFailed": "فشل تحميل المدرسين",
       "saveFailed": "فشل حفظ بيانات المدرس",
@@ -448,6 +1386,39 @@
       "updated": "تم تحديث بيانات المدرس بنجاح",
       "created": "تم إنشاء المدرس بنجاح",
       "deleted": "تم حذف المدرس بنجاح"
+    },
+    "searchPlaceholder": "ابحث عن مدرس...",
+    "empty": {
+      "title": "لا يوجد مدرسون",
+      "description": "لم يتم العثور على أي مدرسين بعد."
+    },
+    "table": {
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "department": "القسم",
+      "actions": "الإجراءات",
+      "noData": "لا توجد بيانات للعرض"
+    },
+    "actions": {
+      "view": "عرض"
+    },
+    "details": {
+      "email": "البريد الإلكتروني",
+      "title": "المسمى الوظيفي",
+      "academicDegree": "الدرجة العلمية",
+      "department": "القسم",
+      "address": "العنوان"
+    },
+    "schedule": {
+      "title": "الجدول",
+      "empty": "لا يوجد جدول متاح"
+    },
+    "scheduleTable": {
+      "day": "اليوم",
+      "start": "البداية",
+      "end": "النهاية",
+      "room": "القاعة",
+      "type": "النوع"
     }
   },
   "auth": {

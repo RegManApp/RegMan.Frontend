@@ -59,7 +59,7 @@ export default function ChatWindow({ conversation, onSend }) {
         <MessageComposer
           onSend={async (text) => {
             const receiverId = getReceiverId();
-            await onSend(receiverId, text);
+            await onSend(conversation.conversationId, receiverId, text);
             await loadConversation();
           }}
         />

@@ -3,6 +3,7 @@
     "name": "RegMan"
   },
   "common": {
+    "home": "Home",
     "language": "Language",
     "english": "EN",
     "arabic": "AR",
@@ -19,7 +20,14 @@
     "back": "Back",
     "search": "Search",
     "select": "Select",
+    "initialsFallback": "??",
+    "viewAll": "View All",
     "user": "User",
+    "unknown": "Unknown",
+    "na": "N/A",
+    "notAvailable": "Not available",
+    "notAssigned": "Not assigned",
+    "notApplied": "Not applied",
     "id": "ID",
     "actions": "Actions",
     "edit": "Edit",
@@ -27,13 +35,243 @@
     "create": "Create",
     "update": "Update",
     "confirm": "Confirm",
+    "retry": "Retry",
     "confirmModal": {
       "title": "Confirm Action",
       "message": "Are you sure you want to perform this action?"
     },
     "prompts": {
       "cancelReasonOptional": "Enter reason for cancellation (optional):"
+    },
+    "days": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "email": "Email",
+    "city": "City",
+    "viewDetails": "View Details",
+    "refresh": "Refresh",
+    "tryAgain": "Please try again.",
+    "accessDeniedTitle": "Access Denied",
+    "accessDeniedMessage": "You don't have permission to view this page.",
+    "room": "Room",
+    "day": "Day",
+    "time": "Time",
+    "type": "Type"
+  },
+
+  "dashboard": {
+    "page": {
+      "welcomeUser": "Welcome, {{name}}"
+    },
+    "timeline": {
+      "title": "Registration Timeline",
+      "subtitle": "Registration and withdraw windows",
+      "statusLabel": "Status:",
+      "closesIn": "• closes in {{time}}",
+      "endsIn": "• ends in {{time}}",
+      "nextChangeIn": "• next change in {{time}}",
+      "registrationRange": "Registration: {{start}} → {{end}} (UTC)",
+      "withdrawRange": "Withdraw: {{start}} → {{end}} (UTC)",
+      "actionsBlocked": "Enrollment actions are blocked outside valid windows.",
+      "phase": {
+        "open": "Open",
+        "withdraw": "Withdraw period",
+        "closed": "Closed"
+      }
+    },
+    "admin": {
+      "stats": {
+        "totalStudents": "Total Students",
+        "totalCourses": "Total Courses",
+        "activeEnrollments": "Active Enrollments",
+        "totalUsers": "Total Users",
+        "vsLastMonth": "vs last month"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "addStudent": "Add Student",
+        "createCourse": "Create Course",
+        "newEnrollment": "New Enrollment",
+        "instructors": "Instructors",
+        "manageUsers": "Manage Users"
+      },
+      "recentEnrollments": {
+        "title": "Recent Enrollments",
+        "empty": "No recent enrollments"
+      },
+      "recentStudents": {
+        "title": "Recent Students",
+        "empty": "No students yet"
+      },
+      "table": {
+        "student": "Student",
+        "course": "Course",
+        "date": "Date",
+        "status": "Status"
+      }
+    },
+    "student": {
+      "fallbackStudent": "Student",
+      "welcomeBack": "Welcome back, {{name}}!",
+      "overview": "Here's an overview of your academic progress.",
+      "stats": {
+        "enrolledCourses": "Enrolled Courses",
+        "completedCourses": "Completed Courses",
+        "currentGpa": "Current GPA",
+        "totalCredits": "Total Credits"
+      },
+      "actions": {
+        "browseCourses": "Browse Courses"
+      },
+      "myCourses": {
+        "title": "My Courses",
+        "subtitle": "{{count}} active enrollment(s)"
+      },
+      "courseMeta": "{{credits}} Credits • {{semester}}",
+      "currentSemester": "Current",
+      "gradeLabel": "Grade: {{grade}}",
+      "inProgress": "In Progress",
+      "emptyActive": {
+        "title": "No active enrollments",
+        "description": "You are not enrolled in any courses. Browse available courses to get started."
+      },
+      "recommended": {
+        "title": "Recommended Courses",
+        "subtitle": "Available courses you might be interested in"
+      },
+      "completed": {
+        "title": "Completed Courses",
+        "subtitle": "Your academic history",
+        "headers": {
+          "course": "Course",
+          "credits": "Credits",
+          "grade": "Grade",
+          "completed": "Completed"
+        }
+      }
+    },
+    "instructor": {
+      "fallbackInstructor": "Instructor",
+      "welcomeBack": "Welcome back, {{name}}!",
+      "department": "Department: {{department}}",
+      "timelineSubtitle": "Read-only timeline visibility",
+      "degree": {
+        "teachingAssistant": "Teaching Assistant",
+        "assistantLecturer": "Assistant Lecturer",
+        "lecturer": "Lecturer",
+        "assistantProfessor": "Assistant Professor",
+        "associateProfessor": "Associate Professor",
+        "professor": "Professor",
+        "instructor": "Instructor"
+      },
+      "blurb": {
+        "professor": "Manage your courses, supervise students, and review research.",
+        "lecturer": "Manage your lectures and student progress.",
+        "ta": "Assist with sections, labs, and student support."
+      },
+      "stats": {
+        "coursesTeaching": "Courses Teaching",
+        "weeklyClasses": "Weekly Classes",
+        "todaysClasses": "Today's Classes",
+        "teachingDays": "Teaching Days"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "mySchedule": "My Schedule",
+        "myCourses": "My Courses",
+        "viewStudents": "View Students",
+        "reports": "Reports"
+      },
+      "today": {
+        "title": "Today's Schedule",
+        "subtitle": "{{day}}'s classes",
+        "viewFullSchedule": "View Full Schedule",
+        "room": "Room: {{room}}",
+        "emptyTitle": "No classes today",
+        "emptyDescription": "You don't have any scheduled classes for today."
+      },
+      "weekly": {
+        "title": "Weekly Overview",
+        "subtitle": "Your teaching schedule this week",
+        "noClasses": "No classes"
+      }
     }
+  },
+
+  "welcome": {
+    "logoAlt": "RegMan Logo",
+    "scrollToTop": "Scroll to top",
+    "nav": {
+      "home": "Home",
+      "features": "Features",
+      "about": "About",
+      "contact": "Contact",
+      "contribute": "Contribute"
+    },
+    "actions": {
+      "login": "Login",
+      "register": "Register"
+    },
+    "hero": {
+      "title": "Welcome to RegMan",
+      "subtitle": "RegMan is your comprehensive student management system. Easily manage academic plans, courses, enrollments, and more with our intuitive platform."
+    },
+    "features": {
+      "title": "Features",
+      "cards": {
+        "manageCourses": {
+          "title": "Manage Courses",
+          "body": "Create, update, and organize courses effortlessly."
+        },
+        "trackProgress": {
+          "title": "Track Progress",
+          "body": "Monitor academic progress and stay on top of your goals."
+        },
+        "bookOfficeHours": {
+          "title": "Book Office Hours",
+          "body": "Schedule meetings with instructors seamlessly."
+        },
+        "analytics": {
+          "title": "Analytics Dashboard",
+          "body": "Gain insights into academic and platform data."
+        }
+      }
+    },
+    "about": {
+      "title": "About RegMan",
+      "body": "We are a team of passionate developers who have seen firsthand how fragmented and complicated university management systems can be. RegMan is our innovative solution designed to streamline academic workflows, making it easier than ever to manage courses, enrollments, schedules, and academic performance. Our goal is to provide students, instructors, and administrators with a seamless, intuitive platform that brings everything together in one place, so you can focus on what really matters: learning and teaching."
+    },
+    "contribute": {
+      "title": "Contribute to RegMan",
+      "viewOnGithub": "View on GitHub",
+      "submitIdeas": "Submit Ideas"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your Name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Your Email",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Your Message",
+      "submit": "Submit"
+    }
+  },
+
+  "table": {
+    "empty": "No data available"
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}} results",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {{page}} of {{total}}"
   },
   "nav": {
     "core": "Core",
@@ -72,7 +310,9 @@
   "a11y": {
     "openSidebar": "Open sidebar",
     "closeSidebar": "Close sidebar",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "tabs": "Tabs",
+    "breadcrumb": "Breadcrumb"
   },
   "errors": {
     "generic": "Something went wrong",
@@ -118,8 +358,93 @@
     "reset": "Reset",
     "noStudentSelected": "Enter a Student ID to view data"
   },
+  "chat": {
+    "loadingConversations": "Loading conversations...",
+    "conversations": {
+      "title": "Chats"
+    },
+    "composer": {
+      "placeholder": "Type a message...",
+      "send": "Send"
+    },
+    "errors": {
+      "couldNotLoadTitle": "Couldn't load chat",
+      "couldNotLoadDescription": "Please try again."
+    },
+    "empty": {
+      "noConversationsTitle": "No conversations yet",
+      "noConversationsDescription": "When you start chatting with someone, conversations will appear here."
+    }
+  },
   "toasts": {
     "gradeUpdated": "Grade updated successfully"
+  },
+  "enums": {
+    "enrollmentStatus": {
+      "pending": "Pending",
+      "enrolled": "Enrolled",
+      "dropped": "Dropped",
+      "completed": "Completed",
+      "declined": "Declined"
+    },
+    "studentLevel": {
+      "freshman": "Freshman",
+      "sophomore": "Sophomore",
+      "junior": "Junior",
+      "senior": "Senior"
+    },
+    "userRole": {
+      "admin": "Admin",
+      "student": "Student",
+      "instructor": "Instructor"
+    },
+    "officeHourStatus": {
+      "available": "Available",
+      "booked": "Booked",
+      "cancelled": "Cancelled"
+    },
+    "officeHourBookingStatus": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "noShow": "No Show"
+    },
+    "semester": {
+      "fall": "Fall",
+      "spring": "Spring",
+      "summer": "Summer"
+    },
+    "instructorDegree": {
+      "lecturer": "Lecturer",
+      "assistantProfessor": "Assistant Professor",
+      "associateProfessor": "Associate Professor",
+      "professor": "Professor"
+    }
+  },
+  "notifications": {
+    "empty": "No notifications",
+    "errors": {
+      "fetchFailed": "Couldn't load notifications."
+    },
+    "actions": {
+      "markAllRead": "Mark all as read",
+      "markRead": "Mark read"
+    },
+    "a11y": {
+      "openNotifications": "Notifications"
+    },
+    "time": {
+      "justNow": "Just now",
+      "minutesAgo": "{{count}}m ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago"
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Sorry, we couldn't find the page you're looking for.",
+    "goHome": "Go back home"
   },
   "withdrawRequests": {
     "requestWithdraw": "Request Withdraw",
@@ -135,6 +460,28 @@
     "toasts": {
       "submitted": "Withdraw request submitted"
     }
+  },
+  "withdrawHistory": {
+    "placeholders": {
+      "search": "Search by enrollment, status, reason..."
+    },
+    "columns": {
+      "requestId": "Request ID",
+      "enrollmentId": "Enrollment ID",
+      "status": "Status",
+      "submitted": "Submitted",
+      "reviewed": "Reviewed",
+      "reason": "Reason"
+    },
+    "empty": "No withdraw requests yet."
+  },
+  "notificationsPage": {
+    "description": "Your recent updates and alerts.",
+    "loading": "Loading notifications...",
+    "errors": {
+      "loadFailedTitle": "Couldn't load notifications"
+    },
+    "emptyDescription": "You're all caught up."
   },
   "transcript": {
     "addTranscript": "Add Transcript",
@@ -214,6 +561,28 @@
     "confirmDeleteTitle": "Delete Course",
     "confirmDeleteMessage": "Are you sure you want to delete \"{{courseName}}\"? This will also remove all enrollments. This action cannot be undone.",
     "confirmDeleteNameFallback": "this course",
+    "enroll": "Enroll",
+    "actions": {
+      "edit": "Edit Course"
+    },
+    "details": {
+      "creditHours": "Credit Hours",
+      "enrolled": "Enrolled",
+      "enrolledCount": "{{count}}",
+      "category": "Category",
+      "enrolledStudents": {
+        "title": "Enrolled Students",
+        "subtitle": "{{count}} student(s) enrolled",
+        "empty": "No enrolled students",
+        "table": {
+          "student": "Student",
+          "semester": "Semester",
+          "enrolledOn": "Enrolled On",
+          "grade": "Grade",
+          "status": "Status"
+        }
+      }
+    },
     "errors": {
       "fetchFailed": "Failed to load courses",
       "detailsFetchFailed": "Failed to load course details",
@@ -236,7 +605,52 @@
     "confirmDropStudentFallback": "this student",
     "confirmDropCourseFallback": "this course",
     "actions": {
-      "drop": "Drop"
+      "drop": "Drop",
+      "create": "Create Enrollment"
+    },
+    "filters": {
+      "allStatuses": "All statuses"
+    },
+    "searchPlaceholder": "Search enrollments...",
+    "emptySearch": "No enrollments match your search.",
+    "empty": {
+      "title": "No enrollments",
+      "descriptionAdmin": "Create an enrollment to get started.",
+      "descriptionStudent": "You have no enrollments yet. Browse courses to enroll.",
+      "table": "No enrollments found"
+    },
+    "table": {
+      "student": "Student",
+      "course": "Course",
+      "semester": "Semester",
+      "enrolledOn": "Enrolled On",
+      "grade": "Grade",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "form": {
+      "createTitle": "Create New Enrollment",
+      "editTitle": "Edit Enrollment",
+      "fields": {
+        "student": "Student",
+        "section": "Section",
+        "status": "Status",
+        "grade": "Grade"
+      },
+      "placeholders": {
+        "selectStudent": "Select a student (search by ID or name)",
+        "selectSection": "Select a section to enroll in"
+      },
+      "summary": {
+        "student": "Student",
+        "course": "Course",
+        "semester": "Semester"
+      },
+      "noGrade": "No Grade",
+      "actions": {
+        "createEnrollment": "Create Enrollment",
+        "updateEnrollment": "Update Enrollment"
+      }
     },
     "errors": {
       "fetchFailed": "Failed to load enrollments",
@@ -281,6 +695,51 @@
     }
   },
   "advising": {
+    "page": {
+      "title": "Course Enrollment Advising",
+      "subtitle": "Review and approve student course registration requests"
+    },
+    "stats": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "declined": "Declined",
+      "todayRequests": "Today's Requests"
+    },
+    "sections": {
+      "pendingRequestsTitle": "Pending Enrollment Requests"
+    },
+    "search": {
+      "placeholder": "Search by student name or course..."
+    },
+    "table": {
+      "student": "Student",
+      "studentMeta": "GPA: {{gpa}} | Credits: {{credits}}",
+      "course": "Course",
+      "courseCodeSection": "{{courseCode}} - Section {{sectionName}}",
+      "creditHours": "{{count}} Credit Hours",
+      "instructor": "Instructor",
+      "requestDate": "Request Date"
+    },
+    "empty": {
+      "title": "No Pending Requests",
+      "description": "All enrollment requests have been processed. Check back later for new requests.",
+      "table": "No pending enrollments found."
+    },
+    "decline": {
+      "title": "Decline Enrollment",
+      "warningTitle": "You are about to decline this enrollment request",
+      "labels": {
+        "student": "Student",
+        "course": "Course"
+      },
+      "reasonLabel": "Reason for Declining",
+      "reasonPlaceholder": "e.g., Missing prerequisites, credit overload, schedule conflict..."
+    },
+    "actions": {
+      "approve": "Approve",
+      "decline": "Decline",
+      "declineEnrollment": "Decline Enrollment"
+    },
     "errors": {
       "pendingFetchFailed": "Failed to load pending enrollments",
       "approveFailed": "Failed to approve enrollment",
@@ -293,6 +752,44 @@
     }
   },
   "calendar": {
+    "subtitle": "View your schedule and upcoming events",
+    "view": {
+      "month": "Month",
+      "list": "List"
+    },
+    "legend": {
+      "officeHours": "Office Hours",
+      "bookings": "Bookings",
+      "classes": "Classes",
+      "teaching": "Teaching",
+      "registrationEnds": "Registration Ends",
+      "withdrawPeriod": "Withdraw Period"
+    },
+    "actions": {
+      "today": "Today"
+    },
+    "more": "+{{count}} more",
+    "selectDate": "Select a Date",
+    "empty": {
+      "noEventsOnDay": "No events on this day",
+      "selectDateHint": "Click on a date to view events"
+    },
+    "upcoming": {
+      "title": "Upcoming Events",
+      "empty": "No upcoming events this month"
+    },
+    "eventType": {
+      "officeHour": "Office Hour",
+      "booking": "Booking",
+      "class": "Class",
+      "teaching": "Teaching",
+      "registration": "Registration",
+      "withdraw": "Withdraw"
+    },
+    "special": {
+      "registrationEnds": "Registration Ends",
+      "withdrawPeriod": "Withdraw Period"
+    },
     "errors": {
       "fetchFailed": "Failed to load calendar events"
     }
@@ -311,6 +808,68 @@
     }
   },
   "analytics": {
+    "page": {
+      "title": "System Analytics",
+      "subtitle": "Comprehensive overview of the student management system"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "students": "Students",
+      "courses": "Courses",
+      "enrollments": "Enrollments"
+    },
+    "sections": {
+      "enrollmentTrendsTitle": "Enrollment Trends (Last 30 Days)",
+      "gpaDistributionTitle": "GPA Distribution (Avg: {{avg}})",
+      "studentClassificationTitle": "Student Classification (Avg Credits: {{avgCredits}})",
+      "userBreakdownTitle": "User Breakdown",
+      "enrollmentStatusTitle": "Enrollment Status",
+      "topCoursesTitle": "Top Courses by Enrollment",
+      "topInstructorsTitle": "Top Instructors by Student Count",
+      "sectionCapacityTitle": "Section Capacity Overview"
+    },
+    "labels": {
+      "students": "Students",
+      "sections": "Sections",
+      "instructors": "Instructors",
+      "administrators": "Administrators",
+      "pendingApproval": "Pending Approval",
+      "activeEnrollments": "Active Enrollments",
+      "declined": "Declined"
+    },
+    "enrollmentTrends": {
+      "series": {
+        "total": "Total",
+        "approved": "Approved",
+        "pending": "Pending",
+        "declined": "Declined"
+      }
+    },
+    "gpaDistribution": {
+      "sliceLabel": "{{name}}: {{value}} ({{percent}}%)"
+    },
+    "tables": {
+      "topCourses": {
+        "course": "Course",
+        "credits": "Credits",
+        "sections": "Sections",
+        "total": "Total",
+        "active": "Active",
+        "pending": "Pending"
+      },
+      "topInstructors": {
+        "instructor": "Instructor",
+        "sections": "Sections",
+        "students": "Students"
+      },
+      "sectionCapacity": {
+        "totalSections": "Total Sections",
+        "full": "Full",
+        "almostFull": "Almost Full",
+        "empty": "Empty",
+        "avgUtilization": "Avg. Utilization"
+      }
+    },
     "errors": {
       "fetchFailed": "Failed to load analytics data"
     }
@@ -338,6 +897,22 @@
     "confirmDeleteTitle": "Delete User",
     "confirmDeleteMessage": "Are you sure you want to delete {{name}}? This action cannot be undone.",
     "confirmDeleteNameFallback": "this user",
+    "searchPlaceholder": "Search users...",
+    "empty": "No users found.",
+    "table": {
+      "name": "Name",
+      "role": "Role",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "form": {
+      "editTitle": "Edit User",
+      "fullName": "Full Name",
+      "address": "Address",
+      "role": "Role",
+      "selectRole": "Select Role",
+      "updateAction": "Update User"
+    },
     "errors": {
       "fetchFailed": "Failed to load users",
       "updateFailed": "Failed to update user"
@@ -351,6 +926,31 @@
     "confirmDeleteTitle": "Delete Student",
     "confirmDeleteMessage": "Are you sure you want to delete {{name}}? This action cannot be undone.",
     "confirmDeleteNameFallback": "this student",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phoneNumber": "Phone Number",
+      "dateOfBirth": "Date of Birth",
+      "address": "Address",
+      "enrollmentDate": "Enrollment Date",
+      "studentLevel": "Student Level",
+      "enrolled": "Enrolled"
+    },
+    "placeholders": {
+      "email": "Enter email",
+      "password": "Enter password",
+      "firstName": "Enter first name",
+      "lastName": "Enter last name",
+      "phoneNumber": "Enter phone number",
+      "address": "Enter address",
+      "city": "Enter city"
+    },
+    "form": {
+      "createTitle": "Create Student",
+      "editTitle": "Edit Student",
+      "createAction": "Create",
+      "updateAction": "Update"
+    },
     "errors": {
       "fetchFailed": "Failed to load students",
       "detailsFetchFailed": "Failed to load student details"
@@ -362,12 +962,74 @@
     }
   },
   "timeSlots": {
+    "fields": {
+      "room": "Room",
+      "day": "Day",
+      "startTime": "Start Time",
+      "endTime": "End Time"
+    },
+    "actions": {
+      "addTimeSlot": "Add Time Slot"
+    },
+    "modals": {
+      "createTitle": "Add Time Slot",
+      "editTitle": "Edit Time Slot"
+    },
+    "placeholders": {
+      "selectRoom": "Select a room"
+    },
     "toasts": {
       "updated": "Time slot updated",
       "created": "Time slot created"
     }
   },
   "smartScheduleBuilder": {
+    "description": "Deterministic recommendations with clear explanations.",
+    "loading": {
+      "courses": "Loading courses..."
+    },
+    "days": {
+      "none": "None"
+    },
+    "fields": {
+      "addCourse": "Add course",
+      "earliestStart": "Earliest start (HH:mm)",
+      "latestEnd": "Latest end (HH:mm)",
+      "avoidDayHard": "Avoid day (hard)",
+      "preferDayOffSoft": "Prefer day off (soft)",
+      "preferCompact": "Prefer compact schedule (fewer gaps)"
+    },
+    "placeholders": {
+      "searchCourse": "Search course code or name...",
+      "earliestStart": "09:00",
+      "latestEnd": "18:00"
+    },
+    "actions": {
+      "build": "Build Schedule",
+      "building": "Building…"
+    },
+    "sections": {
+      "selectedCourses": "Selected courses",
+      "recommended": "Recommended sections",
+      "couldNotSchedule": "Couldn't schedule",
+      "explanation": "Explanation"
+    },
+    "labels": {
+      "seats": "Seats: {{seats}}"
+    },
+    "metrics": {
+      "scheduled": "Scheduled: {{scheduled}}/{{requested}}",
+      "days": "Days: {{count}}",
+      "gaps": "Gaps: {{minutes}} min",
+      "earliest": "Earliest: {{time}}",
+      "latest": "Latest: {{time}}"
+    },
+    "empty": {
+      "selectedCourses": "No courses selected yet.",
+      "recommendationTitle": "No recommendation yet",
+      "recommendationDescription": "Select courses and click Build Schedule.",
+      "noSectionsScheduled": "No sections could be scheduled."
+    },
     "errors": {
       "coursesFetchFailed": "Failed to load courses",
       "courseAlreadyAdded": "Course already added",
@@ -378,10 +1040,47 @@
   },
   "sections": {
     "confirmDelete": "Delete this section?",
+    "actions": {
+      "addSection": "Add Section"
+    },
+    "messages": {
+      "noRoomsAvailable": "No rooms available"
+    },
+    "empty": {
+      "noSections": "No sections available."
+    },
+    "fields": {
+      "semester": "Semester",
+      "year": "Year",
+      "instructor": "Instructor",
+      "course": "Course",
+      "availableSeats": "Seats",
+      "room": "Room",
+      "timeSlot": "Time Slot",
+      "slotType": "Slot Type"
+    },
+    "placeholders": {
+      "chooseSemester": "Choose semester",
+      "chooseSeats": "Choose seats"
+    },
+    "modals": {
+      "createTitle": "Add Section",
+      "editTitle": "Edit Section"
+    },
+    "slotTypes": {
+      "lecture": "Lecture",
+      "lab": "Lab",
+      "tutorial": "Tutorial"
+    },
+    "scheduleSlots": {
+      "title": "Schedule Slots",
+      "empty": "No schedule slots for this section."
+    },
     "errors": {
       "fetchFailed": "Failed to fetch sections",
       "dropdownFetchFailed": "Failed to load dropdown data",
       "timeSlotsForRoomFailed": "Failed to load time slots for room",
+      "noTimeSlotsForSelectedRoom": "No time slots exist for the selected room. Please add a time slot before creating a section.",
       "selectRoomAndTimeSlot": "Please select a room and time slot.",
       "saveFailed": "Failed to save section",
       "deleteFailed": "Failed to delete section"
@@ -396,6 +1095,33 @@
     "confirmDeleteTitle": "Delete Schedule",
     "confirmDeleteMessage": "Are you sure you want to delete this schedule for {{name}}? This action cannot be undone.",
     "confirmDeleteNameFallback": "this schedule",
+    "form": {
+      "createTitle": "Add New Schedule Slot",
+      "editTitle": "Edit Schedule Slot",
+      "fields": {
+        "section": "Section",
+        "instructor": "Instructor",
+        "room": "Room",
+        "timeSlot": "Time Slot",
+        "slotType": "Slot Type"
+      },
+      "placeholders": {
+        "selectSection": "Select Section",
+        "selectRoom": "Select Room",
+        "selectTimeSlot": "Select Time Slot",
+        "selectInstructor": "Select Instructor"
+      },
+      "validation": {
+        "sectionRequired": "Section is required",
+        "instructorRequired": "Instructor is required",
+        "roomRequired": "Room is required",
+        "timeSlotRequired": "Time slot is required"
+      },
+      "actions": {
+        "createSchedule": "Create Schedule",
+        "updateSchedule": "Update Schedule"
+      }
+    },
     "errors": {
       "fetchFailed": "Failed to load schedules",
       "saveFailed": "Failed to save schedule",
@@ -407,12 +1133,187 @@
     }
   },
   "profile": {
+    "cards": {
+      "personalInformation": "Personal Information",
+      "security": "Security"
+    },
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "memberSince": "Member Since",
+      "role": "Role",
+      "accountStatus": "Account Status",
+      "status": "Status"
+    },
+    "actions": {
+      "editProfile": "Edit Profile",
+      "changePassword": "Change Password"
+    },
+    "status": {
+      "active": "Active"
+    },
+    "common": {
+      "quickActions": "Quick Actions"
+    },
+    "security": {
+      "description": "Update your password to keep your account secure.",
+      "fields": {
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmNewPassword": "Confirm New Password"
+      }
+    },
+    "admin": {
+      "title": "Admin Information",
+      "sections": {
+        "details": "Details",
+        "permissions": "Permissions"
+      },
+      "fields": {
+        "accessLevel": "Access Level"
+      },
+      "role": {
+        "systemAdministrator": "System Administrator"
+      },
+      "access": {
+        "full": "Full Access"
+      },
+      "permissions": {
+        "userManagement": "User Management",
+        "courseManagement": "Course Management",
+        "enrollmentControl": "Enrollment Control",
+        "systemSettings": "System Settings",
+        "reportsAndAnalytics": "Reports & Analytics"
+      },
+      "quickActions": {
+        "manageUsers": "Manage Users",
+        "manageCourses": "Manage Courses",
+        "viewEnrollments": "View Enrollments"
+      }
+    },
+    "student": {
+      "title": "Academic Information",
+      "sections": {
+        "programInformation": "Program Information",
+        "academicProgress": "Academic Progress",
+        "gpaAndStatus": "GPA & Status",
+        "emergencyContact": "Emergency Contact"
+      },
+      "fields": {
+        "studentId": "Student ID",
+        "program": "Program",
+        "degree": "Degree",
+        "curriculum": "Curriculum",
+        "college": "College",
+        "department": "Department",
+        "completedCredits": "Completed Credits",
+        "registeredCredits": "Registered Credits",
+        "totalRequiredCredits": "Total Required Credits",
+        "progress": "Progress",
+        "termCreditLimit": "Term Credit Limit",
+        "academicStanding": "Academic Standing",
+        "classification": "Classification",
+        "graduationStatus": "Graduation Status"
+      },
+      "values": {
+        "programUndergraduate": "Undergraduate Program",
+        "degreeBachelorOfScience": "Bachelor of Science",
+        "collegeInformationTechnology": "College of Information Technology",
+        "departmentComputerScience": "Computer Science Department"
+      },
+      "standing": {
+        "deansList": "Dean's List",
+        "goodStanding": "Good Standing",
+        "academicProbation": "Academic Probation"
+      },
+      "progressComplete": "{{percent}}% Complete",
+      "gpaOutOf": "out of {{max}}"
+    },
+    "instructor": {
+      "title": "Instructor Information",
+      "sections": {
+        "positionDetails": "Position Details",
+        "department": "Department",
+        "ranksReference": "Academic Ranks Reference"
+      },
+      "fields": {
+        "instructorId": "Instructor ID",
+        "title": "Title",
+        "academicRank": "Academic Rank",
+        "department": "Department",
+        "office": "Office"
+      },
+      "quickActions": {
+        "mySections": "My Sections",
+        "mySchedule": "My Schedule"
+      },
+      "ranks": {
+        "ta": {
+          "label": "Teaching Assistant",
+          "description": "Assists with teaching and labs"
+        },
+        "lecturer": {
+          "label": "Lecturer",
+          "description": "Teaches courses and supports students"
+        },
+        "assistantProfessor": {
+          "label": "Assistant Professor",
+          "description": "Entry-level professorship role"
+        },
+        "associateProfessor": {
+          "label": "Associate Professor",
+          "description": "Mid-level professorship role"
+        },
+        "professor": {
+          "label": "Professor",
+          "description": "Senior academic and research role"
+        }
+      }
+    },
+    "other": {
+      "title": "Profile",
+      "limitedAccessMessage": "Your account has limited access to profile details."
+    },
     "toasts": {
       "updated": "Profile updated successfully",
       "passwordChanged": "Password changed successfully"
     }
   },
   "officeHours": {
+    "title": "My Office Hours",
+    "subtitle": "Manage your office hours and student bookings",
+    "actions": {
+      "addOfficeHour": "Add Office Hour",
+      "goToCurrentWeek": "Go to current week",
+      "markComplete": "Mark Complete",
+      "markNoShow": "Mark No Show",
+      "addNotes": "Add Notes",
+      "saveNotes": "Save Notes"
+    },
+    "sections": {
+      "bookings": "Bookings"
+    },
+    "empty": {
+      "title": "No office hours this week",
+      "description": "Click \"Add Office Hour\" to create one"
+    },
+    "fields": {
+      "date": "Date",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "notesOptional": "Notes (optional)",
+      "repeatWeekly": "Repeat weekly",
+      "purposeLabel": "Purpose:"
+    },
+    "placeholders": {
+      "notesOptional": "Any additional information for students...",
+      "meetingNotes": "Notes about the meeting..."
+    },
+    "modals": {
+      "createTitle": "Create Office Hour",
+      "notesTitle": "Add Notes",
+      "meetingWith": "Meeting with {{name}}"
+    },
     "confirmDelete": "Are you sure you want to delete this office hour?",
     "errors": {
       "fetchFailed": "Failed to load office hours",
@@ -438,6 +1339,46 @@
     "confirmDeleteTitle": "Delete Instructor",
     "confirmDeleteMessage": "Are you sure you want to delete {{name}}? This action cannot be undone.",
     "confirmDeleteNameFallback": "this instructor",
+    "searchPlaceholder": "Search instructors...",
+    "empty": {
+      "title": "No instructors yet",
+      "description": "Get started by adding your first instructor.",
+      "table": "No instructors found."
+    },
+    "table": {
+      "name": "Name",
+      "degree": "Degree",
+      "department": "Department"
+    },
+    "actions": {
+      "view": "View",
+      "add": "Add Instructor"
+    },
+    "details": {
+      "fields": {
+        "title": "Title",
+        "academicDegree": "Academic Degree",
+        "department": "Department",
+        "address": "Address"
+      },
+      "schedule": {
+        "title": "Teaching Schedule",
+        "empty": "No scheduled classes.",
+        "table": {
+          "course": "Course"
+        }
+      }
+    },
+    "page": {
+      "description": "Manage instructors and their information"
+    },
+    "detailsPage": {
+      "title": "Instructor Details",
+      "description": "Viewing details for {{name}}",
+      "loading": "Loading instructor details...",
+      "notFoundTitle": "Instructor Not Found",
+      "notFoundMessage": "The instructor you're looking for doesn't exist."
+    },
     "errors": {
       "fetchFailed": "Failed to load instructors",
       "saveFailed": "Failed to save instructor",

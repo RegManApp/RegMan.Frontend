@@ -1,5 +1,5 @@
-import { useTranslation } from 'react-i18next';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
   PencilIcon,
@@ -16,7 +16,7 @@ import {
   Select,
 } from '../common';
 import { getFullName, getStatusColor, formatDate } from '../../utils/helpers';
-import { ENROLLMENT_STATUSES, getEnrollmentStatusLabel, GRADES } from '../../utils/constants';
+import { ENROLLMENT_STATUSES, GRADES } from '../../utils/constants';
 
 const EnrollmentList = ({
   enrollments,
@@ -35,10 +35,34 @@ const EnrollmentList = ({
   onPageChange,
   isAdmin,
 }) => {
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, enrollment: null });
   const [sortField, setSortField] = useState(null);
   const [sortDirection, setSortDirection] = useState('asc');
+
+  const getEnrollmentStatusKey = (value) => {
+    if (typeof value === 'number') {
+      if (value === 0) return 'pending';
+      if (value === 1) return 'enrolled';
+      if (value === 2) return 'dropped';
+      if (value === 3) return 'completed';
+      if (value === 4) return 'declined';
+      return null;
+    }
+    const v = String(value || '').toLowerCase();
+    if (v.includes('pending')) return 'pending';
+    if (v.includes('enrolled')) return 'enrolled';
+    if (v.includes('dropped')) return 'dropped';
+    if (v.includes('completed')) return 'completed';
+    if (v.includes('declined')) return 'declined';
+    return null;
+  };
+
+  const renderEnrollmentStatus = (value) => {
+    const key = getEnrollmentStatusKey(value);
+    if (!key) return String(value ?? t('common.notAvailable'));
+    return t(`enums.enrollmentStatus.${key}`);
+  };
 
   // Helper to get enrollment ID (backend returns enrollmentId, normalize to id)
   const getEnrollmentId = (enrollment) => enrollment.enrollmentId || enrollment.id;
@@ -74,7 +98,7 @@ const EnrollmentList = ({
         case 'status': {
           const status = enrollment.status;
           // Sort by label for stable UX across numeric/string enums
-          return getEnrollmentStatusLabel(status).toString();
+          return renderEnrollmentStatus(status).toString();
         }
         default:
           return enrollment[sortField] ?? null;
@@ -105,12 +129,12 @@ const EnrollmentList = ({
   const columns = [
     {
       key: 'student',
-      header: 'Student',
+      header: t('enrollments.table.student'),
       render: (_, enrollment) => {
         // Handle both admin view (nested student object) and direct fields
         const studentName = enrollment.student?.fullName || 
                            getFullName(enrollment.student?.user?.firstName, enrollment.student?.user?.lastName) ||
-                           enrollment.studentName || '-';
+                           enrollment.studentName || t('common.notAvailable');
         const studentEmail = enrollment.student?.email || enrollment.studentEmail || '';
         return (
           <div>
@@ -126,11 +150,11 @@ const EnrollmentList = ({
     },
     {
       key: 'course',
-      header: 'Course',
+      header: t('enrollments.table.course'),
       render: (_, enrollment) => {
         // Handle both nested and flat structure
         const courseId = enrollment.courseId || enrollment.section?.course?.courseId;
-        const courseName = enrollment.courseName || enrollment.section?.course?.name || enrollment.course?.courseName || '-';
+        const courseName = enrollment.courseName || enrollment.section?.course?.name || enrollment.course?.courseName || t('common.notAvailable');
         const courseCode = enrollment.courseCode || enrollment.section?.course?.code || enrollment.course?.courseCode || '';
         return (
           <div>
@@ -149,18 +173,18 @@ const EnrollmentList = ({
     },
     {
       key: 'semester',
-      header: 'Semester',
-      render: (_, enrollment) => enrollment.semester || enrollment.section?.semester || '-',
+      header: t('enrollments.table.semester'),
+      render: (_, enrollment) => enrollment.semester || enrollment.section?.semester || t('common.notAvailable'),
     },
     {
       key: 'enrollmentDate',
-      header: 'Enrolled On',
+      header: t('enrollments.table.enrolledOn'),
       sortable: true,
       render: (_, enrollment) => formatDate(enrollment.enrollmentDate || enrollment.enrolledAt),
     },
     {
       key: 'grade',
-      header: 'Grade',
+      header: t('enrollments.table.grade'),
       render: (_, enrollment) => {
         const value = enrollment.grade;
         // Only allow grade updates for Enrolled students
@@ -172,7 +196,7 @@ const EnrollmentList = ({
               onChange={(e) => onUpdateGrade?.(getEnrollmentId(enrollment), e.target.value)}
               className="text-sm border border-gray-300 dark:border-gray-600 rounded px-2 py-1 bg-white dark:bg-gray-800"
             >
-              <option value="">-</option>
+              <option value="">{t('common.notAvailable')}</option>
               {GRADES.map((grade) => (
                 <option key={grade} value={grade}>
                   {grade}
@@ -181,23 +205,23 @@ const EnrollmentList = ({
             </select>
           );
         }
-        return value || '-';
+        return value || t('common.notAvailable');
       },
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('enrollments.table.status'),
       sortable: true,
       render: (_, enrollment) => {
         const status = enrollment.status;
         return (
-          <Badge className={getStatusColor(status)}>{getEnrollmentStatusLabel(status)}</Badge>
+          <Badge className={getStatusColor(status)}>{renderEnrollmentStatus(status)}</Badge>
         );
       },
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('enrollments.table.actions'),
       render: (_, enrollment) => {
         const enrollmentId = getEnrollmentId(enrollment);
         const isEnrolled = isStatusEnrolled(enrollment.status);
@@ -212,7 +236,7 @@ const EnrollmentList = ({
                   icon={PencilIcon}
                   onClick={() => onEdit?.({ ...enrollment, id: enrollmentId, enrollmentId })}
                 >
-                  Edit
+                  {t('common.edit')}
                 </Button>
                 <Button
                   variant="ghost"
@@ -221,7 +245,7 @@ const EnrollmentList = ({
                   className="text-red-600 hover:text-red-700"
                   onClick={() => setDeleteModal({ isOpen: true, enrollment: { ...enrollment, id: enrollmentId } })}
                 >
-                  Drop
+                  {t('enrollments.actions.drop')}
                 </Button>
               </>
             )}
@@ -231,7 +255,7 @@ const EnrollmentList = ({
                 size="sm"
                 onClick={() => setDeleteModal({ isOpen: true, enrollment: { ...enrollment, id: enrollmentId } })}
               >
-                Drop
+                {t('enrollments.actions.drop')}
               </Button>
             )}
           </div>
@@ -248,28 +272,28 @@ const EnrollmentList = ({
   };
 
   const statusOptions = [
-    { value: '', label: 'All Status' },
+    { value: '', label: t('enrollments.filters.allStatuses') },
     ...ENROLLMENT_STATUSES.map((status) => ({
       value: status.value,
-      label: status.label,
+      label: renderEnrollmentStatus(status.value),
     })),
   ];
 
   if (!isLoading && enrollments.length === 0 && !searchQuery && !statusFilter) {
     return (
       <EmptyState
-        title="No enrollments found"
+        title={t('enrollments.empty.title')}
         description={
           isAdmin
-            ? "Get started by enrolling students in courses."
-            : "You are not enrolled in any courses yet."
+            ? t('enrollments.empty.descriptionAdmin')
+            : t('enrollments.empty.descriptionStudent')
         }
         action={
           isAdmin ? (
-            <Button onClick={() => onEdit?.({})}>Create Enrollment</Button>
+            <Button onClick={() => onEdit?.({})}>{t('enrollments.actions.create')}</Button>
           ) : (
             <Link to="/courses">
-              <Button>Browse Courses</Button>
+              <Button>{t('dashboard.student.actions.browseCourses')}</Button>
             </Link>
           )
         }
@@ -285,7 +309,7 @@ const EnrollmentList = ({
             value={searchQuery}
             onChange={onSearchChange}
             onClear={() => onSearchChange('')}
-            placeholder="Search enrollments..."
+            placeholder={t('enrollments.searchPlaceholder')}
             className="w-full sm:w-64"
           />
           <Select
@@ -296,7 +320,7 @@ const EnrollmentList = ({
           />
         </div>
         {isAdmin && (
-          <Button onClick={() => onEdit?.({})}>Create Enrollment</Button>
+          <Button onClick={() => onEdit?.({})}>{t('enrollments.actions.create')}</Button>
         )}
       </div>
 
@@ -304,7 +328,7 @@ const EnrollmentList = ({
         columns={columns}
         data={sortedEnrollments}
         isLoading={isLoading}
-        emptyMessage="No enrollments match your search criteria."
+        emptyMessage={t('enrollments.emptySearch')}
         sortField={sortField}
         sortDirection={sortDirection}
         onSort={handleSort}

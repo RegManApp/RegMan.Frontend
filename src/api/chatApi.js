@@ -14,9 +14,9 @@ export const chatApi = {
   },
 
   // Send a message via REST API (fallback for SignalR)
-  sendMessage: (receiverId, textMessage) => {
+  sendMessage: (receiverId, textMessage, conversationId = null) => {
     return axiosInstance.post("/chat", null, {
-      params: { receiverId, textMessage },
+      params: { receiverId, conversationId, textMessage },
     });
   },
 };

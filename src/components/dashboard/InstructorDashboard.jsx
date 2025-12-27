@@ -12,7 +12,8 @@ import {
 import { Card, Button, Badge, EmptyState } from '../common';
 import StatsCard from './StatsCard';
 import { formatDate } from '../../utils/helpers';
-import { getDayOfWeekLabel, getInstructorDegreeLabel } from '../../utils/constants';
+import { useTranslation } from 'react-i18next';
+import { useDirection } from '../../hooks/useDirection';
 
 const InstructorDashboard = ({
   instructor,
@@ -21,6 +22,22 @@ const InstructorDashboard = ({
   user,
   timeline,
 }) => {
+  const { t } = useTranslation();
+  const { isRtl } = useDirection();
+  const dayKeys = useMemo(() => ([
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+  ]), []);
+
+  const getDayLabel = (dayIndex) => {
+    const key = dayKeys[Number(dayIndex)] || 'sunday';
+    return t(`common.days.${key}`);
+  };
   // Calculate unique courses from schedules
   const uniqueCourses = [...new Set(schedules.map(s => s.courseId))];
   
@@ -50,21 +67,23 @@ const InstructorDashboard = ({
   };
 
   const getDegreeLabel = () => {
-    const labels = {
-      0: 'Teaching Assistant',
-      1: 'Assistant Lecturer',
-      2: 'Lecturer',
-      3: 'Assistant Professor',
-      4: 'Associate Professor',
-      5: 'Professor',
-      'TeachingAssistant': 'Teaching Assistant',
-      'AssistantLecturer': 'Assistant Lecturer',
-      'Lecturer': 'Lecturer',
-      'AssistantProfessor': 'Assistant Professor',
-      'AssociateProfessor': 'Associate Professor',
-      'Professor': 'Professor',
+    const normalized = typeof degree === 'number' ? degree : String(degree);
+    const map = {
+      0: 'teachingAssistant',
+      1: 'assistantLecturer',
+      2: 'lecturer',
+      3: 'assistantProfessor',
+      4: 'associateProfessor',
+      5: 'professor',
+      TeachingAssistant: 'teachingAssistant',
+      AssistantLecturer: 'assistantLecturer',
+      Lecturer: 'lecturer',
+      AssistantProfessor: 'assistantProfessor',
+      AssociateProfessor: 'associateProfessor',
+      Professor: 'professor',
     };
-    return labels[degree] || 'Instructor';
+    const key = map[normalized] || map[degree] || 'instructor';
+    return t(`dashboard.instructor.degree.${key}`);
   };
 
   const countdownTarget = timeline?.status?.countdownTargetUtc ? new Date(timeline.status.countdownTargetUtc) : null;
@@ -93,6 +112,14 @@ const InstructorDashboard = ({
     return parts.join(' ');
   }, [countdownTarget?.getTime(), now]);
 
+  const normalizedPhase = String(phase || '').toLowerCase();
+  const phaseKey = normalizedPhase === 'open'
+    ? 'dashboard.timeline.phase.open'
+    : normalizedPhase === 'withdraw period'
+      ? 'dashboard.timeline.phase.withdraw'
+      : 'dashboard.timeline.phase.closed';
+  const phaseLabel = t(phaseKey);
+
   return (
     <div className="space-y-6">
       {/* Welcome Section */}
@@ -100,47 +127,53 @@ const InstructorDashboard = ({
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">
-              Welcome back, {instructor?.user?.firstName || user?.firstName || 'Instructor'}!
+              {t('dashboard.instructor.welcomeBack', {
+                name: instructor?.user?.firstName || user?.firstName || t('dashboard.instructor.fallbackInstructor'),
+              })}
             </h1>
             <p className="mt-2 text-white/80">
-              {instructor?.department && `Department: ${instructor.department}`}
+              {instructor?.department
+                ? t('dashboard.instructor.department', { department: instructor.department })
+                : ''}
             </p>
           </div>
-          <div className="text-right">
+          <div className={isRtl ? 'text-left' : 'text-right'}>
             <Badge className="bg-white/20 text-white border-white/30">
-              <AcademicCapIcon className="w-4 h-4 mr-1 inline" />
+              <AcademicCapIcon className={`w-4 h-4 inline ${isRtl ? 'ml-1' : 'mr-1'}`} />
               {getDegreeLabel()}
             </Badge>
           </div>
         </div>
         <p className="mt-2 text-white/70">
-          {isProfessorLevel ? 'Manage your courses, supervise students, and review research.' : 
-           isLecturerLevel ? 'Manage your lectures and student progress.' :
-           'Assist with sections, labs, and student support.'}
+          {isProfessorLevel
+            ? t('dashboard.instructor.blurb.professor')
+            : isLecturerLevel
+              ? t('dashboard.instructor.blurb.lecturer')
+              : t('dashboard.instructor.blurb.ta')}
         </p>
       </div>
 
       {/* Registration Timeline (read-only) */}
-      <Card title="Registration Timeline" subtitle="Read-only timeline visibility">
+      <Card title={t('dashboard.timeline.title')} subtitle={t('dashboard.instructor.timelineSubtitle')}>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-400">Status:</span>
+            <span className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.timeline.statusLabel')}</span>
             <Badge variant={phase === 'Open' ? 'success' : phase === 'Withdraw period' ? 'warning' : 'default'}>
-              {phase}
+              {phaseLabel}
             </Badge>
             {countdownText && (
               <span className="text-sm text-gray-700 dark:text-gray-300">
                 {phase === 'Open'
-                  ? `• closes in ${countdownText}`
+                  ? t('dashboard.timeline.closesIn', { time: countdownText })
                   : phase === 'Withdraw period'
-                    ? `• ends in ${countdownText}`
-                    : `• next change in ${countdownText}`}
+                    ? t('dashboard.timeline.endsIn', { time: countdownText })
+                    : t('dashboard.timeline.nextChangeIn', { time: countdownText })}
               </span>
             )}
           </div>
           <div className="text-sm text-gray-700 dark:text-gray-300">
-            <div>Registration: {timeline?.registrationStartDate || '—'} → {timeline?.registrationEndDate || '—'} (UTC)</div>
-            <div>Withdraw: {timeline?.withdrawStartDate || '—'} → {timeline?.withdrawEndDate || '—'} (UTC)</div>
+            <div>{t('dashboard.timeline.registrationRange', { start: timeline?.registrationStartDate || '—', end: timeline?.registrationEndDate || '—' })}</div>
+            <div>{t('dashboard.timeline.withdrawRange', { start: timeline?.withdrawStartDate || '—', end: timeline?.withdrawEndDate || '—' })}</div>
           </div>
         </div>
       </Card>
@@ -148,25 +181,25 @@ const InstructorDashboard = ({
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Courses Teaching"
+          title={t('dashboard.instructor.stats.coursesTeaching')}
           value={uniqueCourses.length}
           icon={BookOpenIcon}
           iconClassName="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
         />
         <StatsCard
-          title="Weekly Classes"
+          title={t('dashboard.instructor.stats.weeklyClasses')}
           value={schedules.length}
           icon={CalendarDaysIcon}
           iconClassName="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
         />
         <StatsCard
-          title="Today's Classes"
+          title={t('dashboard.instructor.stats.todaysClasses')}
           value={todaySchedules.length}
           icon={ClockIcon}
           iconClassName="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
         />
         <StatsCard
-          title="Teaching Days"
+          title={t('dashboard.instructor.stats.teachingDays')}
           value={Object.keys(schedulesByDay).length}
           icon={UserGroupIcon}
           iconClassName="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400"
@@ -174,29 +207,29 @@ const InstructorDashboard = ({
       </div>
 
       {/* Quick Actions based on role */}
-      <Card title="Quick Actions">
+      <Card title={t('dashboard.instructor.quickActions.title')}>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Link to="/schedules">
             <Button variant="outline" className="w-full justify-start" icon={CalendarDaysIcon}>
-              My Schedule
+              {t('dashboard.instructor.quickActions.mySchedule')}
             </Button>
           </Link>
           <Link to="/courses">
             <Button variant="outline" className="w-full justify-start" icon={BookOpenIcon}>
-              My Courses
+              {t('dashboard.instructor.quickActions.myCourses')}
             </Button>
           </Link>
           {(isProfessorLevel || isLecturerLevel) && (
             <Link to="/students">
               <Button variant="outline" className="w-full justify-start" icon={UserGroupIcon}>
-                View Students
+                {t('dashboard.instructor.quickActions.viewStudents')}
               </Button>
             </Link>
           )}
           {isProfessorLevel && (
             <Link to="/reports">
               <Button variant="outline" className="w-full justify-start" icon={ChartBarIcon}>
-                Reports
+                {t('dashboard.instructor.quickActions.reports')}
               </Button>
             </Link>
           )}
@@ -205,12 +238,12 @@ const InstructorDashboard = ({
 
       {/* Today's Schedule */}
       <Card
-        title="Today's Schedule"
-        subtitle={`${getDayOfWeekLabel(today)}'s classes`}
+        title={t('dashboard.instructor.today.title')}
+        subtitle={t('dashboard.instructor.today.subtitle', { day: getDayLabel(today) })}
         actions={
           <Link to="/schedules">
             <Button variant="outline" size="sm">
-              View Full Schedule
+              {t('dashboard.instructor.today.viewFullSchedule')}
             </Button>
           </Link>
         }
@@ -230,20 +263,20 @@ const InstructorDashboard = ({
                     </div>
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">
-                        {schedule.course?.courseName || 'Unknown Course'}
+                        {schedule.course?.courseName || t('common.notAvailable')}
                       </h4>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {schedule.course?.courseCode}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className={isRtl ? 'text-left' : 'text-right'}>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {schedule.startTime} - {schedule.endTime}
                     </p>
                     {schedule.room && (
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Room: {schedule.room}
+                        {t('dashboard.instructor.today.room', { room: schedule.room })}
                       </p>
                     )}
                   </div>
@@ -252,14 +285,14 @@ const InstructorDashboard = ({
           </div>
         ) : (
           <EmptyState
-            title="No classes today"
-            description="You don't have any scheduled classes for today."
+            title={t('dashboard.instructor.today.emptyTitle')}
+            description={t('dashboard.instructor.today.emptyDescription')}
           />
         )}
       </Card>
 
       {/* Weekly Overview */}
-      <Card title="Weekly Overview" subtitle="Your teaching schedule this week">
+      <Card title={t('dashboard.instructor.weekly.title')} subtitle={t('dashboard.instructor.weekly.subtitle')}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {[1, 2, 3, 4, 5].map((day) => { // Monday to Friday
             const daySchedules = schedulesByDay[day] || [];
@@ -277,7 +310,7 @@ const InstructorDashboard = ({
                     ? 'text-primary-700 dark:text-primary-400'
                     : 'text-gray-900 dark:text-white'
                 }`}>
-                  {getDayOfWeekLabel(day)}
+                  {getDayLabel(day)}
                 </h4>
                 {daySchedules.length > 0 ? (
                   <div className="space-y-2">
@@ -299,7 +332,7 @@ const InstructorDashboard = ({
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 dark:text-gray-500">
-                    No classes
+                    {t('dashboard.instructor.weekly.noClasses')}
                   </p>
                 )}
               </div>

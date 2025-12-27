@@ -5,6 +5,7 @@ import {
   TagIcon,
   AcademicCapIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import {
   Card,
   Badge,
@@ -13,7 +14,6 @@ import {
   Avatar,
 } from '../common';
 import { getFullName, getStatusColor, formatDate } from '../../utils/helpers';
-import { getEnrollmentStatusLabel } from '../../utils/constants';
 
 const CourseDetails = ({
   course,
@@ -26,16 +26,42 @@ const CourseDetails = ({
   isEnrolled,
   isLoadingStudents,
 }) => {
+  const { t } = useTranslation();
+
   if (!course) return null;
 
   // Robust fallback for category and description
-  const categoryName = course.categoryName || course.CourseCategoryName || course.category?.name || course.Category?.Name || '-';
+  const categoryName = course.categoryName || course.CourseCategoryName || course.category?.name || course.Category?.Name || t('common.notAvailable');
   const description = course.description || course.Description || '';
+
+  const getEnrollmentStatusKey = (value) => {
+    if (typeof value === 'number') {
+      if (value === 0) return 'pending';
+      if (value === 1) return 'enrolled';
+      if (value === 2) return 'dropped';
+      if (value === 3) return 'completed';
+      if (value === 4) return 'declined';
+      return null;
+    }
+    const v = String(value || '').toLowerCase();
+    if (v.includes('pending')) return 'pending';
+    if (v.includes('enrolled')) return 'enrolled';
+    if (v.includes('dropped')) return 'dropped';
+    if (v.includes('completed')) return 'completed';
+    if (v.includes('declined')) return 'declined';
+    return null;
+  };
+
+  const renderEnrollmentStatus = (value) => {
+    const key = getEnrollmentStatusKey(value);
+    if (!key) return String(value ?? t('common.notAvailable'));
+    return t(`enums.enrollmentStatus.${key}`);
+  };
 
   const studentColumns = [
     {
       key: 'student',
-      header: 'Student',
+      header: t('courses.details.enrolledStudents.table.student'),
       render: (_, enrollment) => (
         <div className="flex items-center gap-3">
           <Avatar
@@ -59,24 +85,24 @@ const CourseDetails = ({
     },
     {
       key: 'semester',
-      header: 'Semester',
-      render: (value) => value || '-',
+      header: t('courses.details.enrolledStudents.table.semester'),
+      render: (value) => value || t('common.notAvailable'),
     },
     {
       key: 'enrollmentDate',
-      header: 'Enrolled On',
+      header: t('courses.details.enrolledStudents.table.enrolledOn'),
       render: (value) => formatDate(value),
     },
     {
       key: 'grade',
-      header: 'Grade',
-      render: (value) => value || '-',
+      header: t('courses.details.enrolledStudents.table.grade'),
+      render: (value) => value || t('common.notAvailable'),
     },
     {
       key: 'status',
-      header: 'Status',
+      header: t('courses.details.enrolledStudents.table.status'),
       render: (value) => (
-        <Badge className={getStatusColor(value)}>{getEnrollmentStatusLabel(value)}</Badge>
+        <Badge className={getStatusColor(value)}>{renderEnrollmentStatus(value)}</Badge>
       ),
     },
   ];
@@ -100,23 +126,23 @@ const CourseDetails = ({
               {course.courseName}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              {description ? description : <span className="italic text-gray-400">No description</span>}
+              {description ? description : <span className="italic text-gray-400">{t('courses.noDescription')}</span>}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={onBack}>
-              Back
+              {t('common.back')}
             </Button>
             {isAdmin ? (
-              <Button onClick={() => onEdit?.(course)}>Edit Course</Button>
+              <Button onClick={() => onEdit?.(course)}>{t('courses.actions.edit')}</Button>
             ) : isEnrolled ? (
               <Button variant="danger" onClick={() => onUnenroll?.(course.id)}>
-                Drop Course
+                {t('courses.drop')}
               </Button>
             ) : (
               <Button onClick={() => onEnroll?.(course.id)}>
-                Enroll
+                {t('courses.enroll')}
               </Button>
             )}
           </div>
@@ -128,7 +154,7 @@ const CourseDetails = ({
               <BookOpenIcon className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Credit Hours</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('courses.details.creditHours')}</p>
               <p className="font-semibold text-gray-900 dark:text-white">
                 {course.creditHours}
               </p>
@@ -140,9 +166,9 @@ const CourseDetails = ({
               <UserGroupIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Enrolled</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('courses.details.enrolled')}</p>
               <p className="font-semibold text-gray-900 dark:text-white">
-                {course.enrollmentCount || 0} students
+                {t('courses.details.enrolledCount', { count: course.enrollmentCount || 0 })}
               </p>
             </div>
           </div>
@@ -152,7 +178,7 @@ const CourseDetails = ({
               <AcademicCapIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Category</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('courses.details.category')}</p>
               <p className="font-semibold text-gray-900 dark:text-white">
                 {categoryName}
               </p>
@@ -163,12 +189,15 @@ const CourseDetails = ({
 
       {/* Enrolled Students (Admin only) */}
       {isAdmin && (
-        <Card title="Enrolled Students" subtitle={`${enrolledStudents.length} students enrolled`}>
+        <Card
+          title={t('courses.details.enrolledStudents.title')}
+          subtitle={t('courses.details.enrolledStudents.subtitle', { count: enrolledStudents.length })}
+        >
           <Table
             columns={studentColumns}
             data={enrolledStudents}
             isLoading={isLoadingStudents}
-            emptyMessage="No students enrolled in this course yet."
+            emptyMessage={t('courses.details.enrolledStudents.empty')}
           />
         </Card>
       )}

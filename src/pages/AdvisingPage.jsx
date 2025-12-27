@@ -60,7 +60,7 @@ const AdvisingPage = () => {
       const response = await advisingApi.getStats();
       setStats(response.data);
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      console.error(error);
     }
   }, []);
 
@@ -77,7 +77,7 @@ const AdvisingPage = () => {
       setTotalPages(data.totalPages || 1);
       setTotalItems(data.totalItems || 0);
     } catch (error) {
-      console.error('Failed to load enrollments:', error);
+      console.error(error);
       toast.error(t('advising.errors.pendingFetchFailed'));
     } finally {
       setIsLoading(false);
@@ -98,7 +98,7 @@ const AdvisingPage = () => {
       loadStats();
       loadEnrollments();
     } catch (error) {
-      console.error('Failed to approve:', error);
+      console.error(error);
       toast.error(t('advising.errors.approveFailed'));
     } finally {
       setIsProcessing(false);
@@ -120,7 +120,7 @@ const AdvisingPage = () => {
       loadStats();
       loadEnrollments();
     } catch (error) {
-      console.error('Failed to decline:', error);
+      console.error(error);
       toast.error(t('advising.errors.declineFailed'));
     } finally {
       setIsProcessing(false);
@@ -130,55 +130,63 @@ const AdvisingPage = () => {
   const columns = [
     {
       key: 'student',
-      header: 'Student',
+      header: t('advising.table.student'),
       render: (_, enrollment) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">
-            {enrollment.student?.fullName || 'Unknown'}
+            {enrollment.student?.fullName || t('common.notAvailable')}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {enrollment.student?.email}
           </p>
           <p className="text-xs text-gray-400">
-            GPA: {enrollment.student?.gpa?.toFixed(2) || '0.00'} | Credits: {enrollment.student?.completedCredits || 0}
+            {t('advising.table.studentMeta', {
+              gpa: (enrollment.student?.gpa ?? 0).toFixed(2),
+              credits: enrollment.student?.completedCredits ?? 0,
+            })}
           </p>
         </div>
       ),
     },
     {
       key: 'course',
-      header: 'Course',
+      header: t('advising.table.course'),
       render: (_, enrollment) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">
             {enrollment.section?.course?.courseName}
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {enrollment.section?.course?.courseCode} - Section {enrollment.section?.sectionName}
+            {t('advising.table.courseCodeSection', {
+              courseCode: enrollment.section?.course?.courseCode,
+              sectionName: enrollment.section?.sectionName,
+            })}
           </p>
           <p className="text-xs text-gray-400">
-            {enrollment.section?.course?.creditHours || enrollment.section?.course?.credits} Credit Hours
+            {t('advising.table.creditHours', {
+              count: enrollment.section?.course?.creditHours || enrollment.section?.course?.credits || 0,
+            })}
           </p>
         </div>
       ),
     },
     {
       key: 'instructor',
-      header: 'Instructor',
+      header: t('advising.table.instructor'),
       render: (_, enrollment) => (
         <span className="text-gray-900 dark:text-white">
-          {enrollment.section?.instructor?.fullName || 'TBA'}
+          {enrollment.section?.instructor?.fullName || t('common.notAssigned')}
         </span>
       ),
     },
     {
       key: 'requestDate',
-      header: 'Request Date',
+      header: t('advising.table.requestDate'),
       render: (value) => formatDate(value),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('common.actions'),
       render: (_, enrollment) => (
         <div className="flex items-center gap-2">
           <Button
@@ -188,7 +196,7 @@ const AdvisingPage = () => {
             onClick={() => handleApprove(enrollment.enrollmentId)}
             disabled={isProcessing}
           >
-            Approve
+            {t('advising.actions.approve')}
           </Button>
           <Button
             variant="danger"
@@ -197,7 +205,7 @@ const AdvisingPage = () => {
             onClick={() => setDeclineModal({ isOpen: true, enrollment })}
             disabled={isProcessing}
           >
-            Decline
+            {t('advising.actions.decline')}
           </Button>
         </div>
       ),
@@ -211,12 +219,12 @@ const AdvisingPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <Breadcrumb items={[{ name: 'Advising', href: '/advising', current: true }]} />
+        <Breadcrumb items={[{ name: t('nav.advising'), href: '/advising', current: true }]} />
         <h1 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-          Course Enrollment Advising
+          {t('advising.page.title')}
         </h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Review and approve student course registration requests
+          {t('advising.page.subtitle')}
         </p>
       </div>
 
@@ -229,7 +237,7 @@ const AdvisingPage = () => {
                 <ClockIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Pending</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('advising.stats.pending')}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.pendingCount}
                 </p>
@@ -243,7 +251,7 @@ const AdvisingPage = () => {
                 <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Approved</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('advising.stats.approved')}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.approvedCount}
                 </p>
@@ -257,7 +265,7 @@ const AdvisingPage = () => {
                 <XCircleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Declined</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('advising.stats.declined')}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.declinedCount}
                 </p>
@@ -271,7 +279,7 @@ const AdvisingPage = () => {
                 <DocumentCheckIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Today's Requests</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('advising.stats.todayRequests')}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">
                   {stats.todayRequestsCount}
                 </p>
@@ -282,13 +290,13 @@ const AdvisingPage = () => {
       )}
 
       {/* Pending Enrollments Table */}
-      <Card title="Pending Enrollment Requests">
+      <Card title={t('advising.sections.pendingRequestsTitle')}>
         <div className="mb-4">
           <SearchInput
             value={searchInput}
             onChange={setSearchInput}
             onClear={() => setSearchInput('')}
-            placeholder="Search by student name or course..."
+            placeholder={t('advising.search.placeholder')}
             className="w-full sm:w-80"
           />
         </div>
@@ -296,8 +304,8 @@ const AdvisingPage = () => {
         {enrollments.length === 0 && !isLoading ? (
           <EmptyState
             icon={AcademicCapIcon}
-            title="No Pending Requests"
-            description="All enrollment requests have been processed. Check back later for new requests."
+            title={t('advising.empty.title')}
+            description={t('advising.empty.description')}
           />
         ) : (
           <>
@@ -305,7 +313,7 @@ const AdvisingPage = () => {
               columns={columns}
               data={enrollments}
               isLoading={isLoading}
-              emptyMessage="No pending enrollments found."
+              emptyMessage={t('advising.empty.table')}
             />
 
             {totalPages > 1 && (
@@ -328,7 +336,7 @@ const AdvisingPage = () => {
           setDeclineModal({ isOpen: false, enrollment: null });
           setDeclineReason('');
         }}
-        title="Decline Enrollment"
+        title={t('advising.decline.title')}
         size="md"
       >
         <div className="space-y-4">
@@ -337,12 +345,12 @@ const AdvisingPage = () => {
               <ExclamationTriangleIcon className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />
               <div>
                 <p className="font-medium text-red-800 dark:text-red-200">
-                  You are about to decline this enrollment request
+                  {t('advising.decline.warningTitle')}
                 </p>
                 <p className="text-sm text-red-600 dark:text-red-300 mt-1">
-                  Student: {declineModal.enrollment?.student?.fullName}
+                  {t('advising.decline.labels.student')}: {declineModal.enrollment?.student?.fullName}
                   <br />
-                  Course: {declineModal.enrollment?.section?.course?.courseCode} - {declineModal.enrollment?.section?.course?.courseName}
+                  {t('advising.decline.labels.course')}: {declineModal.enrollment?.section?.course?.courseCode} - {declineModal.enrollment?.section?.course?.courseName}
                 </p>
               </div>
             </div>
@@ -350,14 +358,14 @@ const AdvisingPage = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Reason for Declining <span className="text-red-500">*</span>
+              {t('advising.decline.reasonLabel')} <span className="text-red-500">*</span>
             </label>
             <textarea
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-              placeholder="e.g., Missing prerequisites, credit overload, schedule conflict..."
+              placeholder={t('advising.decline.reasonPlaceholder')}
             />
           </div>
 
@@ -370,7 +378,7 @@ const AdvisingPage = () => {
               }}
               disabled={isProcessing}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               variant="danger"
@@ -378,7 +386,7 @@ const AdvisingPage = () => {
               loading={isProcessing}
               disabled={!declineReason.trim()}
             >
-              Decline Enrollment
+              {t('advising.actions.declineEnrollment')}
             </Button>
           </div>
         </div>

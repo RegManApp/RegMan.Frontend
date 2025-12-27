@@ -295,7 +295,7 @@ export const AuthProvider = ({ children }) => {
       const transformedData = {
         fullName: `${userData.firstName || ''} ${userData.lastName || ''}`.trim(),
         email: userData.email,
-        address: userData.address || 'N/A',
+        address: userData.address || '',
         role: 'Student', // Always Student for public registration
         password: userData.password,
       };

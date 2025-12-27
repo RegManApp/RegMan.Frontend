@@ -61,7 +61,7 @@ const UsersPage = () => {
       setTotalPages(data.totalPages || 1);
       setTotalItems(data.totalItems || data.length);
     } catch (error) {
-      console.error('Failed to load users:', error);
+      console.error(error);
       toast.error(t('users.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
@@ -127,7 +127,7 @@ const UsersPage = () => {
       setDeleteModal({ isOpen: false, user: null });
       loadUsers();
     } catch (error) {
-      console.error('Failed to delete user:', error);
+      console.error(error);
     }
   };
 
@@ -153,7 +153,7 @@ const UsersPage = () => {
       setFormUser(null);
       loadUsers();
     } catch (error) {
-      console.error('Failed to update user:', error);
+      console.error(error);
       toast.error(t('users.errors.updateFailed'));
     } finally {
       setIsFormLoading(false);
@@ -165,10 +165,24 @@ const UsersPage = () => {
     setIsFormOpen(true);
   };
 
+  const getUserRoleKey = (value) => {
+    const v = String(value || '').toLowerCase();
+    if (v === 'admin') return 'admin';
+    if (v === 'student') return 'student';
+    if (v === 'instructor') return 'instructor';
+    return null;
+  };
+
+  const renderUserRole = (value) => {
+    const key = getUserRoleKey(value);
+    if (!key) return String(value ?? t('common.user'));
+    return t(`enums.userRole.${key}`);
+  };
+
   const columns = [
     {
       key: 'name',
-      header: 'Name',
+      header: t('users.table.name'),
       sortable: true,
       render: (_, user) => (
         <div>
@@ -181,20 +195,20 @@ const UsersPage = () => {
     },
     {
       key: 'role',
-      header: 'Role',
+      header: t('users.table.role'),
       render: (value) => (
-        <Badge className={getRoleColor(value)}>{value || 'User'}</Badge>
+        <Badge className={getRoleColor(value)}>{renderUserRole(value)}</Badge>
       ),
     },
     {
       key: 'createdAt',
-      header: 'Created',
+      header: t('users.table.created'),
       sortable: true,
       render: (value) => formatDate(value),
     },
     {
       key: 'actions',
-      header: 'Actions',
+      header: t('users.table.actions'),
       render: (_, user) => (
         <div className="flex items-center gap-2">
           <Button
@@ -203,7 +217,7 @@ const UsersPage = () => {
             icon={PencilIcon}
             onClick={() => handleEdit(user)}
           >
-            Edit
+            {t('common.edit')}
           </Button>
           <Button
             variant="ghost"
@@ -212,7 +226,7 @@ const UsersPage = () => {
             className="text-red-600 hover:text-red-700"
             onClick={() => setDeleteModal({ isOpen: true, user })}
           >
-            Delete
+            {t('common.delete')}
           </Button>
         </div>
       ),
@@ -227,9 +241,9 @@ const UsersPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Breadcrumb items={[{ name: 'Users', href: '/users', current: true }]} />
+          <Breadcrumb items={[{ labelKey: 'nav.users', href: '/users', current: true }]} />
           <h1 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Users
+            {t('nav.users')}
           </h1>
         </div>
       </div>
@@ -240,7 +254,7 @@ const UsersPage = () => {
             value={searchQuery}
             onChange={setSearchQuery}
             onClear={() => setSearchQuery('')}
-            placeholder="Search users..."
+            placeholder={t('users.searchPlaceholder')}
             className="w-full sm:w-80"
           />
         </div>
@@ -249,7 +263,7 @@ const UsersPage = () => {
           columns={columns}
           data={sortedUsers}
           isLoading={isLoading}
-          emptyMessage="No users found."
+          emptyMessage={t('users.empty')}
           sortField={sortField}
           sortDirection={sortDirection}
           onSort={handleSort}
@@ -273,42 +287,42 @@ const UsersPage = () => {
           setIsFormOpen(false);
           setFormUser(null);
         }}
-        title="Edit User"
+        title={t('users.form.editTitle')}
         size="md"
       >
         <form onSubmit={handleFormSubmit} className="space-y-4">
           <Input
-            label="Full Name"
+            label={t('users.form.fullName')}
             value={formUser?.fullName || ''}
             onChange={(e) =>
               setFormUser({ ...formUser, fullName: e.target.value })
             }
           />
           <Input
-            label="Email"
+            label={t('common.email')}
             type="email"
             value={formUser?.email || ''}
             onChange={(e) => setFormUser({ ...formUser, email: e.target.value })}
             disabled
           />
           <Input
-            label="Address"
+            label={t('users.form.address')}
             value={formUser?.address || ''}
             onChange={(e) => setFormUser({ ...formUser, address: e.target.value })}
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Role
+              {t('users.form.role')}
             </label>
             <select
               value={formUser?.role || ''}
               onChange={(e) => setFormUser({ ...formUser, role: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="">Select Role</option>
-              <option value="Admin">Admin</option>
-              <option value="Student">Student</option>
-              <option value="Instructor">Instructor</option>
+              <option value="">{t('users.form.selectRole')}</option>
+              <option value="Admin">{t('enums.userRole.admin')}</option>
+              <option value="Student">{t('enums.userRole.student')}</option>
+              <option value="Instructor">{t('enums.userRole.instructor')}</option>
             </select>
           </div>
 
@@ -321,10 +335,10 @@ const UsersPage = () => {
               }}
               disabled={isFormLoading}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" loading={isFormLoading}>
-              Update User
+              {t('users.form.updateAction')}
             </Button>
           </div>
         </form>

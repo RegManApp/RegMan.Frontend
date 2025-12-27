@@ -1,4 +1,5 @@
 import { cn } from '../../utils/helpers';
+import { useDirection } from '../../hooks/useDirection';
 
 const StatsCard = ({
   title,
@@ -11,6 +12,7 @@ const StatsCard = ({
 }) => {
   const isPositiveTrend = trend > 0;
   const isNegativeTrend = trend < 0;
+  const { isRtl } = useDirection();
 
   return (
     <div
@@ -41,7 +43,7 @@ const StatsCard = ({
                 {trend}%
               </span>
               {trendLabel && (
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                <span className={cn('text-sm text-gray-500 dark:text-gray-400', isRtl ? 'mr-2' : 'ml-2')}>
                   {trendLabel}
                 </span>
               )}

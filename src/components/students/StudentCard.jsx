@@ -1,9 +1,33 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, Badge, Avatar, Button } from '../common';
 import { getFullName, getStudentLevelColor, formatDate } from '../../utils/helpers';
-import { getStudentLevelLabel } from '../../utils/constants';
 
 const StudentCard = ({ student, onEdit, onDelete }) => {
+  const { t } = useTranslation();
+
+  const getStudentLevelKey = (value) => {
+    if (typeof value === 'number') {
+      if (value === 0) return 'freshman';
+      if (value === 1) return 'sophomore';
+      if (value === 2) return 'junior';
+      if (value === 3) return 'senior';
+      return null;
+    }
+    const v = String(value || '').toLowerCase();
+    if (v.includes('fresh')) return 'freshman';
+    if (v.includes('soph')) return 'sophomore';
+    if (v.includes('jun')) return 'junior';
+    if (v.includes('sen')) return 'senior';
+    return null;
+  };
+
+  const renderStudentLevel = (value) => {
+    const key = getStudentLevelKey(value);
+    if (!key) return String(value ?? t('common.notAvailable'));
+    return t(`enums.studentLevel.${key}`);
+  };
+
   return (
     <Card hover className="h-full">
       <div className="flex flex-col h-full">
@@ -24,26 +48,26 @@ const StudentCard = ({ student, onEdit, onDelete }) => {
             </div>
           </div>
           <Badge className={getStudentLevelColor(student.studentLevel)}>
-            {getStudentLevelLabel(student.studentLevel)}
+            {renderStudentLevel(student.studentLevel)}
           </Badge>
         </div>
 
         <div className="space-y-2 flex-grow">
           <div className="text-sm">
-            <span className="text-gray-500 dark:text-gray-400">Email: </span>
+            <span className="text-gray-500 dark:text-gray-400">{t('common.email')}: </span>
             <span className="text-gray-900 dark:text-white">
               {student.user?.email}
             </span>
           </div>
           <div className="text-sm">
-            <span className="text-gray-500 dark:text-gray-400">Enrolled: </span>
+            <span className="text-gray-500 dark:text-gray-400">{t('students.fields.enrolled')}: </span>
             <span className="text-gray-900 dark:text-white">
               {formatDate(student.enrollmentDate)}
             </span>
           </div>
           {student.city && (
             <div className="text-sm">
-              <span className="text-gray-500 dark:text-gray-400">City: </span>
+              <span className="text-gray-500 dark:text-gray-400">{t('common.city')}: </span>
               <span className="text-gray-900 dark:text-white">
                 {student.city}
               </span>
@@ -54,7 +78,7 @@ const StudentCard = ({ student, onEdit, onDelete }) => {
         <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <Link to={`/students/${student.id}`} className="flex-1">
             <Button variant="outline" size="sm" className="w-full">
-              View Details
+              {t('common.viewDetails')}
             </Button>
           </Link>
           <Button
@@ -62,7 +86,7 @@ const StudentCard = ({ student, onEdit, onDelete }) => {
             size="sm"
             onClick={() => onEdit?.(student)}
           >
-            Edit
+            {t('common.edit')}
           </Button>
         </div>
       </div>

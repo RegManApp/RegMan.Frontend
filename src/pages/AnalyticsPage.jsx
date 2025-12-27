@@ -91,7 +91,7 @@ const AnalyticsPage = () => {
         setInstructorStats(instructorRes.data || []);
         setSectionCapacity(capacityRes.data);
       } catch (error) {
-        console.error('Failed to load analytics:', error);
+        console.error(error);
         toast.error(t('analytics.errors.fetchFailed'));
       } finally {
         setIsLoading(false);
@@ -111,12 +111,12 @@ const AnalyticsPage = () => {
   return (
     <div className="space-y-6">
       <div>
-        <Breadcrumb items={[{ name: 'Analytics', href: '/analytics', current: true }]} />
+        <Breadcrumb items={[{ name: t('nav.analytics'), href: '/analytics', current: true }]} />
         <h1 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-          System Analytics
+          {t('analytics.page.title')}
         </h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Comprehensive overview of the student management system
+          {t('analytics.page.subtitle')}
         </p>
       </div>
 
@@ -129,7 +129,7 @@ const AnalyticsPage = () => {
                 <UsersIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-blue-600 dark:text-blue-400">Total Users</p>
+                <p className="text-sm text-blue-600 dark:text-blue-400">{t('analytics.stats.totalUsers')}</p>
                 <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">
                   {dashboard.users?.total || 0}
                 </p>
@@ -143,7 +143,7 @@ const AnalyticsPage = () => {
                 <AcademicCapIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-green-600 dark:text-green-400">Students</p>
+                <p className="text-sm text-green-600 dark:text-green-400">{t('analytics.stats.students')}</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">
                   {dashboard.users?.students || 0}
                 </p>
@@ -157,7 +157,7 @@ const AnalyticsPage = () => {
                 <BookOpenIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-purple-600 dark:text-purple-400">Courses</p>
+                <p className="text-sm text-purple-600 dark:text-purple-400">{t('analytics.stats.courses')}</p>
                 <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">
                   {dashboard.courses?.total || 0}
                 </p>
@@ -171,7 +171,7 @@ const AnalyticsPage = () => {
                 <ChartBarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-orange-600 dark:text-orange-400">Enrollments</p>
+                <p className="text-sm text-orange-600 dark:text-orange-400">{t('analytics.stats.enrollments')}</p>
                 <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
                   {dashboard.enrollments?.total || 0}
                 </p>
@@ -183,7 +183,7 @@ const AnalyticsPage = () => {
 
       {/* Enrollment Trends Chart */}
       {chartsReady && enrollmentTrends.length > 0 && (
-        <Card title="Enrollment Trends (Last 30 Days)">
+        <Card title={t('analytics.sections.enrollmentTrendsTitle')}>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={enrollmentTrends}>
@@ -208,7 +208,7 @@ const AnalyticsPage = () => {
                   dataKey="total" 
                   stroke="#3B82F6" 
                   strokeWidth={2}
-                  name="Total"
+                  name={t('analytics.enrollmentTrends.series.total')}
                   dot={false}
                 />
                 <Line 
@@ -216,7 +216,7 @@ const AnalyticsPage = () => {
                   dataKey="approved" 
                   stroke="#10B981" 
                   strokeWidth={2}
-                  name="Approved"
+                  name={t('analytics.enrollmentTrends.series.approved')}
                   dot={false}
                 />
                 <Line 
@@ -224,7 +224,7 @@ const AnalyticsPage = () => {
                   dataKey="pending" 
                   stroke="#F59E0B" 
                   strokeWidth={2}
-                  name="Pending"
+                  name={t('analytics.enrollmentTrends.series.pending')}
                   dot={false}
                 />
                 <Line 
@@ -232,7 +232,7 @@ const AnalyticsPage = () => {
                   dataKey="declined" 
                   stroke="#EF4444" 
                   strokeWidth={2}
-                  name="Declined"
+                  name={t('analytics.enrollmentTrends.series.declined')}
                   dot={false}
                 />
               </LineChart>
@@ -245,7 +245,11 @@ const AnalyticsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* GPA Distribution Pie Chart */}
         {chartsReady && gpaDistribution?.chartData && (
-          <Card title={`GPA Distribution (Avg: ${gpaDistribution.summary?.averageGPA || 0})`}>
+          <Card
+            title={t('analytics.sections.gpaDistributionTitle', {
+              avg: gpaDistribution.summary?.averageGPA || 0,
+            })}
+          >
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -254,7 +258,15 @@ const AnalyticsPage = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value, percent }) => value > 0 ? `${name}: ${value} (${(percent * 100).toFixed(0)}%)` : ''}
+                    label={({ name, value, percent }) =>
+                      value > 0
+                        ? t('analytics.gpaDistribution.sliceLabel', {
+                            name,
+                            value,
+                            percent: (percent * 100).toFixed(0),
+                          })
+                        : ''
+                    }
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
@@ -280,7 +292,11 @@ const AnalyticsPage = () => {
 
         {/* Credits Distribution Bar Chart */}
         {chartsReady && creditsDistribution?.chartData && (
-          <Card title={`Student Classification (Avg Credits: ${creditsDistribution.summary?.averageCredits || 0})`}>
+          <Card
+            title={t('analytics.sections.studentClassificationTitle', {
+              avgCredits: creditsDistribution.summary?.averageCredits || 0,
+            })}
+          >
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={creditsDistribution.chartData}>
@@ -296,7 +312,7 @@ const AnalyticsPage = () => {
                     }}
                     formatter={(value, name, props) => [value, props.payload.range]}
                   />
-                  <Bar dataKey="value" name="Students">
+                  <Bar dataKey="value" name={t('analytics.labels.students')}>
                     {creditsDistribution.chartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
@@ -312,12 +328,12 @@ const AnalyticsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* User Breakdown */}
         {dashboard?.users && (
-          <Card title="User Breakdown">
+          <Card title={t('analytics.sections.userBreakdownTitle')}>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center gap-3">
                   <AcademicCapIcon className="h-5 w-5 text-blue-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Students</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.students')}</span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {dashboard.users.students}
@@ -326,7 +342,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center gap-3">
                   <UserGroupIcon className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Instructors</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.instructors')}</span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {dashboard.users.instructors}
@@ -335,7 +351,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div className="flex items-center gap-3">
                   <UsersIcon className="h-5 w-5 text-purple-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Administrators</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.administrators')}</span>
                 </div>
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {dashboard.users.admins}
@@ -347,12 +363,12 @@ const AnalyticsPage = () => {
 
         {/* Enrollment Status */}
         {dashboard?.enrollments && (
-          <Card title="Enrollment Status">
+          <Card title={t('analytics.sections.enrollmentStatusTitle')}>
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                 <div className="flex items-center gap-3">
                   <ClockIcon className="h-5 w-5 text-yellow-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Pending Approval</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.pendingApproval')}</span>
                 </div>
                 <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
                   {dashboard.enrollments.pending}
@@ -361,7 +377,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <div className="flex items-center gap-3">
                   <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Active Enrollments</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.activeEnrollments')}</span>
                 </div>
                 <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                   {dashboard.enrollments.active}
@@ -370,7 +386,7 @@ const AnalyticsPage = () => {
               <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
                 <div className="flex items-center gap-3">
                   <XCircleIcon className="h-5 w-5 text-red-500" />
-                  <span className="text-gray-700 dark:text-gray-300">Declined</span>
+                  <span className="text-gray-700 dark:text-gray-300">{t('analytics.labels.declined')}</span>
                 </div>
                 <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                   {dashboard.enrollments.declined}
@@ -383,28 +399,28 @@ const AnalyticsPage = () => {
 
       {/* Top Courses */}
       {courseStats.length > 0 && (
-        <Card title="Top Courses by Enrollment">
+        <Card title={t('analytics.sections.topCoursesTitle')}>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead>
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Course
+                    {t('analytics.tables.topCourses.course')}
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Credits
+                    {t('analytics.tables.topCourses.credits')}
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Sections
+                    {t('analytics.tables.topCourses.sections')}
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Total
+                    {t('analytics.tables.topCourses.total')}
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Active
+                    {t('analytics.tables.topCourses.active')}
                   </th>
                   <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Pending
+                    {t('analytics.tables.topCourses.pending')}
                   </th>
                 </tr>
               </thead>
@@ -444,7 +460,7 @@ const AnalyticsPage = () => {
 
       {/* Top Instructors with Bar Chart */}
       {chartsReady && instructorStats.length > 0 && (
-        <Card title="Top Instructors by Student Count">
+        <Card title={t('analytics.sections.topInstructorsTitle')}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
@@ -468,8 +484,8 @@ const AnalyticsPage = () => {
                       color: '#F9FAFB'
                     }}
                   />
-                  <Bar dataKey="totalStudents" fill="#8B5CF6" name="Students" />
-                  <Bar dataKey="sectionsCount" fill="#3B82F6" name="Sections" />
+                  <Bar dataKey="totalStudents" fill="#8B5CF6" name={t('analytics.labels.students')} />
+                  <Bar dataKey="sectionsCount" fill="#3B82F6" name={t('analytics.labels.sections')} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -477,9 +493,9 @@ const AnalyticsPage = () => {
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead>
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Instructor</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sections</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Students</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('analytics.tables.topInstructors.instructor')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('analytics.tables.topInstructors.sections')}</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">{t('analytics.tables.topInstructors.students')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -488,7 +504,7 @@ const AnalyticsPage = () => {
                       <td className="px-4 py-3">
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{instructor.fullName}</p>
-                          <p className="text-sm text-gray-500">{instructor.department || 'N/A'}</p>
+                          <p className="text-sm text-gray-500">{instructor.department || t('common.notAvailable')}</p>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-center text-gray-900 dark:text-white">
@@ -510,27 +526,27 @@ const AnalyticsPage = () => {
 
       {/* Section Capacity */}
       {sectionCapacity?.summary && (
-        <Card title="Section Capacity Overview">
+        <Card title={t('analytics.sections.sectionCapacityTitle')}>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{sectionCapacity.summary.totalSections}</p>
-              <p className="text-sm text-gray-500">Total Sections</p>
+              <p className="text-sm text-gray-500">{t('analytics.tables.sectionCapacity.totalSections')}</p>
             </div>
             <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
               <p className="text-2xl font-bold text-red-600">{sectionCapacity.summary.fullSections}</p>
-              <p className="text-sm text-gray-500">Full</p>
+              <p className="text-sm text-gray-500">{t('analytics.tables.sectionCapacity.full')}</p>
             </div>
             <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
               <p className="text-2xl font-bold text-yellow-600">{sectionCapacity.summary.almostFullSections}</p>
-              <p className="text-sm text-gray-500">Almost Full</p>
+              <p className="text-sm text-gray-500">{t('analytics.tables.sectionCapacity.almostFull')}</p>
             </div>
             <div className="text-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
               <p className="text-2xl font-bold text-gray-600">{sectionCapacity.summary.emptySections}</p>
-              <p className="text-sm text-gray-500">Empty</p>
+              <p className="text-sm text-gray-500">{t('analytics.tables.sectionCapacity.empty')}</p>
             </div>
             <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-2xl font-bold text-blue-600">{sectionCapacity.summary.averageUtilization}%</p>
-              <p className="text-sm text-gray-500">Avg. Utilization</p>
+              <p className="text-sm text-gray-500">{t('analytics.tables.sectionCapacity.avgUtilization')}</p>
             </div>
           </div>
         </Card>

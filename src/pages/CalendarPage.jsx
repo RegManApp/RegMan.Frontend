@@ -16,8 +16,9 @@ import {
 } from 'react-icons/fi';
 
 const CalendarPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const locale = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en-US';
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,14 +38,14 @@ const CalendarPage = () => {
       const dateEvents = [];
       if (regDate) {
         dateEvents.push({
-          title: 'Registration Ends',
+          titleKey: 'calendar.special.registrationEnds',
           date: regDate,
           type: 'registration',
         });
       }
       if (withdrawStart && withdrawEnd) {
         dateEvents.push({
-          title: 'Withdraw Period',
+          titleKey: 'calendar.special.withdrawPeriod',
           date: withdrawStart,
           endDate: withdrawEnd,
           type: 'withdraw',
@@ -62,11 +63,35 @@ const CalendarPage = () => {
       const data = await calendarApi.getCalendarEvents({ startDate, endDate });
       setEvents(data);
     } catch (error) {
-      console.error('Error fetching events:', error);
+      console.error(error);
       toast.error(t('calendar.errors.fetchFailed'));
     } finally {
       setLoading(false);
     }
+  };
+
+  const getEventTypeKey = (value) => {
+    const v = String(value || '');
+    if (v === 'OfficeHour') return 'officeHour';
+    if (v === 'Booking') return 'booking';
+    if (v === 'Class') return 'class';
+    if (v === 'Teaching') return 'teaching';
+    if (v === 'registration') return 'registration';
+    if (v === 'withdraw') return 'withdraw';
+    return null;
+  };
+
+  const renderEventType = (value) => {
+    const key = getEventTypeKey(value);
+    if (!key) return String(value ?? t('common.notAvailable'));
+    return t(`calendar.eventType.${key}`);
+  };
+
+  const renderEventTitle = (event) => {
+    if (!event) return '';
+    if (event.titleKey) return t(event.titleKey);
+    if (event.title) return event.title;
+    return renderEventType(event.type);
   };
 
   const daysInMonth = useMemo(() => {
@@ -158,7 +183,7 @@ const CalendarPage = () => {
   };
 
   const formatMonthYear = () => {
-    return currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return currentDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
   };
 
   const goToPreviousMonth = () => {
@@ -202,8 +227,8 @@ const CalendarPage = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Calendar</h1>
-          <p className="text-gray-600 dark:text-gray-400">View your schedule and upcoming events</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('nav.calendar')}</h1>
+          <p className="text-gray-600 dark:text-gray-400">{t('calendar.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -214,7 +239,7 @@ const CalendarPage = () => {
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
-            Month
+            {t('calendar.view.month')}
           </button>
           <button
             onClick={() => setViewMode('list')}
@@ -224,7 +249,7 @@ const CalendarPage = () => {
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
           >
-            List
+            {t('calendar.view.list')}
           </button>
         </div>
       </div>
@@ -233,27 +258,27 @@ const CalendarPage = () => {
       <div className="flex flex-wrap gap-4 bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-green-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Office Hours</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.officeHours')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Bookings</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.bookings')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Classes</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.classes')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Teaching</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.teaching')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Registration Ends</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.registrationEnds')}</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <span className="text-sm text-gray-600 dark:text-gray-400">Withdraw Period</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{t('calendar.legend.withdrawPeriod')}</span>
         </div>
       </div>
 
@@ -269,7 +294,7 @@ const CalendarPage = () => {
                   onClick={goToToday}
                   className="px-3 py-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
                 >
-                  Today
+                  {t('calendar.actions.today')}
                 </button>
                 <button
                   onClick={goToPreviousMonth}
@@ -288,14 +313,18 @@ const CalendarPage = () => {
 
             {/* Day Headers */}
             <div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
-              {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              {Array.from({ length: 7 }).map((_, dayIndex) => {
+                const d = new Date(2024, 0, 7 + dayIndex);
+                const label = d.toLocaleDateString(locale, { weekday: 'short' });
+                return (
                 <div
-                  key={day}
+                  key={dayIndex}
                   className="py-2 text-center text-sm font-medium text-gray-500 dark:text-gray-400"
                 >
-                  {day}
+                  {label}
                 </div>
-              ))}
+              );
+              })}
             </div>
 
             {/* Calendar Grid */}
@@ -336,12 +365,12 @@ const CalendarPage = () => {
                             key={i}
                             className={`text-xs truncate px-1 py-0.5 rounded ${getEventTypeBgColor(event.type)}`}
                           >
-                            {event.title}
+                            {renderEventTitle(event)}
                           </div>
                         ))}
                         {dayEvents.length > 2 && (
                           <div className="text-xs text-gray-500 dark:text-gray-400 px-1">
-                            +{dayEvents.length - 2} more
+                            {t('calendar.more', { count: dayEvents.length - 2 })}
                           </div>
                         )}
                       </div>
@@ -358,12 +387,12 @@ const CalendarPage = () => {
               <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   {selectedDate
-                    ? selectedDate.toLocaleDateString('en-US', {
+                    ? selectedDate.toLocaleDateString(locale, {
                         weekday: 'long',
                         month: 'long',
                         day: 'numeric',
                       })
-                    : 'Select a Date'}
+                    : t('calendar.selectDate')}
                 </h3>
               </div>
               <div className="max-h-[500px] overflow-y-auto">
@@ -377,15 +406,17 @@ const CalendarPage = () => {
                               {getEventIcon(event.type)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-gray-900 dark:text-white">{event.title}</h4>
+                              <h4 className="font-medium text-gray-900 dark:text-white">{renderEventTitle(event)}</h4>
                               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                 {event.description}
                               </p>
                               <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                <span className="flex items-center gap-1">
-                                  <FiClock className="w-3 h-3" />
-                                  {event.startTime} - {event.endTime}
-                                </span>
+                                {event.startTime && event.endTime && (
+                                  <span className="flex items-center gap-1">
+                                    <FiClock className="w-3 h-3" />
+                                    {event.startTime} - {event.endTime}
+                                  </span>
+                                )}
                                 {event.location && (
                                   <span className="flex items-center gap-1">
                                     <FiMapPin className="w-3 h-3" />
@@ -406,12 +437,12 @@ const CalendarPage = () => {
                     </div>
                   ) : (
                     <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                      No events on this day
+                      {t('calendar.empty.noEventsOnDay')}
                     </div>
                   )
                 ) : (
                   <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                    Click on a date to view events
+                    {t('calendar.empty.selectDateHint')}
                   </div>
                 )}
               </div>
@@ -422,7 +453,7 @@ const CalendarPage = () => {
         /* List View */
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
           <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Upcoming Events</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('calendar.upcoming.title')}</h2>
             <div className="flex items-center gap-2">
               <button
                 onClick={goToPreviousMonth}
@@ -446,7 +477,7 @@ const CalendarPage = () => {
             </div>
           ) : upcomingEvents.length === 0 ? (
             <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-              No upcoming events this month
+              {t('calendar.upcoming.empty')}
             </div>
           ) : (
             <div className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -458,20 +489,22 @@ const CalendarPage = () => {
                         {new Date(event.date).getDate()}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short' })}
+                        {new Date(event.date).toLocaleDateString(locale, { weekday: 'short' })}
                       </div>
                     </div>
                     <div className={`p-2 rounded-lg ${getEventTypeBgColor(event.type)}`}>
                       {getEventIcon(event.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 dark:text-white">{event.title}</h4>
+                      <h4 className="font-medium text-gray-900 dark:text-white">{renderEventTitle(event)}</h4>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{event.description}</p>
                       <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                        <span className="flex items-center gap-1">
-                          <FiClock className="w-4 h-4" />
-                          {event.startTime} - {event.endTime}
-                        </span>
+                        {event.startTime && event.endTime && (
+                          <span className="flex items-center gap-1">
+                            <FiClock className="w-4 h-4" />
+                            {event.startTime} - {event.endTime}
+                          </span>
+                        )}
                         {event.location && (
                           <span className="flex items-center gap-1">
                             <FiMapPin className="w-4 h-4" />
@@ -487,7 +520,7 @@ const CalendarPage = () => {
                       </div>
                     </div>
                     <div className={`px-2 py-1 text-xs font-medium rounded ${getEventTypeBgColor(event.type)}`}>
-                      {event.type}
+                      {renderEventType(event.type)}
                     </div>
                   </div>
                 </div>

@@ -1,9 +1,12 @@
 import { cn } from '../../utils/helpers';
+import { useTranslation } from 'react-i18next';
 
 const Tabs = ({ tabs, activeTab, onChange, className }) => {
+  const { t } = useTranslation();
+
   return (
     <div className={cn('border-b border-gray-200 dark:border-gray-700', className)}>
-      <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+      <nav className="-mb-px flex space-x-8" aria-label={t('a11y.tabs')}>
         {tabs.map((tab) => (
           <button
             key={tab.key}

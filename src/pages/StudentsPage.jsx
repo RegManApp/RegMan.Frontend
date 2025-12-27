@@ -42,7 +42,7 @@ const StudentsPage = () => {
       setTotalPages(data.totalPages || 1);
       setTotalItems(data.totalItems || data.length);
     } catch (error) {
-      console.error('Failed to load students:', error);
+      console.error(error);
       toast.error(t('students.errors.fetchFailed'));
     } finally {
       setIsLoading(false);
@@ -55,7 +55,7 @@ const StudentsPage = () => {
       const response = await studentApi.getById(studentId);
       setSelectedStudent(response.data);
     } catch (error) {
-      console.error('Failed to load student details:', error);
+      console.error(error);
       toast.error(t('students.errors.detailsFetchFailed'));
       navigate('/students');
     } finally {
@@ -68,7 +68,7 @@ const StudentsPage = () => {
       const response = await userApi.getAll();
       setUsers(response.data?.items || response.data || []);
     } catch (error) {
-      console.error('Failed to load users:', error);
+      console.error(error);
     }
   }, []);
 
@@ -97,7 +97,7 @@ const StudentsPage = () => {
       toast.success(t('students.toasts.deleted'));
       loadStudents();
     } catch (error) {
-      console.error('Failed to delete student:', error);
+      console.error(error);
     }
   };
 
@@ -119,7 +119,7 @@ const StudentsPage = () => {
         loadStudents();
       }
     } catch (error) {
-      console.error('Failed to save student:', error);
+      console.error(error);
     } finally {
       setIsFormLoading(false);
     }
@@ -135,7 +135,7 @@ const StudentsPage = () => {
       <div className="space-y-6">
         <Breadcrumb
           items={[
-            { name: 'Students', href: '/students' },
+            { labelKey: 'nav.students', href: '/students' },
             { name: selectedStudent.studentNumber, href: `/students/${id}`, current: true },
           ]}
         />
@@ -164,9 +164,9 @@ const StudentsPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Breadcrumb items={[{ name: 'Students', href: '/students', current: true }]} />
+          <Breadcrumb items={[{ labelKey: 'nav.students', href: '/students', current: true }]} />
           <h1 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Students
+            {t('nav.students')}
           </h1>
         </div>
       </div>

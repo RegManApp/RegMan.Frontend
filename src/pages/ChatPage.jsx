@@ -5,8 +5,10 @@ import { startConnection, stopConnection, onReceiveMessage, offReceiveMessage, s
 import ConversationList from '../components/chat/ConversationList';
 import ChatWindow from '../components/chat/ChatWindow';
 import { EmptyState, Loading, Button } from '../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function ChatPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
@@ -20,7 +22,7 @@ export default function ChatPage() {
       const res = await chatApi.getConversations();
       setConversations(res.data?.conversations || []);
     } catch (e) {
-      console.error('Failed to load conversations', e);
+      console.error(e);
       setLoadError(true);
     } finally {
       setIsLoading(false);
@@ -69,38 +71,38 @@ export default function ChatPage() {
       <div className="w-2/3">
         {isLoading ? (
           <div className="p-6">
-            <Loading text="Loading conversations..." />
+            <Loading text={t('chat.loadingConversations')} />
           </div>
         ) : loadError ? (
           <div className="p-6">
             <EmptyState
-              title="Couldn't load chat"
-              description="Please try again."
-              action={<Button onClick={loadConversations}>Retry</Button>}
+              title={t('chat.errors.couldNotLoadTitle')}
+              description={t('chat.errors.couldNotLoadDescription')}
+              action={<Button onClick={loadConversations}>{t('common.retry')}</Button>}
             />
           </div>
         ) : conversations.length === 0 ? (
           <div className="p-6">
             <EmptyState
-              title="No conversations yet"
-              description="When you start chatting with someone, conversations will appear here."
+              title={t('chat.empty.noConversationsTitle')}
+              description={t('chat.empty.noConversationsDescription')}
             />
           </div>
         ) : (
           <ChatWindow
             conversation={selectedConvo}
-            onSend={async (receiverId, text) => {
+            onSend={async (conversationId, receiverId, text) => {
               try {
                 // Try via SignalR hub first
-                await hubSend(receiverId, text);
+                await hubSend(receiverId, conversationId, text);
                 loadConversations();
               } catch (e) {
                 // Fallback to REST
                 try {
-                  await chatApi.sendMessage(receiverId, text);
+                  await chatApi.sendMessage(receiverId, text, conversationId);
                   loadConversations();
                 } catch (err) {
-                  console.error('Failed to send message', err);
+                  console.error(err);
                 }
               }
             }}

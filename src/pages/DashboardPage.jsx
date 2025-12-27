@@ -10,9 +10,11 @@ import { instructorApi } from '../api/instructorApi';
 import { scheduleApi } from '../api/scheduleApi';
 import { calendarApi } from '../api/calendarApi';
 import { normalizeCourses } from '../utils/helpers';
+import { useTranslation } from 'react-i18next';
 
 const DashboardPage = () => {
   const { user, isAdmin, isStudent, isInstructor } = useAuth();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [recentEnrollments, setRecentEnrollments] = useState([]);
@@ -91,12 +93,14 @@ const DashboardPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Breadcrumb items={[{ name: 'Dashboard', href: '/dashboard', current: true }]} />
+          <Breadcrumb items={[{ labelKey: 'nav.dashboard', href: '/dashboard', current: true }]} />
           <h1 className="mt-2 text-2xl font-bold text-gray-900 dark:text-white">
-            Dashboard
+            {t('nav.dashboard')}
           </h1>
           <p className="mt-1 text-lg text-gray-700 dark:text-gray-300">
-            Welcome, {user?.fullName || user?.email || 'User'}
+            {t('dashboard.page.welcomeUser', {
+              name: user?.fullName || user?.email || t('common.user'),
+            })}
           </p>
         </div>
       </div>

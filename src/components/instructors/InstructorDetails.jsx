@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, Avatar, Badge, Button, Table } from '../common';
 import { getFullName } from '../../utils/helpers';
 import { getDayOfWeekLabel, getInstructorDegreeLabel } from '../../utils/constants';
@@ -10,6 +11,7 @@ const InstructorDetails = ({
   onBack,
   isLoadingSchedules = false,
 }) => {
+  const { t } = useTranslation();
   if (!instructor) return null;
 
   // Get name parts from fullName
@@ -20,7 +22,7 @@ const InstructorDetails = ({
   const scheduleColumns = [
     {
       key: 'courseName',
-      header: 'Course',
+      header: t('instructors.details.schedule.table.course'),
       render: (_, schedule) => (
         <div>
           <p className="font-medium text-gray-900 dark:text-white">{schedule.sectionName || schedule.courseName}</p>
@@ -30,29 +32,29 @@ const InstructorDetails = ({
     },
     {
       key: 'dayOfWeek',
-      header: 'Day',
-      render: (value, schedule) => schedule.timeSlot?.split(' ')[0] || getDayOfWeekLabel(value) || '-',
+      header: t('common.day'),
+      render: (value, schedule) => getDayOfWeekLabel(value) || schedule.timeSlot?.split(' ')[0] || t('common.notAvailable'),
     },
     {
       key: 'time',
-      header: 'Time',
+      header: t('common.time'),
       render: (_, schedule) => {
         if (schedule.timeSlot) {
           const parts = schedule.timeSlot.split(' ');
           return parts.slice(1).join(' ') || schedule.timeSlot;
         }
-        return schedule.startTime && schedule.endTime ? `${schedule.startTime} - ${schedule.endTime}` : '-';
+        return schedule.startTime && schedule.endTime ? `${schedule.startTime} - ${schedule.endTime}` : t('common.notAvailable');
       },
     },
     {
       key: 'room',
-      header: 'Room',
-      render: (_, schedule) => schedule.room || schedule.roomNumber || '-',
+      header: t('common.room'),
+      render: (_, schedule) => schedule.room || schedule.roomNumber || t('common.notAvailable'),
     },
     {
       key: 'slotType',
-      header: 'Type',
-      render: (value) => value || '-',
+      header: t('common.type'),
+      render: (value) => value || t('common.notAvailable'),
     },
   ];
 
@@ -89,46 +91,46 @@ const InstructorDetails = ({
           </div>
           <div className="flex gap-2">
             <Button variant="outline" icon={ArrowLeftIcon} onClick={onBack}>
-              Back
+              {t('common.back')}
             </Button>
             <Button icon={PencilIcon} onClick={() => onEdit?.(instructor)}>
-              Edit
+              {t('common.edit')}
             </Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div>
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Email</h4>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('common.email')}</h4>
             <p className="mt-1 text-gray-900 dark:text-white">{instructor.email}</p>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Title</h4>
-            <p className="mt-1 text-gray-900 dark:text-white">{instructor.title || '-'}</p>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('instructors.details.fields.title')}</h4>
+            <p className="mt-1 text-gray-900 dark:text-white">{instructor.title || t('common.notAvailable')}</p>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Academic Degree</h4>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('instructors.details.fields.academicDegree')}</h4>
             <p className="mt-1 text-gray-900 dark:text-white">
-              {getInstructorDegreeLabel(instructor.degree) || instructor.degreeDisplay || '-'}
+              {getInstructorDegreeLabel(instructor.degree) || instructor.degreeDisplay || t('common.notAvailable')}
             </p>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Department</h4>
-            <p className="mt-1 text-gray-900 dark:text-white">{instructor.department || '-'}</p>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('instructors.details.fields.department')}</h4>
+            <p className="mt-1 text-gray-900 dark:text-white">{instructor.department || t('common.notAvailable')}</p>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">Address</h4>
-            <p className="mt-1 text-gray-900 dark:text-white">{instructor.address || '-'}</p>
+            <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('instructors.details.fields.address')}</h4>
+            <p className="mt-1 text-gray-900 dark:text-white">{instructor.address || t('common.notAvailable')}</p>
           </div>
         </div>
       </Card>
 
-      <Card title="Teaching Schedule">
+      <Card title={t('instructors.details.schedule.title')}>
         <Table
           columns={scheduleColumns}
           data={schedules}
           isLoading={isLoadingSchedules}
-          emptyMessage="No scheduled classes."
+          emptyMessage={t('instructors.details.schedule.empty')}
         />
       </Card>
     </div>

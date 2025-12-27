@@ -1,11 +1,15 @@
 import { useEffect, useState, useCallback } from 'react';
 import { notificationApi } from '../api/notificationApi';
 import { PageHeader, Card, EmptyState, Loading, Button } from '../components/common';
+import { useTranslation } from 'react-i18next';
 
 export default function NotificationsPage() {
+  const { t, i18n } = useTranslation();
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+
+  const locale = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en-US';
 
   const load = useCallback(async () => {
     try {
@@ -14,7 +18,7 @@ export default function NotificationsPage() {
       const list = await notificationApi.getNotifications({ pageSize: 50 });
       setNotifications(Array.isArray(list) ? list : []);
     } catch (e) {
-      console.error('Failed to load notifications', e);
+      console.error(e);
       setLoadError(true);
     } finally {
       setLoading(false);
@@ -30,18 +34,18 @@ export default function NotificationsPage() {
       await notificationApi.markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     } catch (e) {
-      console.error('Failed to mark all as read', e);
+      console.error(e);
     }
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Notifications"
-        description="Your recent updates and alerts."
+        title={t('nav.notifications')}
+        description={t('notificationsPage.description')}
         action={
           <Button variant="outline" onClick={markAllAsRead}>
-            Mark all as read
+            {t('notifications.actions.markAllRead')}
           </Button>
         }
       />
@@ -49,21 +53,21 @@ export default function NotificationsPage() {
       <Card>
         {loading ? (
           <div className="p-6">
-            <Loading text="Loading notifications..." />
+            <Loading text={t('notificationsPage.loading')} />
           </div>
         ) : loadError ? (
           <div className="p-6">
             <EmptyState
-              title="Couldn't load notifications"
-              description="Please try again."
-              action={<Button onClick={load}>Retry</Button>}
+              title={t('notificationsPage.errors.loadFailedTitle')}
+              description={t('common.tryAgain')}
+              action={<Button onClick={load}>{t('common.retry')}</Button>}
             />
           </div>
         ) : notifications.length === 0 ? (
           <div className="p-6">
             <EmptyState
-              title="No notifications"
-              description="You're all caught up."
+              title={t('notifications.empty')}
+              description={t('notificationsPage.emptyDescription')}
             />
           </div>
         ) : (
@@ -82,7 +86,7 @@ export default function NotificationsPage() {
                       {n.message}
                     </div>
                     <div className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-                      {n.createdAt ? new Date(n.createdAt).toLocaleString() : ''}
+                      {n.createdAt ? new Date(n.createdAt).toLocaleString(locale) : ''}
                     </div>
                   </div>
                   {!n.isRead && (
@@ -96,11 +100,11 @@ export default function NotificationsPage() {
                             prev.map((x) => (x.notificationId === n.notificationId ? { ...x, isRead: true } : x))
                           );
                         } catch (e) {
-                          console.error('Failed to mark as read', e);
+                          console.error(e);
                         }
                       }}
                     >
-                      Mark read
+                      {t('notifications.actions.markRead')}
                     </Button>
                   )}
                 </div>

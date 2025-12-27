@@ -11,6 +11,7 @@ export const sanitize = (str) => {
     .replace(/'/g, "&#39;");
 };
 import clsx from "clsx";
+import i18n from "../i18n";
 
 /**
  * Combine class names conditionally
@@ -21,7 +22,7 @@ export const cn = (...classes) => clsx(...classes);
  * Format date to display string
  */
 export const formatDate = (date, options = {}) => {
-  if (!date) return "-";
+  if (!date) return i18n.t("common.notAvailable");
 
   const defaultOptions = {
     year: "numeric",
@@ -30,16 +31,16 @@ export const formatDate = (date, options = {}) => {
     ...options,
   };
 
-  return new Date(date).toLocaleDateString("en-US", defaultOptions);
+  return new Date(date).toLocaleDateString(i18n.language, defaultOptions);
 };
 
 /**
  * Format datetime to display string
  */
 export const formatDateTime = (date) => {
-  if (!date) return "-";
+  if (!date) return i18n.t("common.notAvailable");
 
-  return new Date(date).toLocaleString("en-US", {
+  return new Date(date).toLocaleString(i18n.language, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -69,7 +70,10 @@ export const getFullName = (firstNameOrFullName, lastName) => {
   if (firstNameOrFullName && !lastName) {
     return firstNameOrFullName;
   }
-  return [firstNameOrFullName, lastName].filter(Boolean).join(" ") || "Unknown";
+  return (
+    [firstNameOrFullName, lastName].filter(Boolean).join(" ") ||
+    i18n.t("common.notAvailable")
+  );
 };
 
 /**

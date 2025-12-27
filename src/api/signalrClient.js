@@ -12,7 +12,6 @@ export async function startConnection() {
   if (connection && connection.state === signalR.HubConnectionState.Connected)
     return connection;
 
-  const token = getToken();
   // If VITE_API_BASE_URL includes '/api', strip it so hub path becomes '/hubs/chat'
   const apiBase = (import.meta.env.VITE_API_BASE_URL || "")
     .replace(/\/$/, "")
@@ -20,7 +19,7 @@ export async function startConnection() {
 
   connection = new signalR.HubConnectionBuilder()
     .withUrl(`${apiBase}/hubs/chat`, {
-      accessTokenFactory: () => token || "",
+      accessTokenFactory: () => getToken() || "",
     })
     .configureLogging(signalR.LogLevel.Warning)
     .withAutomaticReconnect()
@@ -40,9 +39,15 @@ export function offReceiveMessage(handler) {
   connection.off("ReceiveMessage", handler);
 }
 
-export async function sendMessage(receiverId, textMessage) {
+export async function sendMessage(receiverId, conversationId, textMessage) {
   if (!connection) await startConnection();
-  return connection.invoke("SendMessage", receiverId, textMessage);
+  // Hub method: SendMessageAsync(string? receiverId, int? conversationId, string textMessage)
+  return connection.invoke(
+    "SendMessageAsync",
+    receiverId ?? null,
+    conversationId ?? null,
+    textMessage
+  );
 }
 
 export async function stopConnection() {
