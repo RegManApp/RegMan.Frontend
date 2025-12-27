@@ -25,17 +25,35 @@ const gradeOptions = [
   { value: "F", label: "F" },
 ];
 
-const enrollmentStatusOptions = [
-  { value: 0, label: "Pending" },
-  { value: 1, label: "Enrolled" },
-  { value: 2, label: "Dropped" },
-  { value: 3, label: "Completed" },
-  { value: 4, label: "Declined" },
-];
+const toTranscriptStatusKey = (status) => {
+  const raw = String(status ?? "").trim();
+  if (!raw) return "unknown";
+
+  // Normalize common enum formats like IN_PROGRESS -> inProgress
+  const parts = raw
+    .toLowerCase()
+    .split(/[_\s]+/)
+    .filter(Boolean);
+
+  return parts
+    .map((p, idx) => (idx === 0 ? p : `${p.charAt(0).toUpperCase()}${p.slice(1)}`))
+    .join("");
+};
 
 const TranscriptPage = () => {
   const { isAdmin } = useAuth();
   const { t } = useTranslation();
+
+  const enrollmentStatusOptions = useMemo(
+    () => [
+      { value: "0", label: t("transcript.enrollmentStatus.pending") },
+      { value: "1", label: t("transcript.enrollmentStatus.enrolled") },
+      { value: "2", label: t("transcript.enrollmentStatus.dropped") },
+      { value: "3", label: t("transcript.enrollmentStatus.completed") },
+      { value: "4", label: t("transcript.enrollmentStatus.declined") },
+    ],
+    [t]
+  );
 
   const [loading, setLoading] = useState(false);
   const [transcript, setTranscript] = useState(null);
@@ -171,12 +189,10 @@ const TranscriptPage = () => {
       {
         key: "status",
         header: t("transcript.table.status"),
-        render: (value) => {
-          if (value === "WITHDRAWN") return t("transcript.status.withdrawn");
-          if (value === "IN_PROGRESS") return t("transcript.status.inProgress");
-          if (value === "COMPLETED") return t("transcript.status.completed");
-          return value;
-        },
+        render: (status) =>
+          t(`transcript.status.${toTranscriptStatusKey(status)}`, {
+            defaultValue: status,
+          }),
       },
       { key: "grade", header: t("transcript.table.grade") },
       { key: "creditHours", header: t("transcript.table.credits") },
@@ -407,10 +423,7 @@ const TranscriptPage = () => {
                 label={t("transcript.admin.enrollmentStatus")}
                 value={editEnrollmentStatus}
                 onChange={(e) => setEditEnrollmentStatus(e.target.value)}
-                options={enrollmentStatusOptions.map((o) => ({
-                  value: String(o.value),
-                  label: o.label,
-                }))}
+                options={enrollmentStatusOptions}
                 placeholder={t("transcript.admin.selectStatus")}
               />
               <Select

@@ -4,6 +4,9 @@ export const adminApi = {
   getRegistrationEndDate: () => {
     return axiosInstance.get("/calendar/registration-withdraw-dates");
   },
+  getStudentCart: (studentId) => {
+    return axiosInstance.get(`/admin/carts/${studentId}`);
+  },
   getAcademicCalendarSettings: () => {
     return axiosInstance.get("/admin/academic-calendar-settings");
   },

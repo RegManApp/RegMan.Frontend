@@ -298,6 +298,7 @@
     "gpaAndGrades": "GPA & Grades",
     "academicPlan": "Academic Plan",
     "transcript": "Transcript",
+    "cartManagement": "Cart Management",
     "timeSlots": "Time Slots",
     "adminSettings": "Admin Settings",
     "officeHours": "Office Hours",
@@ -529,6 +530,74 @@
       "created": "Transcript record created",
       "deleted": "Transcript record deleted",
       "gpaRecalculated": "GPA recalculated"
+    },
+
+    "actions": {
+      "print": "Print",
+      "exportPdf": "Export PDF"
+    },
+    "empty": "No transcript data available.",
+    "header": {
+      "unofficial": "Unofficial Transcript",
+      "studentName": "Student Name",
+      "studentId": "Student ID",
+      "program": "Program",
+      "cumulativeGpa": "Cumulative GPA"
+    },
+    "table": {
+      "courseCode": "Course Code",
+      "title": "Title",
+      "subType": "Type",
+      "status": "Status",
+      "grade": "Grade",
+      "credits": "Credits",
+      "qualityPoints": "Quality Points"
+    },
+    "status": {
+      "withdrawn": "Withdrawn",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "pending": "Pending",
+      "enrolled": "Enrolled",
+      "dropped": "Dropped",
+      "declined": "Declined",
+      "unknown": "Unknown"
+    },
+    "term": {
+      "empty": "No courses in this term."
+    },
+    "termSummary": {
+      "attemptedCredits": "Attempted Credits",
+      "earnedCredits": "Earned Credits",
+      "gpaCredits": "GPA Credits",
+      "qualityPoints": "Quality Points",
+      "gpa": "Term GPA"
+    },
+    "overall": {
+      "title": "Overall Summary",
+      "attemptedCredits": "Attempted Credits",
+      "earnedCredits": "Earned Credits",
+      "gpa": "Cumulative GPA",
+      "qualityPoints": "Quality Points"
+    },
+    "admin": {
+      "searchLabel": "Search Student",
+      "searchPlaceholder": "Search by name, email, or student ID",
+      "studentId": "Student ID",
+      "fullName": "Full Name",
+      "email": "Email",
+      "noResults": "No students found",
+      "editTitle": "Edit Enrollment",
+      "selectGrade": "Select grade",
+      "enrollmentStatus": "Enrollment Status",
+      "selectStatus": "Select status"
+    },
+    "enrollmentStatus": {
+      "pending": "Pending",
+      "enrolled": "Enrolled",
+      "dropped": "Dropped",
+      "completed": "Completed",
+      "declined": "Declined"
     }
   },
   "rooms": {
@@ -681,8 +750,26 @@
     }
   },
   "cart": {
+    "title": "My Cart",
+    "loading": "Loading cart...",
+    "registration": {
+      "closesOn": "Registration closes on {{date}}.",
+      "closedOn": "Registration closed on {{date}}."
+    },
+    "alreadyEnrolledHint": "This course is already in your enrollments. Manage drops in My Enrollments.",
+    "registrationClosedHint": "Registration is closed. You can’t enroll or checkout right now.",
+    "actions": {
+      "enroll": "Enroll",
+      "checkout": "Checkout"
+    },
+    "empty": {
+      "title": "Your cart is empty",
+      "description": "Add courses from the Courses page to enroll during registration."
+    },
     "errors": {
       "fetchFailed": "Failed to load cart",
+      "loadTitle": "Couldn't load cart",
+      "loadDescription": "Please try again.",
       "removeFailed": "Failed to remove item",
       "enrollFailed": "Failed to enroll",
       "checkoutFailed": "Checkout failed"

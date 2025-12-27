@@ -382,6 +382,7 @@
     "bookOfficeHours": "حجز ساعات المكتب",
     "smartSchedule": "الجدول الذكي",
     "cart": "السلة",
+    "cartManagement": "إدارة السلة",
     "profile": "الملف الشخصي",
     "notifications": "الإشعارات"
   },
@@ -606,6 +607,73 @@
       "created": "تم إنشاء السجل",
       "deleted": "تم حذف السجل",
       "gpaRecalculated": "تمت إعادة حساب المعدل"
+    },
+    "actions": {
+      "print": "طباعة",
+      "exportPdf": "تصدير PDF"
+    },
+    "empty": "لا توجد بيانات للسجل الأكاديمي.",
+    "header": {
+      "unofficial": "سجل أكاديمي غير رسمي",
+      "studentName": "اسم الطالب",
+      "studentId": "رقم الطالب",
+      "program": "البرنامج",
+      "cumulativeGpa": "المعدل التراكمي"
+    },
+    "table": {
+      "courseCode": "رمز المقرر",
+      "title": "المقرر",
+      "subType": "النوع",
+      "status": "الحالة",
+      "grade": "التقدير",
+      "credits": "الساعات",
+      "qualityPoints": "نقاط الجودة"
+    },
+    "status": {
+      "withdrawn": "منسحب",
+      "inProgress": "قيد الدراسة",
+      "completed": "مكتمل",
+      "pending": "قيد الانتظار",
+      "enrolled": "مسجل",
+      "dropped": "محذوف",
+      "declined": "مرفوض",
+      "unknown": "غير معروف"
+    },
+    "term": {
+      "empty": "لا توجد مقررات في هذا الفصل."
+    },
+    "termSummary": {
+      "attemptedCredits": "ساعات مُحاوَلة",
+      "earnedCredits": "ساعات مكتسبة",
+      "gpaCredits": "ساعات المعدل",
+      "qualityPoints": "نقاط الجودة",
+      "gpa": "معدل الفصل"
+    },
+    "overall": {
+      "title": "الملخص العام",
+      "attemptedCredits": "ساعات مُحاوَلة",
+      "earnedCredits": "ساعات مكتسبة",
+      "gpa": "المعدل التراكمي",
+      "qualityPoints": "نقاط الجودة"
+    },
+    "admin": {
+      "searchLabel": "بحث عن طالب",
+      "searchPlaceholder": "ابحث بالاسم أو البريد الإلكتروني أو رقم الطالب",
+      "studentId": "رقم الطالب",
+      "fullName": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "noResults": "لا توجد نتائج",
+      "editTitle": "تعديل التسجيل",
+      "selectGrade": "اختر التقدير",
+      "enrollmentStatus": "حالة التسجيل",
+      "selectStatus": "اختر الحالة"
+    },
+    "enrollmentStatus": {
+      "pending": "قيد الانتظار",
+      "enrolled": "مسجل",
+      "dropped": "محذوف",
+      "completed": "مكتمل",
+      "declined": "مرفوض"
     }
   },
   "rooms": {
@@ -683,8 +751,26 @@
     }
   },
   "cart": {
+    "title": "سلتي",
+    "loading": "جاري تحميل السلة...",
+    "registration": {
+      "closesOn": "ينتهي التسجيل في {{date}}.",
+      "closedOn": "انتهى التسجيل في {{date}}."
+    },
+    "alreadyEnrolledHint": "هذا المقرر موجود بالفعل في تسجيلاتك. يمكنك إدارة الحذف من صفحة تسجيلاتي.",
+    "registrationClosedHint": "التسجيل مغلق حالياً. لا يمكنك التسجيل أو إتمام السلة الآن.",
+    "actions": {
+      "enroll": "تسجيل",
+      "checkout": "إتمام"
+    },
+    "empty": {
+      "title": "سلتك فارغة",
+      "description": "أضف مقررات من صفحة المقررات للتسجيل خلال فترة التسجيل."
+    },
     "errors": {
       "fetchFailed": "فشل تحميل السلة",
+      "loadTitle": "تعذر تحميل السلة",
+      "loadDescription": "يرجى المحاولة مرة أخرى.",
       "removeFailed": "فشل إزالة العنصر",
       "enrollFailed": "فشل التسجيل",
       "checkoutFailed": "فشل إنهاء الدفع"

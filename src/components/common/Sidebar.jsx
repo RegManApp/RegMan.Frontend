@@ -68,6 +68,7 @@ const adminNavigation = [
       { labelKey: 'nav.gpaAndGrades', href: '/gpa', icon: 'AcademicCapIcon' },
       { labelKey: 'nav.academicPlan', href: '/academic-plan', icon: 'AcademicCapIcon' },
       { labelKey: 'nav.transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
+      { labelKey: 'nav.cartManagement', href: '/admin/carts', icon: 'ClipboardDocumentListIcon' },
       { labelKey: 'nav.timeSlots', href: '/time-slots', icon: 'ClockIcon' },
       { labelKey: 'nav.adminSettings', href: '/settings', icon: 'UserIcon' },
     ],

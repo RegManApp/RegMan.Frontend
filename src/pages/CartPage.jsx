@@ -10,16 +10,22 @@ const CartPage = () => {
   const { t } = useTranslation();
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadError, setHasLoadError] = useState(false);
   const [registrationEndDate, setRegistrationEndDate] = useState("");
   const [enrollments, setEnrollments] = useState([]);
 
   const loadCart = async () => {
     setIsLoading(true);
+    setHasLoadError(false);
     try {
       const response = await cartApi.viewCart();
-      setCartItems(response.data?.items || response.data || []);
+      const dto = response?.data;
+      const candidate = dto?.cartItems ?? dto?.CartItems ?? dto?.items ?? dto;
+      setCartItems(Array.isArray(candidate) ? candidate : []);
     } catch (error) {
       toast.error(t('cart.errors.fetchFailed'));
+      setCartItems([]);
+      setHasLoadError(true);
     } finally {
       setIsLoading(false);
     }
@@ -101,6 +107,7 @@ const CartPage = () => {
         onEnroll={handleEnroll}
         onCheckout={handleCheckout}
         isLoading={isLoading}
+        hasLoadError={hasLoadError}
         registrationEndDate={registrationEndDate}
         getEnrollmentStatus={getEnrollmentStatus}
         handleDrop={handleDrop}

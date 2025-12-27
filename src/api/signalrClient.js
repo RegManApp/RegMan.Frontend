@@ -109,6 +109,15 @@ export async function stopConnection() {
   if (!connection) return;
   if (connectionRefCount > 0) return;
   try {
+    // Avoid "Failed to start the HttpConnection before stop() was called"
+    // by ensuring any in-flight start completes first.
+    if (startingPromise) {
+      try {
+        await startingPromise;
+      } catch {
+        // ignore start failures
+      }
+    }
     await connection.stop();
   } catch (e) {
     // swallow to avoid noisy console errors on navigation/logout

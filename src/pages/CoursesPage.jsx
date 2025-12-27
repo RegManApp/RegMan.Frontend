@@ -172,13 +172,9 @@ const CoursesPage = () => {
     if (!isStudent()) return;
     try {
       const response = await cartApi.viewCart();
-      let items = [];
-      if (Array.isArray(response.data)) {
-        items = response.data;
-      } else if (Array.isArray(response.data?.items)) {
-        items = response.data.items;
-      }
-      setCartItems(items);
+      const dto = response?.data;
+      const candidate = dto?.cartItems ?? dto?.CartItems ?? dto?.items ?? dto;
+      setCartItems(Array.isArray(candidate) ? candidate : []);
     } catch (error) {
       setCartItems([]);
     }

@@ -1,6 +1,8 @@
 import * as signalR from "@microsoft/signalr";
 
 let connection = null;
+let connectionRefCount = 0;
+let startingPromise = null;
 
 const getToken = () => {
   return (
@@ -9,8 +11,14 @@ const getToken = () => {
 };
 
 export async function startNotificationsConnection() {
+  connectionRefCount += 1;
+
   if (connection && connection.state === signalR.HubConnectionState.Connected) {
     return connection;
+  }
+
+  if (startingPromise) {
+    return startingPromise;
   }
 
   const apiBase = (import.meta.env.VITE_API_BASE_URL || "")
@@ -25,8 +33,14 @@ export async function startNotificationsConnection() {
     .withAutomaticReconnect()
     .build();
 
-  await connection.start();
-  return connection;
+  startingPromise = connection
+    .start()
+    .then(() => connection)
+    .finally(() => {
+      startingPromise = null;
+    });
+
+  return startingPromise;
 }
 
 export function onNotificationReceived(handler) {
@@ -40,11 +54,20 @@ export function offNotificationReceived(handler) {
 }
 
 export async function stopNotificationsConnection() {
+  connectionRefCount = Math.max(0, connectionRefCount - 1);
   if (!connection) return;
+  if (connectionRefCount > 0) return;
   try {
+    if (startingPromise) {
+      try {
+        await startingPromise;
+      } catch {
+        // ignore start failures
+      }
+    }
     await connection.stop();
   } catch (e) {
-    console.error("Error stopping notifications SignalR connection", e);
+    // swallow to avoid noisy console errors on navigation/logout
   } finally {
     connection = null;
   }

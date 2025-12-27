@@ -27,6 +27,7 @@ import {
   GpaPage,
   AcademicPlanPage,   
   TranscriptPage,     
+  AdminCartManagementPage,
   SectionPage,
   AdminSettingsPage,
   NotificationsPage,
@@ -299,6 +300,16 @@ function App() {
                   element={
                     <RoleGuard allowedRoles={[ROLES.ADMIN]}>
                       <AdminWithdrawRequestsPage />
+                    </RoleGuard>
+                  }
+                />
+
+                {/* Admin Cart Management - Admin only */}
+                <Route
+                  path="/admin/carts"
+                  element={
+                    <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                      <AdminCartManagementPage />
                     </RoleGuard>
                   }
                 />
