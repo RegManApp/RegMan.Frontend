@@ -436,7 +436,19 @@
     "addCourse": "إضافة مقرر"
   },
   "chat": {
+    "titleFallback": "المحادثة",
     "loadingConversations": "جارٍ تحميل المحادثات...",
+    "presence": {
+      "online": "متصل",
+      "offline": "غير متصل"
+    },
+    "readIndicator": "مقروءة",
+    "search": {
+      "placeholder": "ابحث بالاسم أو المعرف أو البريد الإلكتروني",
+      "loading": "جارٍ البحث...",
+      "noResults": "لا يوجد مستخدمون مطابقون",
+      "error": "تعذر البحث عن المستخدمين"
+    },
     "conversations": {
       "title": "الدردشات"
     },
@@ -450,7 +462,10 @@
     },
     "empty": {
       "noConversationsTitle": "لا توجد محادثات بعد",
-      "noConversationsDescription": "عند بدء الدردشة مع شخص ما، ستظهر المحادثات هنا."
+      "noConversationsDescription": "عند بدء الدردشة مع شخص ما، ستظهر المحادثات هنا.",
+      "noSelectionTitle": "اختر محادثة",
+      "noSelectionDescription": "اختر محادثة أو ابحث عن مستخدم.",
+      "noMessages": "لا توجد رسائل بعد"
     }
   },
   "toasts": {

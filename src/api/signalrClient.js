@@ -39,6 +39,46 @@ export function offReceiveMessage(handler) {
   connection.off("ReceiveMessage", handler);
 }
 
+export function onMessageRead(handler) {
+  if (!connection) return;
+  connection.on("MessageRead", handler);
+}
+
+export function offMessageRead(handler) {
+  if (!connection) return;
+  connection.off("MessageRead", handler);
+}
+
+export function onUserPresenceChanged(handler) {
+  if (!connection) return;
+  connection.on("UserPresenceChanged", handler);
+}
+
+export function offUserPresenceChanged(handler) {
+  if (!connection) return;
+  connection.off("UserPresenceChanged", handler);
+}
+
+export function onConversationCreated(handler) {
+  if (!connection) return;
+  connection.on("ConversationCreated", handler);
+}
+
+export function offConversationCreated(handler) {
+  if (!connection) return;
+  connection.off("ConversationCreated", handler);
+}
+
+export async function joinConversationGroup(conversationId) {
+  if (!connection) await startConnection();
+  return connection.invoke("JoinConversationGroup", conversationId);
+}
+
+export async function getOnlineUsers() {
+  if (!connection) await startConnection();
+  return connection.invoke("GetOnlineUsers");
+}
+
 export async function sendMessage(receiverId, conversationId, textMessage) {
   if (!connection) await startConnection();
   // Hub method: SendMessageAsync(string? receiverId, int? conversationId, string textMessage)
@@ -55,7 +95,7 @@ export async function stopConnection() {
   try {
     await connection.stop();
   } catch (e) {
-    console.error("Error stopping SignalR connection", e);
+    // swallow to avoid noisy console errors on navigation/logout
   } finally {
     connection = null;
   }

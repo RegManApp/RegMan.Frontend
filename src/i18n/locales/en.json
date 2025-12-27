@@ -359,7 +359,19 @@
     "noStudentSelected": "Enter a Student ID to view data"
   },
   "chat": {
+    "titleFallback": "Chat",
     "loadingConversations": "Loading conversations...",
+    "presence": {
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "readIndicator": "Read",
+    "search": {
+      "placeholder": "Search users by name, ID, or email",
+      "loading": "Searching...",
+      "noResults": "No users found",
+      "error": "Couldn't search users"
+    },
     "conversations": {
       "title": "Chats"
     },
@@ -373,7 +385,10 @@
     },
     "empty": {
       "noConversationsTitle": "No conversations yet",
-      "noConversationsDescription": "When you start chatting with someone, conversations will appear here."
+      "noConversationsDescription": "When you start chatting with someone, conversations will appear here.",
+      "noSelectionTitle": "Select a chat",
+      "noSelectionDescription": "Pick a conversation or search for a user.",
+      "noMessages": "No messages yet"
     }
   },
   "toasts": {
