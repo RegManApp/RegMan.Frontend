@@ -40,7 +40,9 @@ const CourseCard = ({
     } catch (error) {
       const status = error?.response?.status;
       if (status === 409) {
-        toast.error(t('courses.errors.alreadyInCart'));
+        const serverMessage = error?.response?.data?.message;
+        const isArabic = (i18n?.language || '').toLowerCase().startsWith('ar');
+        toast.error(!isArabic && serverMessage ? serverMessage : t('courses.errors.alreadyInCart'));
       } else if (status === 404) {
         toast.error(t('courses.errors.courseNotFound'));
       } else {
