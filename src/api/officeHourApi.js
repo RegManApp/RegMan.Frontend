@@ -44,6 +44,16 @@ export const confirmBooking = async (bookingId) => {
   return response.data;
 };
 
+// Confirm a booking (returns data + ApiResponse message when available)
+export const confirmBookingWithMeta = async (bookingId) => {
+  const response = await axiosInstance.post(
+    `/officehour/bookings/${bookingId}/confirm`
+  );
+  const message = response?.data?.message ?? null;
+  const data = response?.data?.data ?? response?.data;
+  return { data, message };
+};
+
 // Add instructor notes to a booking
 export const addInstructorNotes = async (bookingId, notes) => {
   const response = await axiosInstance.put(
@@ -112,6 +122,17 @@ export const cancelBooking = async (bookingId, reason = null) => {
   return response.data;
 };
 
+// Cancel a booking (returns data + ApiResponse message when available)
+export const cancelBookingWithMeta = async (bookingId, reason = null) => {
+  const response = await axiosInstance.post(
+    `/officehour/bookings/${bookingId}/cancel`,
+    { reason }
+  );
+  const message = response?.data?.message ?? null;
+  const data = response?.data?.data ?? response?.data;
+  return { data, message };
+};
+
 // =============================================
 // ADMIN ENDPOINTS
 // =============================================
@@ -130,6 +151,7 @@ export const officeHourApi = {
   updateOfficeHour,
   deleteOfficeHour,
   confirmBooking,
+  confirmBookingWithMeta,
   addInstructorNotes,
   completeBooking,
   markNoShow,
@@ -139,6 +161,7 @@ export const officeHourApi = {
   bookOfficeHour,
   getMyBookings,
   cancelBooking,
+  cancelBookingWithMeta,
   // Admin
   getAllOfficeHours,
 };

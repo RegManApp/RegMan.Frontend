@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { officeHourApi } from '../api/officeHourApi';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { isCalendarSyncWarningMessage } from '../utils/integrationWarnings';
 import {
   FiCalendar,
   FiClock,
@@ -97,8 +98,11 @@ const BookOfficeHourPage = () => {
     if (!window.confirm(t('bookOfficeHours.confirmCancelBooking'))) return;
     const reason = window.prompt(t('common.prompts.cancelReasonOptional'));
     try {
-      await officeHourApi.cancelBooking(bookingId, reason);
+      const result = await officeHourApi.cancelBookingWithMeta(bookingId, reason);
       toast.success(t('bookOfficeHours.toasts.cancelled'));
+      if (isCalendarSyncWarningMessage(result?.message)) {
+        toast(t('settings.googleCalendar.syncWarning'));
+      }
       fetchMyBookings();
     } catch (error) {
       toast.error(t('bookOfficeHours.errors.cancelFailed'));

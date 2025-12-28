@@ -20,3 +20,4 @@ export { timeSlotApi } from "./timeSlotApi";
 export { smartScheduleApi } from "./smartScheduleApi";
 export { devToolsApi } from "./devToolsApi";
 export { withdrawRequestsApi } from "./withdrawRequestsApi";
+export { googleCalendarIntegrationApi } from "./googleCalendarIntegrationApi";

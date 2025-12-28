@@ -378,6 +378,7 @@
     "transcript": "السجل الأكاديمي",
     "timeSlots": "الفترات الزمنية",
     "adminSettings": "إعدادات الإدارة",
+    "settings": "الإعدادات",
     "officeHours": "ساعات المكتب",
     "bookOfficeHours": "حجز ساعات المكتب",
     "smartSchedule": "الجدول الذكي",
@@ -1054,11 +1055,31 @@
     }
   },
   "adminSettings": {
+    "cards": {
+      "registrationTimeline": "الجدول الزمني للتسجيل",
+      "registrationTimelineSubtitle": "نوافذ التسجيل والانسحاب"
+    },
+    "fields": {
+      "registrationOpenDate": "تاريخ فتح التسجيل",
+      "registrationEndDate": "تاريخ إغلاق التسجيل",
+      "withdrawStartDate": "تاريخ بدء الانسحاب",
+      "withdrawEndDate": "تاريخ نهاية الانسحاب"
+    },
     "errors": {
       "timelineUpdateFailed": "فشل تحديث الجدول الزمني"
     },
     "toasts": {
       "timelineUpdated": "تم تحديث الجدول الزمني"
+    }
+  },
+  "settings": {
+    "googleCalendar": {
+      "title": "تكامل تقويم Google",
+      "notConnectedDescription": "اربط تقويم Google لمزامنة ساعات المكتب",
+      "connectButton": "ربط تقويم Google",
+      "connected": "تم ربط تقويم Google",
+      "connectedEmail": "تم الربط باستخدام {{email}}",
+      "syncWarning": "فشلت مزامنة التقويم، تم حفظ الحجز بنجاح"
     }
   },
   "courses": {

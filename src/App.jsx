@@ -29,7 +29,7 @@ import {
   TranscriptPage,     
   AdminCartManagementPage,
   SectionPage,
-  AdminSettingsPage,
+  SettingsPage,
   NotificationsPage,
   SmartScheduleBuilderPage,
   WithdrawHistoryPage,
@@ -314,15 +314,8 @@ function App() {
                   }
                 />
 
-                {/* Settings - Admin only */}
-                <Route
-                  path="/settings"
-                  element={
-                    <RoleGuard allowedRoles={[ROLES.ADMIN]}>
-                      <AdminSettingsPage />
-                    </RoleGuard>
-                  }
-                />
+                {/* Settings - All authenticated users (admin-only sections are gated inside) */}
+                <Route path="/settings" element={<SettingsPage />} />
               </Route>
 
               {/* 404 */}

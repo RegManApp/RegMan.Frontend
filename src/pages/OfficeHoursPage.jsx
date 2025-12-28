@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { officeHourApi } from '../api/officeHourApi';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { isCalendarSyncWarningMessage } from '../utils/integrationWarnings';
 import {
   FiPlus,
   FiCalendar,
@@ -102,8 +103,11 @@ const OfficeHoursPage = () => {
 
   const handleConfirmBooking = async (bookingId) => {
     try {
-      await officeHourApi.confirmBooking(bookingId);
+      const result = await officeHourApi.confirmBookingWithMeta(bookingId);
       toast.success(t('officeHours.toasts.bookingConfirmed'));
+      if (isCalendarSyncWarningMessage(result?.message)) {
+        toast(t('settings.googleCalendar.syncWarning'));
+      }
       fetchOfficeHours();
     } catch (error) {
       toast.error(t('officeHours.errors.confirmBookingFailed'));
@@ -113,8 +117,11 @@ const OfficeHoursPage = () => {
   const handleCancelBooking = async (bookingId) => {
     const reason = window.prompt(t('common.prompts.cancelReasonOptional'));
     try {
-      await officeHourApi.cancelBooking(bookingId, reason);
+      const result = await officeHourApi.cancelBookingWithMeta(bookingId, reason);
       toast.success(t('officeHours.toasts.bookingCancelled'));
+      if (isCalendarSyncWarningMessage(result?.message)) {
+        toast(t('settings.googleCalendar.syncWarning'));
+      }
       fetchOfficeHours();
     } catch (error) {
       toast.error(t('officeHours.errors.cancelBookingFailed'));

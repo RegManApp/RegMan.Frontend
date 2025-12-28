@@ -92,6 +92,7 @@ const instructorNavigation = [
       { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
       { labelKey: 'nav.advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
       { labelKey: 'nav.profile', href: '/profile', icon: 'UserIcon' },
+      { labelKey: 'nav.settings', href: '/settings', icon: 'UserIcon' },
     ],
   },
 ];
@@ -119,6 +120,7 @@ const studentNavigation = [
       { labelKey: 'nav.withdrawRequest', href: '/withdraw-request', icon: 'ClipboardDocumentCheckIcon' },
       { labelKey: 'nav.withdrawHistory', href: '/withdraw-history', icon: 'ClipboardDocumentCheckIcon' },
       { labelKey: 'nav.profile', href: '/profile', icon: 'UserIcon' },
+      { labelKey: 'nav.settings', href: '/settings', icon: 'UserIcon' },
     ],
   },
 ];

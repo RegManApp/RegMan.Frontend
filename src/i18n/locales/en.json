@@ -301,6 +301,7 @@
     "cartManagement": "Cart Management",
     "timeSlots": "Time Slots",
     "adminSettings": "Admin Settings",
+    "settings": "Settings",
     "officeHours": "Office Hours",
     "bookOfficeHours": "Book Office Hours",
     "smartSchedule": "Smart Schedule",
@@ -1055,11 +1056,31 @@
     }
   },
   "adminSettings": {
+    "cards": {
+      "registrationTimeline": "Registration Timeline",
+      "registrationTimelineSubtitle": "Registration and withdraw windows"
+    },
+    "fields": {
+      "registrationOpenDate": "Registration Open Date",
+      "registrationEndDate": "Registration End Date",
+      "withdrawStartDate": "Withdraw Start Date",
+      "withdrawEndDate": "Withdraw End Date"
+    },
     "errors": {
       "timelineUpdateFailed": "Failed to update timeline"
     },
     "toasts": {
       "timelineUpdated": "Timeline updated"
+    }
+  },
+  "settings": {
+    "googleCalendar": {
+      "title": "Google Calendar Integration",
+      "notConnectedDescription": "Connect your Google Calendar to sync office hours",
+      "connectButton": "Connect Google Calendar",
+      "connected": "Google Calendar Connected",
+      "connectedEmail": "Connected as {{email}}",
+      "syncWarning": "Calendar sync failed, booking saved successfully"
     }
   },
   "users": {
