@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Card, Button, Badge, EmptyState } from '../common';
 import StatsCard from './StatsCard';
-import { formatDate, getStatusColor, calculateGPA } from '../../utils/helpers';
+import { formatDate, getStatusColor } from '../../utils/helpers';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
 
@@ -16,6 +16,7 @@ const StudentDashboard = ({
   student,
   enrollments = [],
   availableCourses = [],
+  currentGpa,
   isLoading,
   timeline,
 }) => {
@@ -24,7 +25,6 @@ const StudentDashboard = ({
   // Backend enum: Pending=0, Enrolled=1, Dropped=2, Completed=3, Declined=4
   const activeEnrollments = safeEnrollments.filter((e) => e?.status === 0 || e?.status === 1);
   const completedEnrollments = safeEnrollments.filter((e) => e?.status === 3);
-  const gpa = calculateGPA(safeEnrollments);
   const { t } = useTranslation();
   const { isRtl } = useDirection();
 
@@ -98,6 +98,9 @@ const StudentDashboard = ({
       : 'default';
 
   const na = t('common.notAvailable');
+  const gpaDisplay = (currentGpa === null || currentGpa === undefined)
+    ? na
+    : Number(currentGpa).toFixed(2);
 
   return (
     <div className="space-y-6">
@@ -127,7 +130,7 @@ const StudentDashboard = ({
         />
         <StatsCard
           title={t('dashboard.student.stats.currentGpa')}
-          value={gpa || na}
+          value={gpaDisplay}
           icon={AcademicCapIcon}
           iconClassName="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
         />

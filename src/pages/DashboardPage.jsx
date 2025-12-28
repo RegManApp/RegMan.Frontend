@@ -9,6 +9,7 @@ import { courseApi } from '../api/courseApi';
 import { instructorApi } from '../api/instructorApi';
 import { scheduleApi } from '../api/scheduleApi';
 import { calendarApi } from '../api/calendarApi';
+import gpaApi from '../api/gpaApi';
 import { normalizeCourses } from '../utils/helpers';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +23,7 @@ const DashboardPage = () => {
   const [studentProfile, setStudentProfile] = useState(null);
   const [myEnrollments, setMyEnrollments] = useState([]);
   const [availableCourses, setAvailableCourses] = useState([]);
+  const [currentGpa, setCurrentGpa] = useState(null);
   const [instructorProfile, setInstructorProfile] = useState(null);
   const [instructorSchedules, setInstructorSchedules] = useState([]);
   const [timeline, setTimeline] = useState(null);
@@ -58,11 +60,12 @@ const DashboardPage = () => {
         }
       } else {
         // Load student dashboard data
-        const [profileRes, enrollmentsRes, coursesRes, timelineRes] = await Promise.all([
+        const [profileRes, enrollmentsRes, coursesRes, timelineRes, gpaRes] = await Promise.all([
           studentApi.getMyProfile().catch(() => ({ data: null })),
           enrollmentApi.getMyEnrollments().catch(() => ({ data: [] })),
           courseApi.getAvailable().catch(() => ({ data: [] })),
           calendarApi.getTimeline().catch(() => null),
+          gpaApi.getMyGPA().catch(() => ({ data: null })),
         ]);
 
         setStudentProfile(profileRes.data || profileRes);
@@ -73,6 +76,10 @@ const DashboardPage = () => {
         const courseItems = Array.isArray(coursesData) ? coursesData : (coursesData?.items || coursesData?.Items || []);
         setAvailableCourses(normalizeCourses(Array.isArray(courseItems) ? courseItems : []));
         setTimeline(timelineRes);
+
+        const gpaData = gpaRes?.data ?? gpaRes;
+        const apiGpa = gpaData?.CurrentGPA ?? gpaData?.currentGPA ?? gpaData?.currentGpa ?? null;
+        setCurrentGpa(typeof apiGpa === 'number' && Number.isFinite(apiGpa) ? apiGpa : null);
       }
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
@@ -125,6 +132,7 @@ const DashboardPage = () => {
           student={studentProfile}
           enrollments={myEnrollments}
           availableCourses={availableCourses}
+          currentGpa={currentGpa}
           isLoading={isLoading}
           timeline={timeline}
         />

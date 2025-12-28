@@ -9,14 +9,14 @@ export const getGoogleCalendarIntegrationStatus = async () => {
 
 export const getGoogleCalendarConnectUrl = async (returnUrl) => {
   const response = await axiosInstance.get(
-    "/integrations/google-calendar/connect",
+    "/integrations/google-calendar/connect-url",
     {
       params: {
         returnUrl,
       },
     }
   );
-  return response.data;
+  return response.data?.url;
 };
 
 export const googleCalendarIntegrationApi = {

@@ -41,9 +41,7 @@ const SettingsPage = () => {
 
   const handleGoogleConnect = async () => {
     try {
-      const authUrl = await googleCalendarIntegrationApi.getConnectUrl(
-        "/settings"
-      );
+      const authUrl = await googleCalendarIntegrationApi.getConnectUrl("/settings");
       if (authUrl) {
         window.location.assign(authUrl);
       } else {
