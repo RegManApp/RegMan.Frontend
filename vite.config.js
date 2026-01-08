@@ -5,6 +5,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    resolve: {
+      // Ensure a single React instance across the bundle (helps avoid runtime crashes).
+      dedupe: ["react", "react-dom", "scheduler"],
+    },
     plugins: [
       react(),
       {
@@ -25,36 +29,50 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id) {
+            const normalizedId = id.replaceAll("\\\\", "/");
+
             // Split app code into stable chunks to keep any single file under the warning threshold.
             // This does not change runtime behavior; it only affects bundling.
-            if (id.includes("/src/")) {
-              if (id.includes("/src/pages/")) return "pages";
-              if (id.includes("/src/components/")) return "components";
-              if (id.includes("/src/api/")) return "api";
-              if (id.includes("/src/context") || id.includes("/src/contexts/"))
+            if (normalizedId.includes("/src/")) {
+              if (normalizedId.includes("/src/pages/")) return "pages";
+              if (normalizedId.includes("/src/components/"))
+                return "components";
+              if (normalizedId.includes("/src/api/")) return "api";
+              if (
+                normalizedId.includes("/src/context") ||
+                normalizedId.includes("/src/contexts/")
+              )
                 return "state";
-              if (id.includes("/src/hooks/")) return "hooks";
-              if (id.includes("/src/utils/")) return "utils";
-              if (id.includes("/src/i18n/")) return "i18n";
+              if (normalizedId.includes("/src/hooks/")) return "hooks";
+              if (normalizedId.includes("/src/utils/")) return "utils";
+              if (normalizedId.includes("/src/i18n/")) return "i18n";
 
               return "app";
             }
 
-            if (!id.includes("node_modules")) return;
+            if (!normalizedId.includes("node_modules")) return;
 
-            if (id.includes("@microsoft/signalr")) return "signalr";
-            if (id.includes("recharts") || id.includes("/d3-")) return "charts";
+            if (normalizedId.includes("@microsoft/signalr")) return "signalr";
             if (
-              id.includes("/react/") ||
-              id.includes("/react-dom/") ||
-              id.includes("react-router")
+              normalizedId.includes("recharts") ||
+              normalizedId.includes("/d3-")
+            )
+              return "charts";
+
+            if (
+              // Keep *only* React core + its scheduler in a dedicated chunk.
+              // This avoids a circular dependency where vendor imports react and react imports vendor.
+              normalizedId.includes("/react/") ||
+              normalizedId.includes("/react-dom/") ||
+              normalizedId.includes("/scheduler/")
             ) {
               return "react";
             }
+
             if (
-              id.includes("@headlessui") ||
-              id.includes("@heroicons") ||
-              id.includes("react-icons")
+              normalizedId.includes("@headlessui") ||
+              normalizedId.includes("@heroicons") ||
+              normalizedId.includes("react-icons")
             ) {
               return "ui";
             }
