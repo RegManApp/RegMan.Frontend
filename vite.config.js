@@ -25,63 +25,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     ],
-    build: {
-      rollupOptions: {
-        output: {
-          manualChunks(id) {
-            const normalizedId = id.replaceAll("\\\\", "/");
-
-            // Split app code into stable chunks to keep any single file under the warning threshold.
-            // This does not change runtime behavior; it only affects bundling.
-            if (normalizedId.includes("/src/")) {
-              if (normalizedId.includes("/src/pages/")) return "pages";
-              if (normalizedId.includes("/src/components/"))
-                return "components";
-              if (normalizedId.includes("/src/api/")) return "api";
-              if (
-                normalizedId.includes("/src/context") ||
-                normalizedId.includes("/src/contexts/")
-              )
-                return "state";
-              if (normalizedId.includes("/src/hooks/")) return "hooks";
-              if (normalizedId.includes("/src/utils/")) return "utils";
-              if (normalizedId.includes("/src/i18n/")) return "i18n";
-
-              return "app";
-            }
-
-            if (!normalizedId.includes("node_modules")) return;
-
-            if (normalizedId.includes("@microsoft/signalr")) return "signalr";
-            if (
-              normalizedId.includes("recharts") ||
-              normalizedId.includes("/d3-")
-            )
-              return "charts";
-
-            if (
-              // Keep *only* React core + its scheduler in a dedicated chunk.
-              // This avoids a circular dependency where vendor imports react and react imports vendor.
-              normalizedId.includes("/react/") ||
-              normalizedId.includes("/react-dom/") ||
-              normalizedId.includes("/scheduler/")
-            ) {
-              return "react";
-            }
-
-            if (
-              normalizedId.includes("@headlessui") ||
-              normalizedId.includes("@heroicons") ||
-              normalizedId.includes("react-icons")
-            ) {
-              return "ui";
-            }
-
-            return "vendor";
-          },
-        },
-      },
-    },
     server: {
       proxy: {
         "/api": {
