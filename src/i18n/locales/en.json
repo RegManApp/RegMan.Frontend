@@ -309,7 +309,84 @@
     "smartSchedule": "Smart Schedule",
     "cart": "Cart",
     "profile": "Profile",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "announcements": "Announcements"
+  },
+
+  "announcementsPage": {
+    "description": "View important announcements and updates",
+    "loading": "Loading announcements...",
+    "actions": {
+      "markRead": "Mark read",
+      "openChat": "Open announcements chat",
+      "adminAudit": "Admin audit"
+    },
+    "compose": {
+      "title": "Send announcement",
+      "targets": {
+        "allUsers": "All users",
+        "roles": "Roles",
+        "course": "Course",
+        "section": "Section"
+      },
+      "fields": {
+        "title": "Title",
+        "content": "Content",
+        "target": "Target",
+        "roles": "Roles",
+        "course": "Course",
+        "section": "Section"
+      },
+      "placeholders": {
+        "title": "Announcement title",
+        "content": "Write the announcement..."
+      },
+      "roles": {
+        "students": "Students",
+        "instructors": "Instructors"
+      },
+      "actions": {
+        "send": "Send"
+      }
+    },
+    "empty": {
+      "title": "No announcements",
+      "description": "You have no announcements yet."
+    },
+    "errors": {
+      "loadFailedTitle": "Failed to load announcements"
+    }
+  },
+
+  "announcementsAudit": {
+    "title": "Announcements audit",
+    "description": "Review instructor announcements and archive when needed",
+    "loading": "Loading audit...",
+    "actions": {
+      "archive": "Archive"
+    },
+    "archived": "Archived",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "archived": "Archived",
+      "status": "Status",
+      "createdByUserId": "Created by (User ID)",
+      "createdByUserIdPlaceholder": "e.g. 123",
+      "targetRole": "Target role",
+      "targetRolePlaceholder": "e.g. Student"
+    },
+    "counts": {
+      "recipients": "Recipients: {{count}}",
+      "read": "Read: {{count}}"
+    },
+    "empty": {
+      "title": "No announcements",
+      "description": "No announcements match your filters."
+    },
+    "errors": {
+      "loadFailedTitle": "Failed to load audit"
+    }
   },
   "a11y": {
     "openSidebar": "Open sidebar",

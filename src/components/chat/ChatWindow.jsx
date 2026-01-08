@@ -17,7 +17,7 @@ import {
 } from '../../api/signalrClient';
 import { useChatUnread } from '../../contexts/ChatUnreadContext';
 
-export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
+export default function ChatWindow({ conversation, onSend, onlineUsers = {}, highlightMessageId = null }) {
   const { t } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [convoDetail, setConvoDetail] = useState(null);
@@ -30,6 +30,7 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
 
   const listRef = useRef(null);
   const pageSize = 20;
+
 
   const loadConversation = async () => {
     if (!conversation) {
@@ -99,6 +100,16 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
   useEffect(() => {
     loadConversation();
   }, [conversation, conversation?._reload]);
+
+  useEffect(() => {
+    try {
+      if (!highlightMessageId) return;
+      if (!messages || messages.length === 0) return;
+      const el = document.getElementById(`msg-${highlightMessageId}`);
+      if (!el) return;
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    } catch (e) {}
+  }, [highlightMessageId, messages]);
 
   useEffect(() => {
     const handler = (receipt) => {
@@ -251,24 +262,43 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
           <div className="text-sm chat-muted">{t('chat.empty.noMessages')}</div>
         ) : null}
 
-        {messages.map((m) => (
-          <div key={m.messageId} className={`mb-3 ${m.senderId === currentUserId ? 'text-right' : 'text-left'}`}>
+        {messages.map((m) => {
+          const isSystem = !!m.isSystem || m.senderRole === 'System';
+          const isHighlighted = highlightMessageId && m.messageId === highlightMessageId;
+          return (
             <div
-              className={
-                `chat-bubble ${
-                  m.senderId === currentUserId ? 'chat-bubble-sent' : 'chat-bubble-received'
-                }`
-              }
+              key={m.messageId}
+              id={`msg-${m.messageId}`}
+              className={`mb-3 ${
+                isSystem
+                  ? 'text-center'
+                  : m.senderId === currentUserId
+                    ? 'text-right'
+                    : 'text-left'
+              }`}
             >
-              {m.content}
-            </div>
+              <div
+                className={`chat-bubble ${
+                  isSystem
+                    ? 'chat-bubble-system'
+                    : m.senderId === currentUserId
+                      ? 'chat-bubble-sent'
+                      : 'chat-bubble-received'
+                } ${
+                  isHighlighted
+                    ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900'
+                    : ''
+                }`}
+              >
+                {m.content}
+              </div>
             <div className="chat-message-meta">
               {new Date(m.timestamp).toLocaleString()}
               {m.senderId === currentUserId && m.isRead ? (
                 <span className="ml-2">{t('chat.readIndicator')}</span>
               ) : null}
 
-              {!m.isDeletedForEveryone ? (
+              {!m.isDeletedForEveryone && !isSystem ? (
                 <span className="ml-2 inline-flex gap-2">
                   <button
                     type="button"
@@ -312,8 +342,9 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
                 </span>
               ) : null}
             </div>
-          </div>
-        ))}
+            </div>
+          );
+        })}
 
         {isOtherTyping ? (
           <div className="text-xs chat-muted mt-2">{t('chat.typingIndicator', 'Typing…')}</div>

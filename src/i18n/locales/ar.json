@@ -344,7 +344,84 @@
     "cart": "السلة",
     "cartManagement": "إدارة السلة",
     "profile": "الملف الشخصي",
-    "notifications": "الإشعارات"
+    "notifications": "الإشعارات",
+    "announcements": "الإعلانات"
+  },
+
+  "announcementsPage": {
+    "description": "عرض الإعلانات والتحديثات المهمة",
+    "loading": "جارٍ تحميل الإعلانات...",
+    "actions": {
+      "markRead": "وضع كمقروء",
+      "openChat": "فتح محادثة الإعلانات",
+      "adminAudit": "تدقيق الإدارة"
+    },
+    "compose": {
+      "title": "إرسال إعلان",
+      "targets": {
+        "allUsers": "جميع المستخدمين",
+        "roles": "الأدوار",
+        "course": "المقرر",
+        "section": "الشعبة"
+      },
+      "fields": {
+        "title": "العنوان",
+        "content": "المحتوى",
+        "target": "الاستهداف",
+        "roles": "الأدوار",
+        "course": "المقرر",
+        "section": "الشعبة"
+      },
+      "placeholders": {
+        "title": "عنوان الإعلان",
+        "content": "اكتب الإعلان..."
+      },
+      "roles": {
+        "students": "الطلاب",
+        "instructors": "المدرسون"
+      },
+      "actions": {
+        "send": "إرسال"
+      }
+    },
+    "empty": {
+      "title": "لا توجد إعلانات",
+      "description": "ليس لديك أي إعلانات بعد."
+    },
+    "errors": {
+      "loadFailedTitle": "فشل تحميل الإعلانات"
+    }
+  },
+
+  "announcementsAudit": {
+    "title": "تدقيق الإعلانات",
+    "description": "مراجعة إعلانات المدرسين وأرشفتها عند الحاجة",
+    "loading": "جارٍ تحميل التدقيق...",
+    "actions": {
+      "archive": "أرشفة"
+    },
+    "archived": "مؤرشف",
+    "filters": {
+      "all": "الكل",
+      "active": "نشط",
+      "archived": "مؤرشف",
+      "status": "الحالة",
+      "createdByUserId": "أُنشئ بواسطة (معرف المستخدم)",
+      "createdByUserIdPlaceholder": "مثال: 123",
+      "targetRole": "الدور المستهدف",
+      "targetRolePlaceholder": "مثال: Student"
+    },
+    "counts": {
+      "recipients": "المستلمون: {{count}}",
+      "read": "المقروء: {{count}}"
+    },
+    "empty": {
+      "title": "لا توجد إعلانات",
+      "description": "لا توجد إعلانات تطابق عوامل التصفية."
+    },
+    "errors": {
+      "loadFailedTitle": "فشل تحميل التدقيق"
+    }
   },
   "a11y": {
     "openSidebar": "فتح الشريط الجانبي",

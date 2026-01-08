@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatUnreadProvider } from './contexts/ChatUnreadContext';
+import { AnnouncementsUnreadProvider } from './contexts/AnnouncementsUnreadContext';
 import { ProtectedRoute, RoleGuard } from './components/auth';
 import { Layout } from './components/Layout';
 import {
@@ -31,6 +32,8 @@ import {
   SectionPage,
   SettingsPage,
   NotificationsPage,
+  AnnouncementsPage,
+  AnnouncementsAuditPage,
   SmartScheduleBuilderPage,
   WithdrawHistoryPage,
   WelcomePage
@@ -49,7 +52,8 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <ChatUnreadProvider>
-          <Router>
+          <AnnouncementsUnreadProvider>
+            <Router>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<WelcomePage />} />
@@ -208,6 +212,17 @@ function App() {
                 {/* Notifications - All authenticated users */}
                 <Route path="/notifications" element={<NotificationsPage />} />
 
+                {/* Announcements - All authenticated users (compose/audit gated within) */}
+                <Route path="/announcements" element={<AnnouncementsPage />} />
+                <Route
+                  path="/announcements/audit"
+                  element={
+                    <RoleGuard allowedRoles={[ROLES.ADMIN]}>
+                      <AnnouncementsAuditPage />
+                    </RoleGuard>
+                  }
+                />
+
                 {/* GPA - Students view their own, Admin can view any student */}
                 <Route
                   path="/gpa"
@@ -321,7 +336,7 @@ function App() {
               {/* 404 */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
-          </Router>
+            </Router>
 
           {/* Toast Notifications */}
           <Toaster
@@ -343,6 +358,7 @@ function App() {
               },
             }}
           />
+          </AnnouncementsUnreadProvider>
         </ChatUnreadProvider>
       </AuthProvider>
     </ThemeProvider>

@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { officeHourApi } from '../api/officeHourApi';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { isCalendarSyncWarningMessage } from '../utils/integrationWarnings';
 import {
   FiCalendar,
@@ -20,11 +21,12 @@ import {
 const BookOfficeHourPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [instructors, setInstructors] = useState([]);
+  const navigate = useNavigate();
+  const [providers, setProviders] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [myBookings, setMyBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedInstructor, setSelectedInstructor] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingData, setBookingData] = useState({
@@ -35,32 +37,32 @@ const BookOfficeHourPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchInstructors();
+    fetchProviders();
     fetchMyBookings();
   }, []);
 
   useEffect(() => {
-    if (selectedInstructor) {
-      fetchAvailableSlots(selectedInstructor.instructorId);
+    if (selectedProvider) {
+      fetchAvailableSlots(selectedProvider.provider.userId);
     }
-  }, [selectedInstructor]);
+  }, [selectedProvider]);
 
-  const fetchInstructors = async () => {
+  const fetchProviders = async () => {
     try {
-      const data = await officeHourApi.getInstructorsWithOfficeHours();
-      setInstructors(data);
+      const data = await officeHourApi.getProvidersWithOfficeHours();
+      setProviders(data);
     } catch (error) {
-      console.error('Error fetching instructors:', error);
+      console.error('Error fetching providers:', error);
       toast.error(t('bookOfficeHours.errors.instructorsFetchFailed'));
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchAvailableSlots = async (instructorId) => {
+  const fetchAvailableSlots = async (providerUserId) => {
     try {
       setLoading(true);
-      const data = await officeHourApi.getAvailableOfficeHours({ instructorId });
+      const data = await officeHourApi.getAvailableOfficeHoursV2({ providerUserId });
       setAvailableSlots(data);
     } catch (error) {
       console.error('Error fetching slots:', error);
@@ -82,13 +84,19 @@ const BookOfficeHourPage = () => {
   const handleBookSlot = async () => {
     if (!selectedSlot) return;
     try {
-      await officeHourApi.bookOfficeHour(selectedSlot.officeHourId, bookingData);
+      const result = await officeHourApi.bookOfficeHour(selectedSlot.officeHourId, bookingData);
       toast.success(t('bookOfficeHours.toasts.booked'));
       setShowBookingModal(false);
       setSelectedSlot(null);
       setBookingData({ purpose: '', studentNotes: '' });
-      fetchAvailableSlots(selectedInstructor.instructorId);
+      if (selectedProvider) {
+        fetchAvailableSlots(selectedProvider.provider.userId);
+      }
       fetchMyBookings();
+
+      if (result?.conversationId && result?.systemMessageId) {
+        navigate(`/chat?conversationId=${result.conversationId}&highlightMessageId=${result.systemMessageId}`);
+      }
     } catch (error) {
       toast.error(t('bookOfficeHours.errors.bookFailed'));
     }
@@ -109,10 +117,10 @@ const BookOfficeHourPage = () => {
     }
   };
 
-  const filteredInstructors = instructors.filter(
-    (i) =>
-      i.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      i.department?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProviders = providers.filter(
+    (p) =>
+      p.provider.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.provider.department?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const getDegreeLabel = (degree) => {
@@ -144,7 +152,7 @@ const BookOfficeHourPage = () => {
     }
   };
 
-  if (loading && instructors.length === 0) {
+  if (loading && providers.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -191,13 +199,13 @@ const BookOfficeHourPage = () => {
 
       {activeTab === 'browse' ? (
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Instructors List */}
+          {/* Providers List */}
           <div className="lg:col-span-1 space-y-4">
             <div className="relative">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search instructors..."
+                placeholder="Search providers..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
@@ -206,20 +214,20 @@ const BookOfficeHourPage = () => {
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
               <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="font-medium text-gray-900 dark:text-white">Instructors with Available Slots</h3>
+                <h3 className="font-medium text-gray-900 dark:text-white">Providers with Available Slots</h3>
               </div>
               <div className="max-h-[500px] overflow-y-auto">
-                {filteredInstructors.length === 0 ? (
+                {filteredProviders.length === 0 ? (
                   <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                    No instructors with available office hours
+                    No providers with available office hours
                   </div>
                 ) : (
-                  filteredInstructors.map((instructor) => (
+                  filteredProviders.map((item) => (
                     <button
-                      key={instructor.instructorId}
-                      onClick={() => setSelectedInstructor(instructor)}
+                      key={item.provider.userId}
+                      onClick={() => setSelectedProvider(item)}
                       className={`w-full p-4 text-left border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors flex items-center justify-between ${
-                        selectedInstructor?.instructorId === instructor.instructorId
+                        selectedProvider?.provider.userId === item.provider.userId
                           ? 'bg-primary-50 dark:bg-primary-900/20'
                           : ''
                       }`}
@@ -229,18 +237,18 @@ const BookOfficeHourPage = () => {
                           <FiUser className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">{instructor.fullName}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{item.provider.fullName}</p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {getDegreeLabel(instructor.degree)}
+                            {item.provider.degree != null ? getDegreeLabel(item.provider.degree) : item.provider.role}
                           </p>
-                          {instructor.department && (
-                            <p className="text-xs text-gray-400 dark:text-gray-500">{instructor.department}</p>
+                          {item.provider.department && (
+                            <p className="text-xs text-gray-400 dark:text-gray-500">{item.provider.department}</p>
                           )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded-full">
-                          {instructor.availableSlots} slots
+                          {item.availableSlots} slots
                         </span>
                         <FiChevronRight className="w-5 h-5 text-gray-400" />
                       </div>
@@ -253,20 +261,22 @@ const BookOfficeHourPage = () => {
 
           {/* Available Slots */}
           <div className="lg:col-span-2">
-            {selectedInstructor ? (
+            {selectedProvider ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      Office Hours - {selectedInstructor.fullName}
+                      Office Hours - {selectedProvider.provider.fullName}
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {getDegreeLabel(selectedInstructor.degree)}
-                      {selectedInstructor.department && ` • ${selectedInstructor.department}`}
+                      {selectedProvider.provider.degree != null
+                        ? getDegreeLabel(selectedProvider.provider.degree)
+                        : selectedProvider.provider.role}
+                      {selectedProvider.provider.department && ` • ${selectedProvider.provider.department}`}
                     </p>
                   </div>
                   <button
-                    onClick={() => setSelectedInstructor(null)}
+                    onClick={() => setSelectedProvider(null)}
                     className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                   >
                     <FiX className="w-5 h-5" />
@@ -284,7 +294,7 @@ const BookOfficeHourPage = () => {
                       No available slots
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400">
-                      This instructor has no available office hours at the moment
+                      This provider has no available office hours at the moment
                     </p>
                   </div>
                 ) : (
@@ -314,7 +324,7 @@ const BookOfficeHourPage = () => {
                               {slot.room && (
                                 <span className="flex items-center gap-1">
                                   <FiMapPin className="w-4 h-4" />
-                                  {slot.room.roomName} ({slot.room.building})
+                                  {slot.room.roomNumber} ({slot.room.building})
                                 </span>
                               )}
                             </div>
@@ -343,10 +353,10 @@ const BookOfficeHourPage = () => {
                 <div className="text-center">
                   <FiUser className="w-12 h-12 mx-auto text-gray-400 mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-                    Select an Instructor
+                    Select a Provider
                   </h3>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Choose an instructor from the list to see their available office hours
+                    Choose a provider from the list to see their available office hours
                   </p>
                 </div>
               </div>
@@ -405,13 +415,18 @@ const BookOfficeHourPage = () => {
                         {booking.officeHour.room && (
                           <span className="flex items-center gap-1">
                             <FiMapPin className="w-4 h-4" />
-                            {booking.officeHour.room.roomName} ({booking.officeHour.room.building})
+                            {booking.officeHour.room.roomNumber} ({booking.officeHour.room.building})
                           </span>
                         )}
                       </div>
                       <p className="mt-2 text-sm text-gray-900 dark:text-white">
                         <span className="text-gray-500 dark:text-gray-400">With: </span>
-                        {booking.instructor.fullName} ({getDegreeLabel(booking.instructor.degree)})
+                        {(booking.provider?.fullName || booking.instructor?.fullName) ?? '—'}
+                        {booking.provider?.degree != null
+                          ? ` (${getDegreeLabel(booking.provider.degree)})`
+                          : booking.instructor?.degree != null
+                          ? ` (${getDegreeLabel(booking.instructor.degree)})`
+                          : ''}
                       </p>
                       {booking.purpose && (
                         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -467,7 +482,7 @@ const BookOfficeHourPage = () => {
                 {selectedSlot.startTime} - {selectedSlot.endTime}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                With {selectedInstructor.fullName}
+                With {selectedSlot.provider?.fullName || selectedProvider?.provider?.fullName || '—'}
               </p>
             </div>
             <div className="space-y-4">

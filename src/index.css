@@ -127,6 +127,11 @@ html[dir='rtl'] .rtl-flip {
     @apply dark:bg-gray-800 dark:text-gray-100;
   }
 
+  .chat-bubble-system {
+    @apply bg-gray-50 text-gray-700;
+    @apply dark:bg-gray-800/60 dark:text-gray-200;
+  }
+
   .chat-message-meta {
     @apply text-xs text-gray-500 dark:text-gray-400;
   }

@@ -15,12 +15,14 @@ import {
   ChartBarIcon,
   ClockIcon,
   ChatBubbleLeftRightIcon,
+  MegaphoneIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../contexts/AuthContext';
 import { cn } from '../../utils/helpers';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
 import { useChatUnread } from '../../contexts/ChatUnreadContext';
+import { useAnnouncementsUnread } from '../../contexts/AnnouncementsUnreadContext';
 
 const iconMap = {
   HomeIcon,
@@ -35,6 +37,7 @@ const iconMap = {
   ChartBarIcon,
   ChatIcon: ChatBubbleLeftRightIcon,
   ClockIcon,
+  MegaphoneIcon,
 };
 
 const adminNavigation = [
@@ -56,6 +59,7 @@ const adminNavigation = [
     sectionKey: 'nav.support',
     items: [
       { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.announcements', href: '/announcements', icon: 'MegaphoneIcon' },
       { labelKey: 'nav.advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
       { labelKey: 'nav.withdrawRequests', href: '/admin/withdraw-requests', icon: 'ClipboardDocumentCheckIcon' },
     ],
@@ -90,6 +94,7 @@ const instructorNavigation = [
     sectionKey: 'nav.support',
     items: [
       { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.announcements', href: '/announcements', icon: 'MegaphoneIcon' },
       { labelKey: 'nav.advising', href: '/advising', icon: 'ClipboardDocumentCheckIcon' },
       { labelKey: 'nav.profile', href: '/profile', icon: 'UserIcon' },
       { labelKey: 'nav.settings', href: '/settings', icon: 'UserIcon' },
@@ -114,6 +119,7 @@ const studentNavigation = [
     sectionKey: 'nav.support',
     items: [
       { labelKey: 'nav.chat', href: '/chat', icon: 'ChatIcon' },
+      { labelKey: 'nav.announcements', href: '/announcements', icon: 'MegaphoneIcon' },
       { labelKey: 'nav.gpaAndGrades', href: '/gpa', icon: 'AcademicCapIcon' },
       { labelKey: 'nav.academicPlan', href: '/academic-plan', icon: 'AcademicCapIcon' },
       { labelKey: 'nav.transcript', href: '/transcript', icon: 'ClipboardDocumentListIcon' },
@@ -130,6 +136,7 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
   const { t } = useTranslation();
   const { isRtl } = useDirection();
   const { totalUnread } = useChatUnread();
+  const { unreadCount: announcementsUnread } = useAnnouncementsUnread();
 
   const sectionIdByKey = useMemo(() => ({
     'nav.core': 'sidebar-section-core',
@@ -189,6 +196,8 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
                     (item.href !== '/dashboard' && location.pathname.startsWith(item.href));
 
                   const showChatBadge = item.href === '/chat' && totalUnread > 0;
+                  const showAnnouncementsBadge =
+                    item.href === '/announcements' && announcementsUnread > 0;
 
                   return (
                     <NavLink
@@ -220,6 +229,13 @@ const SidebarContent = ({ navigation, sectionOpen, onToggleSection }) => {
                           aria-hidden="true"
                         >
                           {Math.min(99, totalUnread)}
+                        </span>
+                      ) : showAnnouncementsBadge ? (
+                        <span
+                          className={cn('chat-unread-badge', isRtl ? 'mr-auto' : 'ml-auto')}
+                          aria-hidden="true"
+                        >
+                          {Math.min(99, announcementsUnread)}
                         </span>
                       ) : null}
                     </NavLink>

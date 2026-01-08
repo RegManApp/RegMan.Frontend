@@ -89,6 +89,20 @@ export const getAvailableOfficeHours = async (params = {}) => {
   return response.data;
 };
 
+// Get all providers with their available office hours count (role-agnostic)
+export const getProvidersWithOfficeHours = async () => {
+  const response = await axiosInstance.get("/officehour/providers");
+  return response.data;
+};
+
+// Get all available office hours for a provider (role-agnostic)
+export const getAvailableOfficeHoursV2 = async (params = {}) => {
+  const response = await axiosInstance.get("/officehour/available-v2", {
+    params,
+  });
+  return response.data;
+};
+
 // Get all instructors with their available office hours count
 export const getInstructorsWithOfficeHours = async () => {
   const response = await axiosInstance.get("/officehour/instructors");
@@ -157,7 +171,9 @@ export const officeHourApi = {
   markNoShow,
   // Student
   getAvailableOfficeHours,
+  getAvailableOfficeHoursV2,
   getInstructorsWithOfficeHours,
+  getProvidersWithOfficeHours,
   bookOfficeHour,
   getMyBookings,
   cancelBooking,

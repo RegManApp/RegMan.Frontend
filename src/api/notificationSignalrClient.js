@@ -53,6 +53,26 @@ export function offNotificationReceived(handler) {
   connection.off("NotificationReceived", handler);
 }
 
+export function onAnnouncementSent(handler) {
+  if (!connection) return;
+  connection.on("AnnouncementSent", handler);
+}
+
+export function offAnnouncementSent(handler) {
+  if (!connection) return;
+  connection.off("AnnouncementSent", handler);
+}
+
+export function onAnnouncementRead(handler) {
+  if (!connection) return;
+  connection.on("AnnouncementRead", handler);
+}
+
+export function offAnnouncementRead(handler) {
+  if (!connection) return;
+  connection.off("AnnouncementRead", handler);
+}
+
 export async function stopNotificationsConnection() {
   connectionRefCount = Math.max(0, connectionRefCount - 1);
   if (!connection) return;

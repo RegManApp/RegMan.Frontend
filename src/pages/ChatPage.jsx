@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { chatApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from 'react-router-dom';
 import {
   startConnection,
   stopConnection,
@@ -25,6 +26,7 @@ import { useChatUnread } from '../contexts/ChatUnreadContext';
 export default function ChatPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const location = useLocation();
   const { byConversationId, clearConversationUnread } = useChatUnread();
   const [conversations, setConversations] = useState([]);
   const [selectedConvo, setSelectedConvo] = useState(null);
@@ -38,6 +40,15 @@ export default function ChatPage() {
   const searchTimerRef = useRef(null);
 
   const [onlineUsers, setOnlineUsers] = useState({});
+
+  const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const convoIdParam = params.get('conversationId');
+  const highlightParam = params.get('highlightMessageId');
+  const openAnnouncementsParam = params.get('openAnnouncements');
+
+  const targetConversationId = convoIdParam && Number.isFinite(Number(convoIdParam)) ? Number(convoIdParam) : null;
+  const highlightMessageId = highlightParam && Number.isFinite(Number(highlightParam)) ? Number(highlightParam) : null;
+  const openAnnouncements = openAnnouncementsParam === '1' || openAnnouncementsParam === 'true';
 
   const loadConversations = useCallback(async () => {
     try {
@@ -55,6 +66,44 @@ export default function ChatPage() {
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+
+  useEffect(() => {
+    if (!targetConversationId) return;
+    if (!conversations || conversations.length === 0) return;
+
+    const found = conversations.find((c) => c.conversationId === targetConversationId);
+    if (!found) return;
+
+    (async () => {
+      try {
+        await startConnection();
+        await joinConversationGroup(found.conversationId);
+      } catch (e) {}
+
+      setSelectedConvo(found);
+      clearConversationUnread(found.conversationId);
+    })();
+  }, [targetConversationId, conversations, clearConversationUnread]);
+
+  useEffect(() => {
+    if (targetConversationId) return;
+    if (!openAnnouncements) return;
+    if (!conversations || conversations.length === 0) return;
+    if (selectedConvo) return;
+
+    const found = conversations.find((c) => c.conversationDisplayName === 'Announcements');
+    if (!found) return;
+
+    (async () => {
+      try {
+        await startConnection();
+        await joinConversationGroup(found.conversationId);
+      } catch (e) {}
+
+      setSelectedConvo(found);
+      clearConversationUnread(found.conversationId);
+    })();
+  }, [targetConversationId, openAnnouncements, conversations, selectedConvo, clearConversationUnread]);
 
   useEffect(() => {
     let handler = (message) => {
@@ -277,6 +326,7 @@ export default function ChatPage() {
           <ChatWindow
             conversation={selectedConvo}
             onlineUsers={onlineUsers}
+            highlightMessageId={highlightMessageId}
             onSend={async (conversationId, receiverId, text) => {
               try {
                 // Try via SignalR hub first

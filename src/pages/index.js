@@ -30,6 +30,8 @@ export { default as AcademicPlanPage } from "./AcademicPlanPage";
 export { default as WithdrawRequestPage } from "./WithdrawRequestPage";
 export { default as AdminWithdrawRequestsPage } from "./AdminWithdrawRequestsPage";
 export { default as NotificationsPage } from "./NotificationsPage";
+export { default as AnnouncementsPage } from "./AnnouncementsPage";
+export { default as AnnouncementsAuditPage } from "./AnnouncementsAuditPage";
 export { default as SmartScheduleBuilderPage } from "./SmartScheduleBuilderPage";
 export { default as WithdrawHistoryPage } from "./WithdrawHistoryPage";
 export { default as WelcomePage } from "./WelcomePage";
