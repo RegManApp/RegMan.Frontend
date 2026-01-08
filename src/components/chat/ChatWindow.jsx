@@ -187,7 +187,16 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
 
   const currentUserId = user?.userId || user?.id || '';
   const otherUserId = convoDetail?.participantIds?.find((id) => id !== currentUserId) || '';
-  const isOtherOnline = otherUserId ? !!onlineUsers[otherUserId] : false;
+  const otherPresence = otherUserId ? onlineUsers?.[otherUserId] : null;
+  const isOtherOnline = otherUserId
+    ? typeof otherPresence === 'boolean'
+      ? otherPresence
+      : !!otherPresence?.isOnline
+    : false;
+  const otherLastSeenAt =
+    otherUserId && otherPresence && typeof otherPresence === 'object'
+      ? otherPresence.lastSeenAt
+      : null;
   const isOtherTyping = otherUserId ? !!typingUserIds[otherUserId] : false;
 
   // Mark messages read when opening (receiver-only enforced by backend)
@@ -218,6 +227,14 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
             {conversation.conversationDisplayName || conversation.displayName || convoDetail?.displayName || t('chat.titleFallback')}
           </h3>
         </div>
+        {!isOtherOnline && otherLastSeenAt ? (
+          <div className="mt-1 text-xs chat-muted">
+            {t('chat.presence.lastSeen', {
+              time: new Date(otherLastSeenAt).toLocaleString(),
+              defaultValue: `Last seen ${new Date(otherLastSeenAt).toLocaleString()}`,
+            })}
+          </div>
+        ) : null}
       </div>
       <div className="flex-1 p-4">
         <div ref={listRef} className="h-full overflow-auto" onScroll={(e) => {
@@ -249,6 +266,50 @@ export default function ChatWindow({ conversation, onSend, onlineUsers = {} }) {
               {new Date(m.timestamp).toLocaleString()}
               {m.senderId === currentUserId && m.isRead ? (
                 <span className="ml-2">{t('chat.readIndicator')}</span>
+              ) : null}
+
+              {!m.isDeletedForEveryone ? (
+                <span className="ml-2 inline-flex gap-2">
+                  <button
+                    type="button"
+                    className="text-xs chat-muted hover:underline"
+                    onClick={async () => {
+                      try {
+                        await chatApi.deleteMessageForMe(conversation.conversationId, m.messageId);
+                        setMessages((prev) => (prev || []).filter((x) => x.messageId !== m.messageId));
+                      } catch (e) {}
+                    }}
+                  >
+                    {t('chat.actions.deleteForMe', { defaultValue: 'Delete for me' })}
+                  </button>
+
+                  {m.senderId === currentUserId ? (
+                    <button
+                      type="button"
+                      className="text-xs chat-muted hover:underline"
+                      onClick={async () => {
+                        try {
+                          const ok = window.confirm(
+                            t('chat.actions.confirmDeleteForEveryone', {
+                              defaultValue: 'Delete this message for everyone?',
+                            })
+                          );
+                          if (!ok) return;
+                          await chatApi.deleteMessageForEveryone(conversation.conversationId, m.messageId);
+                          setMessages((prev) =>
+                            (prev || []).map((x) =>
+                              x.messageId === m.messageId
+                                ? { ...x, isDeletedForEveryone: true, content: '[deleted]' }
+                                : x
+                            )
+                          );
+                        } catch (e) {}
+                      }}
+                    >
+                      {t('chat.actions.deleteForEveryone', { defaultValue: 'Delete for everyone' })}
+                    </button>
+                  ) : null}
+                </span>
               ) : null}
             </div>
           </div>

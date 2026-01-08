@@ -16,7 +16,11 @@ export default function NotificationsPage() {
       setLoadError(false);
       setLoading(true);
       const list = await notificationApi.getNotifications({ pageSize: 50 });
-      setNotifications(Array.isArray(list) ? list : []);
+      const arr = Array.isArray(list) ? list : [];
+      const deduped = Array.from(
+        new Map(arr.map((n) => [n.notificationId, n])).values()
+      );
+      setNotifications(deduped);
     } catch (e) {
       console.error(e);
       setLoadError(true);

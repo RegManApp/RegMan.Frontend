@@ -39,6 +39,18 @@ export const chatApi = {
     return axiosInstance.post(`/chat/conversations/${conversationId}/read`);
   },
 
+  deleteMessageForMe: (conversationId, messageId) => {
+    return axiosInstance.post(
+      `/chat/conversations/${conversationId}/messages/${messageId}/delete-for-me`
+    );
+  },
+
+  deleteMessageForEveryone: (conversationId, messageId) => {
+    return axiosInstance.post(
+      `/chat/conversations/${conversationId}/messages/${messageId}/delete-for-everyone`
+    );
+  },
+
   // Send a message via REST API (fallback for SignalR)
   sendMessage: (receiverId, textMessage, conversationId = null) => {
     return axiosInstance.post("/chat", null, {

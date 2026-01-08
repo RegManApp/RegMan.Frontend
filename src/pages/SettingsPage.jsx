@@ -51,11 +51,9 @@ const SettingsPage = () => {
         toast.error(t("settings.googleCalendar.errors.connectFailed"));
       }
     } catch (err) {
-      // axiosInstance already handles 401 -> redirect to login.
-      const status = err?.response?.status;
-      if (status !== 401) {
-        toast.error(t("settings.googleCalendar.errors.connectFailed"));
-      }
+      // axiosInstance already surfaces a toast with the server's message.
+      // 401 is handled globally (redirect to login).
+      return;
     }
   };
 

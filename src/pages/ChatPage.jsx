@@ -94,8 +94,12 @@ export default function ChatPage() {
       try {
         const userId = evt?.userId;
         const isOnline = !!evt?.isOnline;
+        const lastSeenAt = evt?.lastSeenAt || null;
         if (!userId) return;
-        setOnlineUsers((prev) => ({ ...prev, [userId]: isOnline }));
+        setOnlineUsers((prev) => ({
+          ...prev,
+          [userId]: { isOnline, lastSeenAt },
+        }));
       } catch (e) {}
     };
 
@@ -111,7 +115,7 @@ export default function ChatPage() {
           .then((ids) => {
             const map = {};
             (ids || []).forEach((id) => {
-              map[id] = true;
+              map[id] = { isOnline: true, lastSeenAt: null };
             });
             setOnlineUsers((prev) => ({ ...prev, ...map }));
           })

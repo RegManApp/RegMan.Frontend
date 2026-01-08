@@ -79,7 +79,11 @@ const NotificationBell = () => {
       setLoading(true);
       setLoadError(false);
       const list = await notificationApi.getNotifications();
-      setNotifications(Array.isArray(list) ? list : []);
+      const arr = Array.isArray(list) ? list : [];
+      const deduped = Array.from(
+        new Map(arr.map((n) => [n.notificationId, n])).values()
+      );
+      setNotifications(deduped);
     } catch (error) {
       console.error('Error fetching notifications:', error);
       setLoadError(true);
