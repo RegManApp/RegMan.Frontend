@@ -5,6 +5,9 @@ import { getApiErrorMessageKey } from "../utils/i18nError";
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
+  // Required for Google Calendar OAuth binding cookie (SameSite=None; Secure)
+  // to be accepted and sent on cross-site requests.
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
