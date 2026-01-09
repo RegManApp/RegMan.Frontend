@@ -188,6 +188,7 @@ const BookOfficeHourPage = () => {
     { value: '', label: 'All roles' },
     { value: 'Instructor', label: 'Instructor' },
     { value: 'Admin', label: 'Admin' },
+    { value: 'Advisor', label: 'Advisor' },
   ];
 
   const getDegreeLabel = (degree) => {
@@ -432,7 +433,7 @@ const BookOfficeHourPage = () => {
                       No available slots
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400">
-                      This provider has no available office hours at the moment
+                      This provider has no available office hours.
                     </p>
                   </div>
                 ) : (

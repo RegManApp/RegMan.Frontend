@@ -6,7 +6,7 @@ import axiosInstance from "./axiosInstance";
 
 // Get all office hours for the current instructor
 export const getMyOfficeHours = async (params = {}) => {
-  const response = await axiosInstance.get("/officehour/my-office-hours", {
+  const response = await axiosInstance.get("/officehour/my", {
     params,
   });
   return response.data;

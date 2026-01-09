@@ -26,6 +26,8 @@ const OfficeHoursPage = () => {
   const [officeHours, setOfficeHours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingOfficeHour, setEditingOfficeHour] = useState(null);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [instructorNotes, setInstructorNotes] = useState('');
@@ -98,6 +100,47 @@ const OfficeHoursPage = () => {
       fetchOfficeHours();
     } catch (error) {
       toast.error(t('officeHours.errors.deleteFailed'));
+    }
+  };
+
+  const handleOpenEdit = (officeHour) => {
+    setEditingOfficeHour(officeHour);
+    setFormData({
+      date: officeHour?.date ? new Date(officeHour.date).toISOString().slice(0, 10) : '',
+      startTime: officeHour?.startTime || '09:00',
+      endTime: officeHour?.endTime || '10:00',
+      roomId: officeHour?.room?.roomId ?? null,
+      notes: officeHour?.notes || '',
+      isRecurring: Boolean(officeHour?.isRecurring),
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateOfficeHour = async (e) => {
+    e.preventDefault();
+    if (!editingOfficeHour?.officeHourId) return;
+    try {
+      await officeHourApi.updateOfficeHour(editingOfficeHour.officeHourId, {
+        date: formData.date,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        roomId: formData.roomId,
+        notes: formData.notes,
+      });
+      toast.success(t('officeHours.toasts.updated') || t('common.updated') || 'Updated');
+      setShowEditModal(false);
+      setEditingOfficeHour(null);
+      setFormData({
+        date: '',
+        startTime: '09:00',
+        endTime: '10:00',
+        roomId: null,
+        notes: '',
+        isRecurring: false,
+      });
+      fetchOfficeHours();
+    } catch (error) {
+      toast.error(t('officeHours.errors.updateFailed') || t('errors.generic'));
     }
   };
 
@@ -251,7 +294,7 @@ const OfficeHoursPage = () => {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('officeHours.title')}</h1>
           <p className="text-gray-600 dark:text-gray-400">{t('officeHours.subtitle')}</p>
         </div>
-        {!isStudent && (
+        {!isStudent() && (
           <button
             onClick={() => setShowCreateModal(true)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
@@ -293,7 +336,7 @@ const OfficeHoursPage = () => {
           <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
             <FiCalendar className="w-12 h-12 mx-auto text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{t('officeHours.empty.title')}</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-4">{t('officeHours.empty.description')}</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-4">You haven’t added any office hours yet.</p>
           </div>
         ) : (
           officeHours.map((oh) => (
@@ -316,7 +359,7 @@ const OfficeHoursPage = () => {
                         {oh.room && (
                           <span className="flex items-center gap-1">
                             <FiMapPin className="w-4 h-4" />
-                            {oh.room.roomName} ({oh.room.building})
+                            {oh.room.roomNumber} ({oh.room.building})
                           </span>
                         )}
                       </div>
@@ -330,14 +373,24 @@ const OfficeHoursPage = () => {
                       {renderOfficeHourStatus(oh.status)}
                     </span>
                     {oh.status === 'Available' && (
-                      <button
-                        onClick={() => handleDeleteOfficeHour(oh.officeHourId)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title={t('common.delete')}
-                        aria-label={t('common.delete')}
-                      >
-                        <FiTrash2 className="w-5 h-5" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => handleOpenEdit(oh)}
+                          className="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
+                          title={t('common.edit')}
+                          aria-label={t('common.edit')}
+                        >
+                          <FiEdit2 className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteOfficeHour(oh.officeHourId)}
+                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title={t('common.delete')}
+                          aria-label={t('common.delete')}
+                        >
+                          <FiTrash2 className="w-5 h-5" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -358,8 +411,8 @@ const OfficeHoursPage = () => {
                             <FiUser className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{booking.student.fullName}</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{booking.student.email}</p>
+                            <p className="font-medium text-gray-900 dark:text-white">{booking.booker?.fullName || ''}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{booking.booker?.email || ''}</p>
                             {booking.purpose && (
                               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                 <span className="font-medium">{t('officeHours.fields.purposeLabel')}</span> {booking.purpose}
@@ -412,7 +465,7 @@ const OfficeHoursPage = () => {
                               <button
                                 onClick={() => {
                                   setSelectedBooking(booking);
-                                  setInstructorNotes(booking.instructorNotes || '');
+                                  setInstructorNotes(booking.providerNotes || '');
                                   setShowNotesModal(true);
                                 }}
                                 className="p-2 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors"
@@ -514,13 +567,84 @@ const OfficeHoursPage = () => {
         </div>
       )}
 
+      {/* Edit Office Hour Modal */}
+      {showEditModal && editingOfficeHour && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('common.edit') || 'Edit'}</h2>
+            <form onSubmit={handleUpdateOfficeHour} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('officeHours.fields.date')}</label>
+                <input
+                  type="date"
+                  required
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('officeHours.fields.startTime')}</label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('officeHours.fields.endTime')}</label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{t('officeHours.fields.notesOptional')}</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  rows={3}
+                  placeholder={t('officeHours.placeholders.notesOptional')}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingOfficeHour(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                >
+                  {t('common.save') || 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Notes Modal */}
       {showNotesModal && selectedBooking && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('officeHours.modals.notesTitle')}</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {t('officeHours.modals.meetingWith', { name: selectedBooking.student.fullName })}
+              {t('officeHours.modals.meetingWith', { name: selectedBooking.booker?.fullName || '' })}
             </p>
             <textarea
               value={instructorNotes}
