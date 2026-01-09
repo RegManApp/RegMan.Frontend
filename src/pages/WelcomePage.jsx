@@ -1,260 +1,317 @@
-import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaArrowUp, FaBook, FaChartLine, FaClock, FaEnvelope, FaGraduationCap, FaLaptop, FaLightbulb, FaUsers } from 'react-icons/fa';
-import { useTranslation } from 'react-i18next';
-import { useDirection } from '../hooks/useDirection';
-import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import {
+  FaBug,
+  FaCalendarAlt,
+  FaComments,
+  FaGithub,
+  FaLightbulb,
+  FaLock,
+  FaShieldAlt,
+  FaBullhorn,
+  FaClock,
+  FaUsers,
+} from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
+
+const GITHUB_ORG_URL = 'https://github.com/RegManApp';
+const GITHUB_FEATURE_REQUEST_URL =
+  'https://github.com/RegManApp/RegMan.Frontend/issues/new?labels=enhancement&title=Feature%20request%3A%20';
+const GITHUB_BUG_REPORT_URL =
+  'https://github.com/RegManApp/RegMan.Frontend/issues/new?labels=bug&title=Bug%20report%3A%20';
+
+const SectionHeader = ({ kicker, title, subtitle }) => (
+  <div className="mx-auto max-w-3xl text-center">
+    {kicker ? (
+      <p className="text-sm font-semibold text-primary-600 dark:text-primary-400">{kicker}</p>
+    ) : null}
+    <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight">{title}</h2>
+    {subtitle ? (
+      <p className="mt-3 text-base text-gray-600 dark:text-gray-300">{subtitle}</p>
+    ) : null}
+  </div>
+);
+
+const FeatureCard = ({ icon: Icon, title, body }) => (
+  <div className="h-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6">
+    <div className="flex items-start gap-4">
+      <div className="shrink-0 rounded-lg bg-primary-50 dark:bg-gray-900 p-3">
+        <Icon className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden="true" />
+      </div>
+      <div>
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{body}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const ActionCard = ({ icon: Icon, title, body, href, ctaLabel }) => (
+  <div className="h-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-6">
+    <div className="flex items-start gap-4">
+      <div className="shrink-0 rounded-lg bg-primary-50 dark:bg-gray-900 p-3">
+        <Icon className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden="true" />
+      </div>
+      <div className="flex-1">
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{body}</p>
+        <a
+          className="mt-4 inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {ctaLabel}
+        </a>
+      </div>
+    </div>
+  </div>
+);
 
 const WelcomePage = () => {
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
-  const { t } = useTranslation();
-  const { isRtl } = useDirection();
+  const { isAuthenticated } = useAuth();
 
-  const scrollToSection = (id) => {
-    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleScroll = () => {
-    setShowScrollToTop(window.scrollY > 300);
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const primaryCta = isAuthenticated
+    ? { to: '/dashboard', label: 'Go to Dashboard' }
+    : { to: '/login', label: 'Login / Get Started' };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-      {/* Navigation Bar */}
-      {/*<nav className="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">*/}
-      {/*  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">*/}
-      {/*    <div className="flex justify-center items-center h-16">*/}
-      {/*      <div className="space-x-4">*/}
-      {/*        <button onClick={() => scrollToSection('hero')} className="hover:underline">Home</button>*/}
-      {/*        <button onClick={() => scrollToSection('features')} className="hover:underline">Key Features</button>*/}
-      {/*        <button onClick={() => scrollToSection('about')} className="hover:underline">About</button>*/}
-      {/*        <button onClick={() => scrollToSection('contact-form')} className="hover:underline">Contact</button>*/}
-      {/*        <button onClick={() => scrollToSection('contribute')} className="hover:underline">Contribute</button>*/}
-      {/*        <Link to="/login" className="hover:underline">Login</Link>*/}
-      {/*        <Link to="/register" className="hover:underline">Register</Link>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-          {/*</nav>*/}
-            <nav className="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className={`flex items-center h-16 ${isRtl ? 'flex-row-reverse' : ''}`}>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/regman-logo.png" alt="RegMan" className="h-8 w-8" />
+              <span className="font-semibold">RegMan</span>
+            </div>
 
-                      {/* Left spacer / Logo */}
-                      <div className="flex-1">
-                          {/* Optional logo or title */}
-                          <span className="font-bold text-lg">{t('app.name')}</span>
-                      </div>
+            <nav className="flex items-center gap-3">
+              <Link
+                className="rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                to="/privacy-policy"
+              >
+                Privacy Policy
+              </Link>
+              <Link
+                className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+                to={primaryCta.to}
+              >
+                {primaryCta.label}
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
 
-                      {/* Center navigation */}
-                        <div className={`flex space-x-6 ${isRtl ? 'space-x-reverse' : ''}`}>
-                          <button onClick={() => scrollToSection('hero')} className="hover:underline transition-colors duration-200 ease-out">
-                            {t('welcome.nav.home')}
-                          </button>
-                          <button onClick={() => scrollToSection('features')} className="hover:underline transition-colors duration-200 ease-out">
-                            {t('welcome.nav.features')}
-                          </button>
-                          <button onClick={() => scrollToSection('about')} className="hover:underline transition-colors duration-200 ease-out">
-                            {t('welcome.nav.about')}
-                          </button>
-                          <button onClick={() => scrollToSection('contact-form')} className="hover:underline transition-colors duration-200 ease-out">
-                            {t('welcome.nav.contact')}
-                          </button>
-                          <button onClick={() => scrollToSection('contribute')} className="hover:underline transition-colors duration-200 ease-out">
-                            {t('welcome.nav.contribute')}
-                          </button>
-                      </div>
+      {/* 1) Hero */}
+      <section className="bg-gradient-to-b from-primary-600 to-primary-500 text-white">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div className="max-w-3xl">
+            <p className="text-sm font-semibold text-white/90">University registration, communication, and scheduling</p>
+            <h1 className="mt-3 text-4xl sm:text-5xl font-bold tracking-tight">
+              RegMan keeps academic workflows organized — end to end.
+            </h1>
+            <p className="mt-5 text-base sm:text-lg text-white/90">
+              A secure platform for office hours booking, announcements, chat, and calendar syncing
+              that works across students, instructors, and administrators.
+            </p>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Link
+                to={primaryCta.to}
+                className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-3 text-sm font-semibold text-primary-700 hover:bg-gray-100"
+              >
+                {primaryCta.label}
+              </Link>
+              <a
+                href={GITHUB_ORG_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center rounded-lg border border-white/30 px-5 py-3 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                View on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
 
-                      {/* Right auth buttons */}
-                        <div className={`flex-1 flex ${isRtl ? 'justify-start' : 'justify-end'} items-center space-x-4 ${isRtl ? 'space-x-reverse' : ''}`}>
-                          <LanguageSwitcher />
-                          <Link
-                              to="/login"
-                            className="px-4 py-2 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors duration-200 ease-out"
-                          >
-                            {t('welcome.actions.login')}
-                          </Link>
-
-                          {/* Only include Register if needed */}
-                          <Link
-                              to="/register"
-                              className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 ease-out"
-                          >
-                              {t('welcome.actions.register')}
-                          </Link>
-                      </div>
-
-                  </div>
-              </div>
-          </nav>
-
-
-      {/* Hero Section */}
-      <div id="hero" className="flex items-center justify-center min-h-screen bg-gradient-to-b from-primary-600 to-primary-400 text-white">
-        <div className="text-center space-y-6 motion-safe:animate-fade-up">
-          <img
-            src="/regman-logo.png"
-            alt={t('welcome.logoAlt')}
-            className="mx-auto w-32 h-32"
+      {/* 2) What RegMan Does */}
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            kicker="What RegMan does"
+            title="The core tools students and staff use daily"
+            subtitle="Designed for real university workflows: scheduling, communication, and coordination—without the noise."
           />
-          <h1 className="text-5xl font-bold">{t('welcome.hero.title')}</h1>
-          <p className="text-lg max-w-2xl mx-auto">
-            {t('welcome.hero.subtitle')}
-          </p>
-          <div className={`flex justify-center space-x-4 ${isRtl ? 'space-x-reverse' : ''}`}>
-            <Link
-              to="/login"
-              className="px-6 py-3 bg-white text-primary-600 rounded-lg hover:bg-gray-200 transition-colors duration-200 ease-out"
-            >
-              {t('welcome.actions.login')}
-            </Link>
-            <Link
-              to="/register"
-              className="px-6 py-3 bg-white text-primary-600 rounded-lg hover:bg-gray-200 transition-colors duration-200 ease-out"
-            >
-              {t('welcome.actions.register')}
-            </Link>
-          </div>
-        </div>
-      </div>
 
-      {/* Features Section */}
-      <div id="features" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-12">{t('welcome.features.title')}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition">
-            <FaBook className="text-primary-600 text-4xl mb-4" />
-            <h4 className="text-xl font-semibold mb-2">{t('welcome.features.cards.manageCourses.title')}</h4>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t('welcome.features.cards.manageCourses.body')}
-            </p>
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition">
-            <FaGraduationCap className="text-primary-600 text-4xl mb-4" />
-            <h4 className="text-xl font-semibold mb-2">{t('welcome.features.cards.trackProgress.title')}</h4>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t('welcome.features.cards.trackProgress.body')}
-            </p>
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition">
-            <FaClock className="text-primary-600 text-4xl mb-4" />
-            <h4 className="text-xl font-semibold mb-2">{t('welcome.features.cards.bookOfficeHours.title')}</h4>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t('welcome.features.cards.bookOfficeHours.body')}
-            </p>
-          </div>
-          <div className="p-6 bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition">
-            <FaChartLine className="text-primary-600 text-4xl mb-4" />
-            <h4 className="text-xl font-semibold mb-2">{t('welcome.features.cards.analytics.title')}</h4>
-            <p className="text-gray-600 dark:text-gray-300">
-              {t('welcome.features.cards.analytics.body')}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* About Section */}
-      <div id="about" className="py-16 bg-gray-100 dark:bg-gray-900">
-        <h2 className="text-3xl font-bold text-center mb-8">{t('welcome.about.title')}</h2>
-        <p className="max-w-4xl mx-auto text-center text-lg text-gray-700 dark:text-gray-300">
-          {/*RegMan is designed to simplify student management for both administrators and students.*/}
-          {/*From managing courses to tracking academic progress, our platform provides all the tools*/}
-                  {/*you need to succeed.*/}
-                  {t('welcome.about.body')}
-        </p>
-      </div>
-
-      {/* Contribute Section */}
-      <div id="contribute" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">{t('welcome.contribute.title')}</h2>
-        <div className={`flex justify-center space-x-4 ${isRtl ? 'space-x-reverse' : ''}`}>
-          <a
-            href="https://github.com/RegManApp"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 ease-out"
-          >
-            {t('welcome.contribute.viewOnGithub')}
-          </a>
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLScI48XI-hfc5MmUgzFcTkhh5eqAGOYcZVM42DBUNn9y3G47Wg/viewform?usp=header"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-colors duration-200 ease-out"
-          >
-            {t('welcome.contribute.submitIdeas')}
-          </a>
-        </div>
-      </div>
-
-      {/* Contact Form */}
-      <div id="contact-form" className="py-16 bg-gray-50 dark:bg-gray-800">
-        <h2 className="text-3xl font-bold text-center mb-8">{t('welcome.contact.title')}</h2>
-        <form className="max-w-3xl mx-auto space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('welcome.contact.nameLabel')}</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder={t('welcome.contact.namePlaceholder')}
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <FeatureCard
+              icon={FaClock}
+              title="Office Hours booking"
+              body="Find availability, book time, and keep meetings organized across staff and students."
+            />
+            <FeatureCard
+              icon={FaComments}
+              title="Chat & Notifications"
+              body="Fast conversations and timely updates so people don’t miss what matters."
+            />
+            <FeatureCard
+              icon={FaBullhorn}
+              title="Announcements"
+              body="Publish important updates with visibility and accountability across the organization."
+            />
+            <FeatureCard
+              icon={FaCalendarAlt}
+              title="Google Calendar integration"
+              body="Optional OAuth connection to sync events and reduce scheduling conflicts."
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('welcome.contact.emailLabel')}</label>
-            <input
-              type="email"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder={t('welcome.contact.emailPlaceholder')}
+        </div>
+      </section>
+
+      {/* 3) Who It’s For */}
+      <section className="py-14 sm:py-16 bg-white dark:bg-gray-900 border-y border-gray-200 dark:border-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            kicker="Who it’s for"
+            title="Built for every role involved in academic operations"
+            subtitle="Role-based access keeps the right features available to the right people—without hardcoding role behavior into the UI."
+          />
+
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <FeatureCard
+              icon={FaUsers}
+              title="Students"
+              body="Track schedules, get updates, and book office hours with confidence."
+            />
+            <FeatureCard
+              icon={FaUsers}
+              title="Instructors"
+              body="Manage availability, communicate quickly, and stay aligned with course activity."
+            />
+            <FeatureCard
+              icon={FaUsers}
+              title="Admins / Advisors"
+              body="Keep oversight and workflows consistent with auditability across critical actions."
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">{t('welcome.contact.messageLabel')}</label>
-            <textarea
-              rows="4"
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              placeholder={t('welcome.contact.messagePlaceholder')}
-            ></textarea>
-          </div>
-          <div className="text-center">
-            <button
-              type="submit"
-              className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 ease-out"
-            >
-              {t('welcome.contact.submit')}
-            </button>
-          </div>
-        </form>
-      </div>
+        </div>
+      </section>
 
-      {/* Scroll to Top Button */}
-      {showScrollToTop && (
-        <button
-          onClick={scrollToTop}
-          aria-label={t('welcome.scrollToTop')}
-          className={`fixed bottom-6 ${isRtl ? 'left-6' : 'right-6'} p-3 bg-primary-600 text-white rounded-full shadow-lg hover:bg-primary-700 transition-colors duration-200 ease-out`}
-        >
-          <FaArrowUp />
-        </button>
-      )}
+      {/* 4) Community & Contribution (MANDATORY) */}
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            kicker="Community"
+            title="Help improve RegMan"
+            subtitle="Contributions and feedback make the product better for everyone. These actions open in a new tab."
+          />
 
-      {/* Footer */}
-      <footer className="py-6 bg-gray-800 text-gray-400">
-        <div className={`max-w-6xl mx-auto flex justify-between items-center ${isRtl ? 'flex-row-reverse' : ''}`}>
-          <img src="/regman-logo.png" alt={t('welcome.logoAlt')} className="w-12 h-12" />
-          <div className={`space-x-4 ${isRtl ? 'space-x-reverse' : ''}`}>
-            <button onClick={() => scrollToSection('hero')} className="hover:underline transition-colors duration-200 ease-out">{t('welcome.nav.home')}</button>
-            <button onClick={() => scrollToSection('features')} className="hover:underline transition-colors duration-200 ease-out">{t('welcome.nav.features')}</button>
-            <button onClick={() => scrollToSection('about')} className="hover:underline transition-colors duration-200 ease-out">{t('welcome.nav.about')}</button>
-            <button onClick={() => scrollToSection('contact-form')} className="hover:underline transition-colors duration-200 ease-out">{t('welcome.nav.contact')}</button>
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <ActionCard
+              icon={FaGithub}
+              title="GitHub Organization"
+              body="Browse the source, project docs, and roadmap across the RegMan org."
+              href={GITHUB_ORG_URL}
+              ctaLabel="View on GitHub"
+            />
+            <ActionCard
+              icon={FaLightbulb}
+              title="Submit an Idea"
+              body="Request a feature or propose an improvement for students, instructors, or admins."
+              href={GITHUB_FEATURE_REQUEST_URL}
+              ctaLabel="Submit an Idea"
+            />
+            <ActionCard
+              icon={FaBug}
+              title="Report a Bug"
+              body="Found something broken? Open an issue with steps to reproduce."
+              href={GITHUB_BUG_REPORT_URL}
+              ctaLabel="Report a Bug"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 5) Trust & Security */}
+      <section className="py-14 sm:py-16 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            kicker="Trust & Security"
+            title="Secure by design"
+            subtitle="Authentication stays server-authoritative. Integrations are optional and scoped. Auditability is built-in."
+          />
+
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+            <FeatureCard
+              icon={FaLock}
+              title="Secure authentication"
+              body="Session handling and access control are enforced by the backend as the source of truth."
+            />
+            <FeatureCard
+              icon={FaCalendarAlt}
+              title="OAuth-based integrations"
+              body="Google Calendar uses OAuth so users can grant and revoke access directly."
+            />
+            <FeatureCard
+              icon={FaShieldAlt}
+              title="Privacy-first & audit logging"
+              body="Sensitive actions can be tracked to support accountability and operational reviews."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 6) Footer */}
+      <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+          <div className="flex flex-col md:flex-row gap-8 md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/regman-logo.png" alt="RegMan" className="h-9 w-9" />
+              <div>
+                <div className="font-semibold">RegMan</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  University registration & management
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+              <Link className="text-gray-700 dark:text-gray-300 hover:underline" to="/privacy-policy">
+                Privacy Policy
+              </Link>
+              <Link className="text-gray-700 dark:text-gray-300 hover:underline" to="/login">
+                Login
+              </Link>
+              <a
+                className="text-gray-700 dark:text-gray-300 hover:underline"
+                href={GITHUB_ORG_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+              <a
+                className="text-gray-700 dark:text-gray-300 hover:underline"
+                href={GITHUB_BUG_REPORT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Report a Bug
+              </a>
+              <a
+                className="text-gray-700 dark:text-gray-300 hover:underline"
+                href={GITHUB_FEATURE_REQUEST_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Submit an Idea
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-8 text-xs text-gray-500 dark:text-gray-500">
+            © {new Date().getFullYear()} RegMan
           </div>
         </div>
       </footer>

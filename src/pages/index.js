@@ -36,3 +36,4 @@ export { default as AnnouncementsAuditPage } from "./AnnouncementsAuditPage";
 export { default as SmartScheduleBuilderPage } from "./SmartScheduleBuilderPage";
 export { default as WithdrawHistoryPage } from "./WithdrawHistoryPage";
 export { default as WelcomePage } from "./WelcomePage";
+export { default as PrivacyPolicyPage } from "./PrivacyPolicyPage";

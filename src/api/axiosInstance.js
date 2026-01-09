@@ -77,7 +77,11 @@ axiosInstance.interceptors.response.use(
           sessionStorage.removeItem("accessToken");
           sessionStorage.removeItem("refreshToken");
           sessionStorage.removeItem("user");
-          window.location.href = "/login";
+          {
+            const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            const from = encodeURIComponent(currentPath);
+            window.location.href = `/login?from=${from}`;
+          }
           toast.error(i18n.t("auth.sessionExpired"));
           break;
         case 403:

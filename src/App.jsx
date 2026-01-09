@@ -6,6 +6,8 @@ import { ChatUnreadProvider } from './contexts/ChatUnreadContext';
 import { AnnouncementsUnreadProvider } from './contexts/AnnouncementsUnreadContext';
 import { ProtectedRoute, RoleGuard } from './components/auth';
 import { Layout } from './components/Layout';
+import { useAuth } from './contexts/AuthContext';
+import { Loading } from './components/common';
 import {
   LoginPage,
   RegisterPage,
@@ -35,7 +37,8 @@ import {
   AnnouncementsAuditPage,
   SmartScheduleBuilderPage,
   WithdrawHistoryPage,
-  WelcomePage
+  WelcomePage,
+  PrivacyPolicyPage
 } from './pages';
 import RoomPage from './pages/RoomPage';
 import RoomDetailsPage from './pages/RoomDetailsPage';
@@ -46,6 +49,24 @@ import TimeSlotPage from './pages/TimeSlotPage';
 
 import { ROLES } from './utils/constants';
 
+const AuthGate = ({ children }) => {
+  const { isLoading } = useAuth();
+  if (isLoading) {
+    return <Loading fullScreen />;
+  }
+  return children;
+};
+
+const HomeRoute = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <WelcomePage />;
+};
+
+const LoginRoute = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />;
+};
+
 function App() {
   return (
     <ThemeProvider>
@@ -53,23 +74,24 @@ function App() {
         <ChatUnreadProvider>
           <AnnouncementsUnreadProvider>
             <Router>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<WelcomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
+              <AuthGate>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<HomeRoute />} />
+                  <Route path="/login" element={<LoginRoute />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
 
-              {/* Protected Routes */}
-              <Route
-                element={
-                  <ProtectedRoute>
-                    <Layout />
-                  </ProtectedRoute>
-                }
-              >
-                {/* Dashboard - All authenticated users */}
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
+                  {/* Protected Routes */}
+                  <Route
+                    element={
+                      <ProtectedRoute>
+                        <Layout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    {/* Dashboard - All authenticated users */}
+                    <Route path="/dashboard" element={<DashboardPage />} />
 
                 <Route
                   path="/academic-plan"
@@ -316,11 +338,12 @@ function App() {
 
                 {/* Settings - All authenticated users (admin-only sections are gated inside) */}
                 <Route path="/settings" element={<SettingsPage />} />
-              </Route>
+                  </Route>
 
-              {/* 404 */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
+                  {/* 404 */}
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </AuthGate>
             </Router>
 
           {/* Toast Notifications */}

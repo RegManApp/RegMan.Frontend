@@ -15,7 +15,21 @@ const LoginPage = () => {
   const { t } = useTranslation();
   const { isRtl } = useDirection();
 
-  const from = location.state?.from?.pathname || '/dashboard';
+  const searchParams = new URLSearchParams(location.search);
+  const fromQuery = searchParams.get('from');
+  const fromStateLocation = location.state?.from;
+  const fromState =
+    fromStateLocation &&
+    typeof fromStateLocation === 'object' &&
+    typeof fromStateLocation.pathname === 'string'
+      ? `${fromStateLocation.pathname || ''}${fromStateLocation.search || ''}${fromStateLocation.hash || ''}`
+      : null;
+  const isSafeInternalPath = (value) =>
+    typeof value === 'string' && value.startsWith('/') && !value.startsWith('//');
+  const from =
+    (isSafeInternalPath(fromState) && fromState) ||
+    (isSafeInternalPath(fromQuery) && fromQuery) ||
+    '/dashboard';
 
   const handleSubmit = async (data) => {
     setIsLoading(true);
