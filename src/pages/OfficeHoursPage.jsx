@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { officeHourApi } from '../api/officeHourApi';
 import toast from 'react-hot-toast';
@@ -22,6 +23,7 @@ import {
 const OfficeHoursPage = () => {
   const { t, i18n } = useTranslation();
   const { isStudent } = useAuth();
+  const navigate = useNavigate();
   const locale = i18n.language?.toLowerCase().startsWith('ar') ? 'ar' : 'en-US';
   const [officeHours, setOfficeHours] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -372,6 +374,15 @@ const OfficeHoursPage = () => {
                     <span className={`px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(oh.status)}`}>
                       {renderOfficeHourStatus(oh.status)}
                     </span>
+
+                    <button
+                      type="button"
+                      onClick={() => navigate(`/office-hours/session/${oh.officeHourId}`)}
+                      className="px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      title="Smart Office Hours"
+                    >
+                      Smart Queue
+                    </button>
                     {oh.status === 'Available' && (
                       <>
                         <button

@@ -472,16 +472,26 @@ const BookOfficeHourPage = () => {
                             )}
                           </div>
                         </div>
-                        <button
-                          onClick={() => {
-                            setSelectedSlot(slot);
-                            setShowBookingModal(true);
-                          }}
-                          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
-                        >
-                          <FiBookOpen className="w-4 h-4" />
-                          Book
-                        </button>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/office-hours/session/${slot.officeHourId}`)}
+                            className="px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            Smart Queue
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSlot(slot);
+                              setShowBookingModal(true);
+                            }}
+                            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors flex items-center gap-2"
+                          >
+                            <FiBookOpen className="w-4 h-4" />
+                            Book
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -25,6 +25,7 @@ import {
   AnalyticsPage,
   ChatPage,
   OfficeHoursHubPage,
+  SmartOfficeHoursSessionPage,
   CalendarPage,
   GpaPage,
   AcademicPlanPage,   
@@ -207,6 +208,9 @@ function App() {
 
                 {/* Office Hours - All authenticated users (role-aware within page) */}
                 <Route path="/office-hours" element={<OfficeHoursHubPage />} />
+
+                {/* Smart Office Hours (queue + QR) */}
+                <Route path="/office-hours/session/:officeHourId" element={<SmartOfficeHoursSessionPage />} />
 
                 {/* Back-compat redirect */}
                 <Route path="/book-office-hours" element={<Navigate to="/office-hours" replace />} />
