@@ -59,10 +59,24 @@ export function offStudentViewUpdated(handler) {
 
 export async function joinOfficeHourAsStudent(officeHourId) {
   if (!connection) await startSmartOfficeHoursConnection();
-  return connection.invoke("JoinAsStudent", Number(officeHourId));
+  try {
+    return await connection.invoke("JoinAsStudent", Number(officeHourId));
+  } catch (err) {
+    const msg = err?.message || "Failed to join office hour";
+    const e = new Error(msg);
+    e.cause = err;
+    throw e;
+  }
 }
 
 export async function joinOfficeHourAsProvider(officeHourId) {
   if (!connection) await startSmartOfficeHoursConnection();
-  return connection.invoke("JoinAsProvider", Number(officeHourId));
+  try {
+    return await connection.invoke("JoinAsProvider", Number(officeHourId));
+  } catch (err) {
+    const msg = err?.message || "Failed to join office hour";
+    const e = new Error(msg);
+    e.cause = err;
+    throw e;
+  }
 }

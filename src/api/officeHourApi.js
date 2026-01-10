@@ -144,9 +144,13 @@ export const getInstructorsWithOfficeHours = async () => {
 
 // Book an office hour
 export const bookOfficeHour = async (officeHourId, data = {}) => {
+  const payload = {
+    purpose: data?.purpose ?? null,
+    bookerNotes: data?.bookerNotes ?? null,
+  };
   const response = await axiosInstance.post(
     `/officehour/${officeHourId}/book`,
-    data
+    payload
   );
   return response.data;
 };
