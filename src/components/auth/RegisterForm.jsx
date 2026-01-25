@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
   EnvelopeIcon,
   LockClosedIcon,
+  MapPinIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,8 @@ const RegisterForm = ({ onSubmit, isLoading }) => {
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(getRegisterSchema(t)),
@@ -25,14 +28,31 @@ const RegisterForm = ({ onSubmit, isLoading }) => {
       firstName: '',
       lastName: '',
       email: '',
+      address: '',
       password: '',
       confirmPassword: '',
       role: 'Student',
     },
   });
 
+  const handleFormSubmit = async (data) => {
+    const address = (data.address || '').trim();
+    if (!address) {
+      setError('address', {
+        type: 'manual',
+        message: t('validation.address.required', { defaultValue: 'Address is required' }),
+      });
+      return;
+    }
+
+    await onSubmit({
+      ...data,
+      address,
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input
           label={t('authPages.fields.firstName')}
@@ -57,6 +77,20 @@ const RegisterForm = ({ onSubmit, isLoading }) => {
         icon={EnvelopeIcon}
         error={errors.email?.message}
         {...register('email')}
+      />
+
+      <Input
+        label={t('authPages.fields.address', { defaultValue: 'Address' })}
+        placeholder={t('authPages.placeholders.address', { defaultValue: 'Enter your address' })}
+        icon={MapPinIcon}
+        required
+        autoComplete="street-address"
+        error={errors.address?.message}
+        {...register('address', {
+          onChange: () => {
+            if (errors.address) clearErrors('address');
+          },
+        })}
       />
 
       <div className="relative">
